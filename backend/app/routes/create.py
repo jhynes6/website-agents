@@ -1,14 +1,40 @@
+import asyncio
 import time
+from urllib.parse import urlparse
 from typing import Any, Dict, List, Optional
 
 from fastapi import APIRouter, HTTPException
 
 from ..clients.firecrawl import firecrawl_client
+from ..clients.llm import llm_client
+from ..clients.redis_client import redis_client
 from ..clients.upstash_search import upstash_search_client
 from ..config import get_settings
 from ..logging import log
 
 router = APIRouter()
+
+
+def _doc_id_from_url(raw_url: str) -> str:
+    """Build a stable id from domain + path without a trailing slash."""
+    parsed = urlparse(raw_url or "")
+    netloc = parsed.netloc
+    raw_path = parsed.path or "/"
+    # Drop trailing slash unless the path is just "/"
+    path = "" if raw_path == "/" else raw_path.rstrip("/")
+    if netloc:
+        return f"{netloc}{path}"
+    # Fallback: if no netloc (e.g., already a bare path), return the path itself.
+    return path
+
+
+async def _categorize_page(p: Dict[str, Any]) -> tuple[str, str]:
+    """Helper to categorize a page URL."""
+    u = p.get("metadata", {}).get("sourceURL") or p.get("url") or ""
+    if not u:
+        return "", "other"
+    cat = await llm_client.categorize_url(u)
+    return u, cat
 
 
 @router.post("/create")
@@ -43,18 +69,25 @@ async def create_chatbot(payload: Dict[str, Any]) -> Dict[str, Any]:
     ]
     log("create.pages.preview", {"sample": pages_preview, "total": len(pages)})
 
+    # Run categorization in parallel
+    log("create.categorize", {"pages": len(pages)})
+    cats_results = await asyncio.gather(*[_categorize_page(p) for p in pages])
+    url_to_category = dict(cats_results)
+
     documents = []
     for index, page in enumerate(pages):
         full_content = page.get("markdown") or page.get("content") or ""
         title = page.get("metadata", {}).get("title") or "Untitled"
         page_url = page.get("metadata", {}).get("sourceURL") or page.get("url") or ""
         description = page.get("metadata", {}).get("description") or page.get("metadata", {}).get("ogDescription") or ""
+        content_type = url_to_category.get(page_url, "other")
 
         searchable_text = f"namespace:{namespace} {title} {description} {full_content}"[:1000]
+        doc_id = _doc_id_from_url(page_url or url)
 
         documents.append(
             {
-                "id": f"{namespace}-{index}",
+                "id": doc_id,
                 "content": {
                     "text": searchable_text,
                     "url": page_url,
@@ -69,6 +102,8 @@ async def create_chatbot(payload: Dict[str, Any]) -> Dict[str, Any]:
                     "pageTitle": title,
                     "description": description,
                     "fullContent": full_content[:5000],
+                    "content_type": content_type,
+                    "document_source": "website",
                 },
             }
         )
@@ -86,6 +121,27 @@ async def create_chatbot(payload: Dict[str, Any]) -> Dict[str, Any]:
         ),
         pages[0],
     )
+
+    # Save index metadata to Redis for persistence
+    try:
+        index_metadata = {
+            "url": url,
+            "namespace": namespace,
+            "pagesCrawled": len(pages),
+            "createdAt": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime()),
+            "metadata": {
+                "title": homepage.get("metadata", {}).get("title"),
+                "description": homepage.get("metadata", {}).get("description")
+                or homepage.get("metadata", {}).get("ogDescription"),
+                "favicon": homepage.get("metadata", {}).get("favicon"),
+                "ogImage": homepage.get("metadata", {}).get("ogImage")
+                or homepage.get("metadata", {}).get("og:image"),
+            },
+        }
+        redis_client.save_index(index_metadata)
+        log("create.redis.saved", {"namespace": namespace})
+    except Exception as e:
+        log("create.redis.error", {"error": str(e)})
 
     return {
         "success": True,
@@ -137,7 +193,7 @@ async def scrape_urls(payload: Dict[str, Any]) -> Dict[str, Any]:
 
     pages: List[Dict[str, Any]] = []
     for target in urls:
-        result = await firecrawl_client.scrape_url(target)
+        result = firecrawl_client.scrape_url(target)
         data = result.get("data") if isinstance(result, dict) else None
         if data:
             data["url"] = target
@@ -146,6 +202,11 @@ async def scrape_urls(payload: Dict[str, Any]) -> Dict[str, Any]:
     if not pages:
         raise HTTPException(status_code=502, detail="Scrape returned no pages")
 
+    # Run categorization in parallel
+    log("scrape.categorize", {"pages": len(pages)})
+    cats_results = await asyncio.gather(*[_categorize_page(p) for p in pages])
+    url_to_category = dict(cats_results)
+
     documents = []
     for index, page in enumerate(pages):
         full_content = page.get("markdown") or page.get("content") or ""
@@ -153,12 +214,14 @@ async def scrape_urls(payload: Dict[str, Any]) -> Dict[str, Any]:
         title = metadata.get("title") or "Untitled"
         page_url = metadata.get("sourceURL") or metadata.get("url") or page.get("url") or ""
         description = metadata.get("description") or metadata.get("ogDescription") or ""
+        content_type = url_to_category.get(page_url, "other")
 
         searchable_text = f"namespace:{namespace} {title} {description} {full_content}"[:1000]
+        doc_id = _doc_id_from_url(page_url or target)
 
         documents.append(
             {
-                "id": f"{namespace}-{index}",
+                "id": doc_id,
                 "content": {
                     "text": searchable_text,
                     "url": page_url,
@@ -173,6 +236,8 @@ async def scrape_urls(payload: Dict[str, Any]) -> Dict[str, Any]:
                     "pageTitle": title,
                     "description": description,
                     "fullContent": full_content[:5000],
+                    "content_type": content_type,
+                    "document_source": "website",
                 },
             }
         )
@@ -181,6 +246,28 @@ async def scrape_urls(payload: Dict[str, Any]) -> Dict[str, Any]:
     await upstash_search_client.upsert_documents(documents, index_name=index_name)
 
     homepage = pages[0]
+    
+    # Save index metadata to Redis for persistence
+    try:
+        index_metadata = {
+            "url": urls[0] if urls else "",
+            "namespace": namespace,
+            "pagesCrawled": len(pages),
+            "createdAt": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime()),
+            "metadata": {
+                "title": homepage.get("metadata", {}).get("title"),
+                "description": homepage.get("metadata", {}).get("description")
+                or homepage.get("metadata", {}).get("ogDescription"),
+                "favicon": homepage.get("metadata", {}).get("favicon"),
+                "ogImage": homepage.get("metadata", {}).get("ogImage")
+                or homepage.get("metadata", {}).get("og:image"),
+            },
+        }
+        redis_client.save_index(index_metadata)
+        log("scrape.redis.saved", {"namespace": namespace})
+    except Exception as e:
+        log("scrape.redis.error", {"error": str(e)})
+    
     return {
         "success": True,
         "namespace": namespace,
@@ -199,4 +286,3 @@ async def scrape_urls(payload: Dict[str, Any]) -> Dict[str, Any]:
             or homepage.get("metadata", {}).get("og:image"),
         },
     }
-

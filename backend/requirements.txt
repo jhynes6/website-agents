@@ -6,4 +6,5 @@ pydantic==2.10.2
 pydantic-settings==2.6.1
 openai==1.55.3
 upstash_search==0.1.1
+upstash-redis==0.15.0
 

@@ -131,6 +131,37 @@ export async function POST(request: NextRequest) {
         title: homepage?.metadata?.title,
         url: homepage?.metadata?.sourceURL || homepage?.url
       })
+      
+      // Save index metadata to Redis IMMEDIATELY after crawl, before upserting documents
+      try {
+        log('index.saving', { namespace, pagesCrawled: crawlResponse.data.length })
+        const indexMetadata = {
+          url,
+          namespace,
+          pagesCrawled: crawlResponse.data.length,
+          createdAt: new Date().toISOString(),
+          metadata: {
+            title: homepage?.metadata?.title || new URL(url).hostname,
+            description: homepage?.metadata?.description || homepage?.metadata?.ogDescription,
+            favicon: homepage?.metadata?.favicon,
+            ogImage: homepage?.metadata?.ogImage || homepage?.metadata?.['og:image']
+          }
+        }
+        
+        console.log('[CREATE] About to call saveIndex with:', JSON.stringify(indexMetadata, null, 2))
+        
+        // We need to import saveIndex from @/lib/storage
+        // Ensure we await this properly and log the result
+        await saveIndex(indexMetadata)
+        
+        console.log('[CREATE] saveIndex completed successfully for:', namespace)
+        log('index.saved_success', { namespace, redisKey: `firestarter:index:${namespace}` })
+      } catch (storageError) {
+        console.error('[CREATE] CRITICAL: Failed to save index metadata to Redis:', storageError)
+        console.error('[CREATE] Error details:', JSON.stringify(storageError, Object.getOwnPropertyNames(storageError)))
+        log('index.save_failed', { error: String(storageError), stack: storageError instanceof Error ? storageError.stack : undefined })
+        // Don't throw - let the crawl succeed even if storage fails
+      }
     }
     
     // Store documents in Upstash Search
@@ -163,7 +194,8 @@ export async function POST(request: NextRequest) {
           favicon: page.metadata?.favicon,
           ogImage: page.metadata?.ogImage || page.metadata?.['og:image'],
           // Store the full content in metadata for retrieval (not searchable but accessible)
-          fullContent: fullContent.substring(0, 5000) // Store more content here
+          fullContent: fullContent.substring(0, 5000), // Store more content here
+          document_source: 'website'
         }
       }
     })
@@ -231,19 +263,8 @@ export async function POST(request: NextRequest) {
     }) || crawlResponse.data[0]
     
     try {
-      await saveIndex({
-        url,
-        namespace,
-        pagesCrawled: crawlResponse.data?.length || 0,
-        createdAt: new Date().toISOString(),
-        metadata: {
-          title: homepage?.metadata?.title,
-          description: homepage?.metadata?.description || homepage?.metadata?.ogDescription,
-          favicon: homepage?.metadata?.favicon,
-          ogImage: homepage?.metadata?.ogImage || homepage?.metadata?.['og:image']
-        }
-      })
-      log('index.saved', { namespace, pagesCrawled: crawlResponse.data?.length || 0 })
+      /* Removed duplicate saveIndex call that was here */
+      log('index.saved_legacy_block_skipped', { namespace })
     } catch {
       // Continue execution - storage error shouldn't fail the entire operation
       console.error('Failed to save index metadata')

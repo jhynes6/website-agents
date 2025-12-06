@@ -1,4 +1,5 @@
 import asyncio
+import time
 from typing import Any, Dict, List, Optional, Tuple
 
 import httpx
@@ -23,6 +24,43 @@ class FirecrawlClient:
         if resp.status_code >= 400:
             raise RuntimeError(f"Firecrawl error {resp.status_code}: {resp.text}")
         return resp.json()
+    
+    def _post_sync(self, path: str, json: Dict[str, Any]) -> Dict[str, Any]:
+        url = f"{self.base_url}{path}"
+        max_retries = 3
+        last_error = None
+        
+        for attempt in range(max_retries):
+            try:
+                # Increased timeout to 60s to avoid ReadTimeout on slow scrapes
+                with httpx.Client(timeout=60) as client:
+                    resp = client.post(url, json=json, headers=self.headers)
+                
+                if resp.status_code < 400:
+                    return resp.json()
+                
+                # If it's a server error (5xx), wait and retry
+                if resp.status_code >= 500:
+                    error_msg = f"Firecrawl error {resp.status_code}: {resp.text}"
+                    log("firecrawl.retry", {"attempt": attempt + 1, "status": resp.status_code, "error": resp.text})
+                    time.sleep(2 * (attempt + 1))
+                    last_error = RuntimeError(error_msg)
+                    continue
+                
+                # For 4xx errors, raise immediately
+                raise RuntimeError(f"Firecrawl error {resp.status_code}: {resp.text}")
+                
+            except httpx.RequestError as e:
+                log("firecrawl.request_error", {"attempt": attempt + 1, "error": str(e)})
+                last_error = e
+                if attempt == max_retries - 1:
+                    raise
+                time.sleep(2 * (attempt + 1))
+
+        # If we get here, we failed after retries
+        if last_error:
+            raise last_error
+        raise RuntimeError(f"Firecrawl failed after {max_retries} attempts")
 
     async def _get(self, path: str) -> Dict[str, Any]:
         url = f"{self.base_url}{path}"
@@ -45,7 +83,7 @@ class FirecrawlClient:
             return resp.get("links", [])
         return []
 
-    async def scrape_url(self, url: str) -> Dict[str, Any]:
+    def scrape_url(self, url: str) -> Dict[str, Any]:
         payload: Dict[str, Any] = {
             "url": url,
             # Firecrawl v2 expects options at the top level (no scrapeOptions key)
@@ -56,7 +94,7 @@ class FirecrawlClient:
             "blockAds": True,
             "zeroDataRetention": False,
         }
-        return await self._post("/scrape", payload)
+        return self._post_sync("/scrape", payload)
 
     async def crawl_and_wait(
         self,
@@ -106,4 +144,3 @@ class FirecrawlClient:
 
 
 firecrawl_client = FirecrawlClient()
-

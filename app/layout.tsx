@@ -10,20 +10,20 @@ const inter = Inter({
 });
 
 export const metadata: Metadata = {
-  title: "Firecrawl Tools - AI-Powered Web Scraping & Data Enrichment",
-  description: "Transform websites into structured data with Firecrawl's suite of AI tools. Create chatbots, enrich CSVs, search intelligently, and generate images from URLs.",
+  title: "MintAgents - Custom AI Chatbots",
+  description:  "Create custom AI chatbots for your website with MintAgents. MintAgents is a platform that allows you to create custom AI chatbots for your website.",
   metadataBase: new URL(process.env.NEXT_PUBLIC_URL || "https://firecrawl.dev"),
   openGraph: {
-    title: "Firecrawl Tools - AI-Powered Web Scraping & Data Enrichment",
-    description: "Transform websites into structured data with Firecrawl's suite of AI tools. Create chatbots, enrich CSVs, search intelligently, and generate images from URLs.",
+    title: "MintAgents - Custom AI Chatbots",
+    description: "Create custom AI chatbots for your website with MintAgents. MintAgents is a platform that allows you to create custom AI chatbots for your website.",
     url: "/",
-    siteName: "Firecrawl Tools",
+    siteName: "MintAgents",
     images: [
       {
         url: "/firecrawl-logo-with-fire.png",
         width: 1200,
         height: 630,
-        alt: "Firecrawl - AI-Powered Web Scraping",
+        alt: "MintAgents - Custom AI Chatbots",
       },
     ],
     locale: "en_US",
@@ -31,7 +31,7 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "Firecrawl Tools - AI-Powered Web Scraping",
+    title: "MintAgents - Custom AI Chatbots",
     description: "Transform websites into structured data with AI",
     images: ["/firecrawl-logo-with-fire.png"],
     creator: "@firecrawl_dev",

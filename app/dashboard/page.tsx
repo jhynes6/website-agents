@@ -350,9 +350,10 @@ function DashboardContent() {
           }
         }
       }
-    } catch {
+    } catch (error) {
       toast.error('Failed to get response')
-      console.error('Query failed')
+      console.error('Query failed:', error)
+      console.error('Error details:', error instanceof Error ? error.message : String(error))
     } finally {
       setIsLoading(false)
     }
@@ -361,37 +362,53 @@ function DashboardContent() {
   useEffect(() => {
     // Get namespace from URL params
     const namespaceParam = searchParams.get('namespace')
+    console.log(`[Dashboard] Init with namespace: ${namespaceParam}`)
     
     if (namespaceParam) {
-      // Try to load data for this specific namespace
-      const storedIndexes = localStorage.getItem('firestarter_indexes')
-      if (storedIndexes) {
-        const indexes = JSON.parse(storedIndexes)
-        const matchingIndex = indexes.find((idx: { namespace: string }) => idx.namespace === namespaceParam)
-        if (matchingIndex) {
-          setSiteData(matchingIndex)
-          // Also update sessionStorage for consistency
-          sessionStorage.setItem('firestarter_current_data', JSON.stringify(matchingIndex))
-          // Clear messages when namespace changes
-          setMessages([])
-        } else {
-          // Namespace not found in stored indexes
+      // Try to fetch index data from the database via API first
+      console.log(`[Dashboard] Fetching index for: ${namespaceParam}`)
+      fetch(`/api/indexes?namespace=${namespaceParam}`)
+        .then(async (res) => {
+          if (!res.ok) {
+            const text = await res.text()
+            console.error(`[Dashboard] Fetch failed: ${res.status} ${res.statusText}`, text)
+            throw new Error('Failed to fetch index from API')
+          }
+          const data = await res.json()
+          console.log(`[Dashboard] Fetch success:`, data)
+          if (data.index) {
+            setSiteData(data.index)
+            sessionStorage.setItem('firestarter_current_data', JSON.stringify(data.index))
+            setMessages([])
+            return
+          } else {
+            throw new Error('Index not found in API response')
+          }
+        })
+        .catch((err) => {
+          console.error('[Dashboard] API fetch failed, falling back to localStorage:', err)
+          
+          // Fallback to localStorage (for when Redis isn't configured)
+          const storedIndexes = localStorage.getItem('firestarter_indexes')
+          if (storedIndexes) {
+            const indexes = JSON.parse(storedIndexes)
+            const matchingIndex = indexes.find((idx: { namespace: string }) => idx.namespace === namespaceParam)
+            if (matchingIndex) {
+              console.log('[Dashboard] Found in localStorage:', matchingIndex)
+              setSiteData(matchingIndex)
+              sessionStorage.setItem('firestarter_current_data', JSON.stringify(matchingIndex))
+              setMessages([])
+              return
+            }
+          }
+          
+          // If still not found, redirect to indexes page
+          console.error('[Dashboard] Index not found in API or localStorage, redirecting')
           router.push('/indexes')
-        }
-      } else {
-        router.push('/indexes')
-      }
+        })
     } else {
-      // Fallback to sessionStorage if no namespace param
-      const data = sessionStorage.getItem('firestarter_current_data')
-      if (data) {
-        const parsedData = JSON.parse(data)
-        setSiteData(parsedData)
-        // Add namespace to URL for consistency
-        router.replace(`/dashboard?namespace=${parsedData.namespace}`)
-      } else {
-        router.push('/indexes')
-      }
+      console.log(`[Dashboard] No namespace param, redirecting`)
+      router.push('/indexes')
     }
   }, [router, searchParams])
 

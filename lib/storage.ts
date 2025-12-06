@@ -87,13 +87,18 @@ class RedisStorageAdapter implements StorageAdapter {
 
   constructor() {
     if (!process.env.UPSTASH_REDIS_REST_URL || !process.env.UPSTASH_REDIS_REST_TOKEN) {
+      console.error('[Redis] Configuration MISSING: UPSTASH_REDIS_REST_URL or UPSTASH_REDIS_REST_TOKEN not set')
       throw new Error('Redis configuration missing')
     }
     
+    console.log('[Redis] Initializing adapter with URL:', process.env.UPSTASH_REDIS_REST_URL)
     this.redis = new Redis({
       url: process.env.UPSTASH_REDIS_REST_URL,
       token: process.env.UPSTASH_REDIS_REST_TOKEN,
     })
+    
+    // Test connection
+    this.redis.ping().then(res => console.log('[Redis] PING response:', res)).catch(err => console.error('[Redis] PING failed:', err))
   }
 
   async getIndexes(): Promise<IndexMetadata[]> {
@@ -109,9 +114,20 @@ class RedisStorageAdapter implements StorageAdapter {
   async getIndex(namespace: string): Promise<IndexMetadata | null> {
     try {
       const index = await this.redis.get<IndexMetadata>(`${this.INDEX_KEY_PREFIX}${namespace}`)
+      console.log(`[Redis] Fetched index for namespace "${namespace}" at key "${this.INDEX_KEY_PREFIX}${namespace}":`, index ? 'Found' : 'Not Found')
+      if (!index) {
+        // Fallback check: check if it's in the main list but not individual key
+        const allIndexes = await this.getIndexes()
+        const foundInList = allIndexes.find(i => i.namespace === namespace)
+        if (foundInList) {
+            console.log(`[Redis] Found namespace "${namespace}" in main list but missing individual key. Restoring key.`)
+            await this.redis.set(`${this.INDEX_KEY_PREFIX}${namespace}`, foundInList)
+            return foundInList
+        }
+      }
       return index
-    } catch {
-      console.error('Failed to get index from Redis')
+    } catch (error) {
+      console.error(`[Redis] Failed to get index for namespace "${namespace}"`, error)
       return null
     }
   }
@@ -119,6 +135,7 @@ class RedisStorageAdapter implements StorageAdapter {
   async saveIndex(index: IndexMetadata): Promise<void> {
     try {
       // Save individual index
+      console.log(`[Redis] Saving index for namespace "${index.namespace}" to ${this.INDEX_KEY_PREFIX}${index.namespace}`)
       await this.redis.set(`${this.INDEX_KEY_PREFIX}${index.namespace}`, index)
       
       // Update indexes list
@@ -133,8 +150,10 @@ class RedisStorageAdapter implements StorageAdapter {
       
       // Keep only the last 50 indexes
       const limitedIndexes = indexes.slice(0, 50)
+      console.log(`[Redis] Updating indexes list with ${limitedIndexes.length} items`)
       await this.redis.set(this.INDEXES_KEY, limitedIndexes)
     } catch (error) {
+      console.error(`[Redis] Failed to save index for namespace "${index.namespace}"`, error)
       throw error
     }
   }
@@ -156,17 +175,25 @@ class RedisStorageAdapter implements StorageAdapter {
 
 // Factory function to get the appropriate storage adapter
 function getStorageAdapter(): StorageAdapter {
+  console.log('[Storage] getStorageAdapter called - checking env vars...')
+  console.log('[Storage] UPSTASH_REDIS_REST_URL:', process.env.UPSTASH_REDIS_REST_URL ? 'SET' : 'NOT SET')
+  console.log('[Storage] UPSTASH_REDIS_REST_TOKEN:', process.env.UPSTASH_REDIS_REST_TOKEN ? 'SET' : 'NOT SET')
+  console.log('[Storage] typeof window:', typeof window)
+  
   // Use Redis if both environment variables are set
   if (process.env.UPSTASH_REDIS_REST_URL && process.env.UPSTASH_REDIS_REST_TOKEN) {
+    console.log('[Storage] Using RedisStorageAdapter')
     return new RedisStorageAdapter()
   }
   
   // Check if we're on the server
   if (typeof window === 'undefined') {
+    console.error('[Storage] On server but no Redis config - throwing error')
     throw new Error('No storage adapter available on the server. Please configure Redis by setting UPSTASH_REDIS_REST_URL and UPSTASH_REDIS_REST_TOKEN environment variables.')
   }
   
   // Otherwise, use localStorage (only on client)
+  console.log('[Storage] Using LocalStorageAdapter (client-side)')
   return new LocalStorageAdapter()
 }
 

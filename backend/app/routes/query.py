@@ -35,15 +35,24 @@ async def query(payload: Dict[str, Any]) -> StreamingResponse:
     index_name: Optional[str] = payload.get("index")
     stream: bool = bool(payload.get("stream", False))
 
-    if not query_text or not namespace:
-        raise HTTPException(status_code=400, detail="Query and namespace are required")
+    # Support chat-style payloads: extract latest user message if query missing
+    if not query_text:
+        messages = payload.get("messages")
+        if isinstance(messages, list):
+            user_messages = [m for m in messages if isinstance(m, dict) and m.get("role") == "user"]
+            if user_messages:
+                query_text = user_messages[-1].get("content")
 
-    search_query = f"{query_text} {namespace}"
+    # Allow querying by index only; namespace is optional now
+    if not query_text or not (namespace or index_name):
+        raise HTTPException(status_code=400, detail="Query and namespace or index are required")
+
+    search_query = query_text
     try:
         search_results = await upstash_search_client.search(
             query=search_query,
             limit=settings.search_max_results,
-            filter_expr=f'metadata.namespace = "{namespace}"',
+            filter_expr=None,  # query on index only
             reranking=True,
             index_name=index_name,
         )
@@ -57,8 +66,18 @@ async def query(payload: Dict[str, Any]) -> StreamingResponse:
 
     transformed_docs = []
     for result in search_results:
-        metadata = result.get("metadata", {}) or {}
-        content_obj = result.get("content", {}) or {}
+        # Handle results that are dicts (fallback REST) vs objects (SDK)
+        if isinstance(result, dict):
+            metadata = result.get("metadata", {}) or {}
+            content_obj = result.get("content", {}) or {}
+            score = result.get("score", 0)
+        else:
+            # It's an SDK DocumentScore object
+            # Access attributes directly first, they might return dicts or None
+            metadata = getattr(result, "metadata", {}) or {}
+            content_obj = getattr(result, "content", {}) or {}
+            score = getattr(result, "score", 0)
+
         title = metadata.get("title") or metadata.get("pageTitle") or "Untitled"
         description = metadata.get("description") or ""
         url = metadata.get("url") or metadata.get("sourceURL") or content_obj.get("url") or ""
@@ -70,7 +89,7 @@ async def query(payload: Dict[str, Any]) -> StreamingResponse:
                 "url": url,
                 "title": title,
                 "description": description,
-                "score": result.get("score") or 0,
+                "score": score,
             }
         )
 
@@ -134,4 +153,3 @@ async def query(payload: Dict[str, Any]) -> StreamingResponse:
     answer = "".join(chunks)
     payload = {"answer": answer, "sources": sources}
     return JSONResponse(payload)
-

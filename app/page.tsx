@@ -61,6 +61,8 @@ export default function FirestarterPage() {
   const [useMapFlow, setUseMapFlow] = useState(false);
   const [isScrapingSelected, setIsScrapingSelected] = useState(false);
   const [indexName, setIndexName] = useState<string>('');
+  const allMappedSelected =
+    mapLinks.length > 0 && mapLinks.every((link) => selectedLinks[link.url]);
 
   useEffect(() => {
     // Check environment and API keys
@@ -390,14 +392,9 @@ export default function FirestarterPage() {
   return (
     <div className="px-4 sm:px-6 lg:px-8 py-4 max-w-7xl mx-auto font-inter">
       <div className="flex justify-between items-center mb-8">
-        <Link href="https://www.firecrawl.dev/?utm_source=tool-firestarter" target="_blank" rel="noopener noreferrer">
-          <Image
-            src="/firecrawl-logo-with-fire.png"
-            alt="Firecrawl Logo"
-            width={113}
-            height={24}
-          />
-        </Link>
+        <div className="text-xl font-bold text-mint-primary">
+          MintAgents
+        </div>
         <div className="flex items-center gap-2">
           <Button
             asChild
@@ -410,18 +407,15 @@ export default function FirestarterPage() {
           </Button>
           <Button
             asChild
-            variant="code"
+            variant="orange"
             className="font-medium flex items-center gap-2"
           >
             <a
-              href="https://github.com/mendableai/hostedTools/tree/main/app/firestarter"
+              href="https://console.upstash.com/search/ca83b161-8d48-4687-aa8d-776ea9673f6f?teamid=0"
               target="_blank"
               rel="noopener noreferrer"
             >
-              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" fill="currentColor" className="w-4 h-4">
-                <path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z" />
-              </svg>
-              Use this template
+              Link to DB
             </a>
           </Button>
         </div>
@@ -431,9 +425,9 @@ export default function FirestarterPage() {
         // Show loading state while checking environment
         <div className="max-w-2xl mx-auto">
           <div className="text-center pt-8 pb-6">
-            <h1 className="text-[2.5rem] lg:text-[3.8rem] text-center text-[#36322F] dark:text-zinc-100 font-semibold tracking-tight leading-[1.1] opacity-0 animate-fade-up [animation-duration:500ms] [animation-delay:200ms] [animation-fill-mode:forwards]">
-              Firestarter<br />
-              <span className="text-[2.5rem] lg:text-[3.8rem] block mt-2 opacity-0 animate-fade-up [animation-duration:500ms] [animation-delay:400ms] [animation-fill-mode:forwards] text-transparent bg-clip-text bg-gradient-to-tr from-red-600 to-yellow-500">
+            <h1 className="text-[2.5rem] lg:text-[3.8rem] text-center text-[#0E3D68] dark:text-zinc-100 font-semibold tracking-tight leading-[1.1] opacity-0 animate-fade-up [animation-duration:500ms] [animation-delay:200ms] [animation-fill-mode:forwards]">
+              MintAgents<br />
+              <span className="text-[2.5rem] lg:text-[3.8rem] block mt-2 opacity-0 animate-fade-up [animation-duration:500ms] [animation-delay:400ms] [animation-fill-mode:forwards] text-transparent bg-clip-text bg-gradient-to-tr from-[#00B388] to-[#0E3D68]">
                 Loading...
               </span>
             </h1>
@@ -442,8 +436,8 @@ export default function FirestarterPage() {
       ) : isCreationDisabled === true ? (
         <div className="max-w-2xl mx-auto">
           <div className="text-center pt-8 pb-6">
-            <h1 className="text-[2.5rem] lg:text-[3.8rem] text-center text-[#36322F] dark:text-zinc-100 font-semibold tracking-tight leading-[1.1] opacity-0 animate-fade-up [animation-duration:500ms] [animation-delay:200ms] [animation-fill-mode:forwards]">
-              Firestarter<br />
+            <h1 className="text-[2.5rem] lg:text-[3.8rem] text-center text-[#0E3D68] dark:text-zinc-100 font-semibold tracking-tight leading-[1.1] opacity-0 animate-fade-up [animation-duration:500ms] [animation-delay:200ms] [animation-fill-mode:forwards]">
+              MintAgents<br />
               <span className="text-[2.5rem] lg:text-[3.8rem] block mt-2 opacity-0 animate-fade-up [animation-duration:500ms] [animation-delay:400ms] [animation-fill-mode:forwards] text-transparent bg-clip-text bg-gradient-to-tr from-gray-400 to-gray-600">
                 Read-Only Mode
               </span>
@@ -470,7 +464,7 @@ export default function FirestarterPage() {
               </Button>
               <Button
                 asChild
-                variant="outline"
+                variant="orange"
                 className="font-medium"
               >
                 <Link href="/">
@@ -483,10 +477,10 @@ export default function FirestarterPage() {
       ) : (
         <>
           <div className="text-center pt-8 pb-6">
-            <h1 className="text-[2.5rem] lg:text-[3.8rem] text-center text-[#36322F] dark:text-zinc-100 font-semibold tracking-tight leading-[1.1] opacity-0 animate-fade-up [animation-duration:500ms] [animation-delay:200ms] [animation-fill-mode:forwards]">
-              Firestarter<br />
-              <span className="text-[2.5rem] lg:text-[3.8rem] block mt-2 opacity-0 animate-fade-up [animation-duration:500ms] [animation-delay:400ms] [animation-fill-mode:forwards] text-transparent bg-clip-text bg-gradient-to-tr from-red-600 to-yellow-500">
-                Chatbots, Instantly.
+            <h1 className="text-[2.5rem] lg:text-[3.8rem] text-center text-[#0E3D68] dark:text-zinc-100 font-semibold tracking-tight leading-[1.1] opacity-0 animate-fade-up [animation-duration:500ms] [animation-delay:200ms] [animation-fill-mode:forwards]">
+              MintAgents<br />
+              <span className="text-[2.5rem] lg:text-[3.8rem] block mt-2 opacity-0 animate-fade-up [animation-duration:500ms] [animation-delay:400ms] [animation-fill-mode:forwards] text-[#00B388]">
+                Custom AI Chatbots
               </span>
             </h1>
           </div>
@@ -508,7 +502,7 @@ export default function FirestarterPage() {
                     }
                   }}
                   placeholder="https://example.com"
-                  className="w-full h-14 px-6 text-lg"
+                  className="w-full h-14 px-6 text-lg border-mint-primary/20 focus:border-mint-accent focus:ring-mint-accent/20"
                   required
                   disabled={loading}
                 />
@@ -533,7 +527,7 @@ export default function FirestarterPage() {
               </div>
               <div className="flex flex-col sm:flex-row sm:items-center gap-3">
                 <div className="flex-1">
-                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                  <label className="block text-sm font-medium text-[#0E3D68] dark:text-gray-300 mb-1">
                     Index Name (client-slug)
                   </label>
                   <Input
@@ -542,6 +536,7 @@ export default function FirestarterPage() {
                     onChange={(e) => setIndexName(e.target.value)}
                     placeholder="e.g. movies"
                     disabled={loading}
+                    className="border-[#0E3D68]/20 focus:border-[#00B388] focus:ring-[#00B388]/20"
                   />
                   <p className="text-xs text-muted-foreground mt-1">
                     Optional. If empty, uses backend default (`UPSTASH_SEARCH_INDEX`).
@@ -552,7 +547,7 @@ export default function FirestarterPage() {
                 <label className="flex items-center gap-2">
                   <input
                     type="checkbox"
-                    className="h-4 w-4 rounded border-gray-300 text-orange-600 focus:ring-orange-500"
+                    className="h-4 w-4 rounded border-gray-300 text-[#00B388] focus:ring-[#00B388]"
                     checked={useMapFlow}
                     onChange={() => setUseMapFlow(!useMapFlow)}
                     disabled={loading}
@@ -570,15 +565,37 @@ export default function FirestarterPage() {
                     <h3 className="font-semibold text-[#36322F]">Mapped URLs</h3>
                     <p className="text-sm text-gray-600">Select which pages to scrape.</p>
                   </div>
-                  <Button
-                    type="button"
-                    size="sm"
-                    variant="orange"
-                    onClick={handleScrapeSelected}
-                    disabled={isScrapingSelected}
-                  >
-                    {isScrapingSelected ? 'Scraping...' : 'Scrape Selected'}
-                  </Button>
+                  <div className="flex items-center gap-3">
+                    <label className="flex items-center gap-2 text-sm text-gray-700">
+                      <input
+                        type="checkbox"
+                        className="h-4 w-4 rounded border-gray-300 text-orange-600 focus:ring-orange-500"
+                        checked={allMappedSelected}
+                        onChange={(e) => {
+                          if (e.target.checked) {
+                            // select all
+                            const next: Record<string, boolean> = {};
+                            mapLinks.forEach((link) => {
+                              next[link.url] = true;
+                            });
+                            setSelectedLinks(next);
+                          } else {
+                            setSelectedLinks({});
+                          }
+                        }}
+                      />
+                      <span>Select all</span>
+                    </label>
+                    <Button
+                      type="button"
+                      size="sm"
+                      variant="orange"
+                      onClick={handleScrapeSelected}
+                      disabled={isScrapingSelected}
+                    >
+                      {isScrapingSelected ? 'Scraping...' : 'Scrape Selected'}
+                    </Button>
+                  </div>
                 </div>
                 <div className="max-h-60 overflow-auto space-y-2">
                   {mapLinks.map((link, idx) => (
@@ -613,11 +630,11 @@ export default function FirestarterPage() {
                 <div className="flex items-center justify-between mb-4">
                   <h3 className="text-lg font-semibold text-[#36322F] flex items-center gap-2">
                     {crawlProgress.status === 'Crawl complete!' ? (
-                      <CheckCircle2 className="w-5 h-5 text-green-600 animate-in zoom-in duration-300" />
+                      <CheckCircle2 className="w-5 h-5 text-[#00B388] animate-in zoom-in duration-300" />
                     ) : crawlProgress.status.includes('Error') ? (
                       <AlertCircle className="w-5 h-5 text-red-600 animate-in zoom-in duration-300" />
                     ) : (
-                      <Loader2 className="w-5 h-5 text-orange-600 animate-spin" />
+                      <Loader2 className="w-5 h-5 text-[#00B388] animate-spin" />
                     )}
                     <span className="animate-in fade-in duration-300">{crawlProgress.status}</span>
                   </h3>
@@ -640,9 +657,13 @@ export default function FirestarterPage() {
                   
                   {crawlProgress.pagesFound > 0 && (
                     <div className="mt-4">
+                      <div className="flex justify-between text-xs text-gray-600 mb-1">
+                        <span>Progress</span>
+                        <span>{Math.round((crawlProgress.pagesScraped / crawlProgress.pagesFound) * 100)}% ({crawlProgress.pagesScraped} / {crawlProgress.pagesFound} pages)</span>
+                      </div>
                       <div className="w-full bg-gray-200 rounded-full h-2">
                         <div 
-                          className="bg-gradient-to-r from-orange-500 to-red-600 h-2 rounded-full transition-all duration-500"
+                          className="bg-[#00B388] h-2 rounded-full transition-all duration-500"
                           style={{ width: `${(crawlProgress.pagesScraped / crawlProgress.pagesFound) * 100}%` }}
                         />
                       </div>
@@ -667,7 +688,7 @@ export default function FirestarterPage() {
               <Button
                 type="button"
                 onClick={() => setShowSettings(!showSettings)}
-                variant="code"
+                variant="orange"
                 size="sm"
                 className="font-medium"
               >
@@ -694,7 +715,7 @@ export default function FirestarterPage() {
                         step="5"
                         value={pageLimit}
                         onChange={(e) => setPageLimit(parseInt(e.target.value))}
-                        className="flex-1 accent-orange-500"
+                        className="flex-1 accent-[#00B388]"
                         disabled={loading}
                       />
                       <span className="text-[#36322F] font-medium w-12 text-right">{pageLimit}</span>
@@ -728,56 +749,56 @@ export default function FirestarterPage() {
             <div className="mt-12">
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                 <div className="bg-[#FBFAF9] rounded-xl border border-gray-200 px-6 py-4 flex items-center gap-3 hover:shadow-sm transition-shadow">
-                  <div className="w-8 h-8 bg-orange-100 rounded-lg flex items-center justify-center flex-shrink-0">
-                    <Globe className="w-4 h-4 text-orange-600" />
+                  <div className="w-8 h-8 bg-[#00B388]/10 rounded-lg flex items-center justify-center flex-shrink-0">
+                    <Globe className="w-4 h-4 text-[#00B388]" />
                   </div>
                   <div className="flex items-center">
-                    <h3 className="text-base font-semibold text-[#36322F]">Smart Crawling</h3>
+                    <h3 className="text-base font-semibold text-[#0E3D68]">Smart Crawling</h3>
                   </div>
                 </div>
                 
                 <div className="bg-[#FBFAF9] rounded-xl border border-gray-200 px-6 py-4 flex items-center gap-3 hover:shadow-sm transition-shadow">
-                  <div className="w-8 h-8 bg-orange-100 rounded-lg flex items-center justify-center flex-shrink-0">
-                    <FileText className="w-4 h-4 text-orange-600" />
+                  <div className="w-8 h-8 bg-[#00B388]/10 rounded-lg flex items-center justify-center flex-shrink-0">
+                    <FileText className="w-4 h-4 text-[#00B388]" />
                   </div>
                   <div className="flex items-center">
-                    <h3 className="text-base font-semibold text-[#36322F]">Content Extraction</h3>
+                    <h3 className="text-base font-semibold text-[#0E3D68]">Content Extraction</h3>
                   </div>
                 </div>
                 
                 <div className="bg-[#FBFAF9] rounded-xl border border-gray-200 px-6 py-4 flex items-center gap-3 hover:shadow-sm transition-shadow">
-                  <div className="w-8 h-8 bg-orange-100 rounded-lg flex items-center justify-center flex-shrink-0">
-                    <Database className="w-4 h-4 text-orange-600" />
+                  <div className="w-8 h-8 bg-[#00B388]/10 rounded-lg flex items-center justify-center flex-shrink-0">
+                    <Database className="w-4 h-4 text-[#00B388]" />
                   </div>
                   <div className="flex items-center">
-                    <h3 className="text-base font-semibold text-[#36322F]">Intelligent Chunking</h3>
+                    <h3 className="text-base font-semibold text-[#0E3D68]">Intelligent Chunking</h3>
                   </div>
                 </div>
                 
                 <div className="bg-[#FBFAF9] rounded-xl border border-gray-200 px-6 py-4 flex items-center gap-3 hover:shadow-sm transition-shadow">
-                  <div className="w-8 h-8 bg-orange-100 rounded-lg flex items-center justify-center flex-shrink-0">
-                    <Search className="w-4 h-4 text-orange-600" />
+                  <div className="w-8 h-8 bg-[#00B388]/10 rounded-lg flex items-center justify-center flex-shrink-0">
+                    <Search className="w-4 h-4 text-[#00B388]" />
                   </div>
                   <div className="flex items-center">
-                    <h3 className="text-base font-semibold text-[#36322F]">Semantic Search</h3>
+                    <h3 className="text-base font-semibold text-[#0E3D68]">Semantic Search</h3>
                   </div>
                 </div>
                 
                 <div className="bg-[#FBFAF9] rounded-xl border border-gray-200 px-6 py-4 flex items-center gap-3 hover:shadow-sm transition-shadow">
-                  <div className="w-8 h-8 bg-orange-100 rounded-lg flex items-center justify-center flex-shrink-0">
-                    <Zap className="w-4 h-4 text-orange-600" />
+                  <div className="w-8 h-8 bg-[#00B388]/10 rounded-lg flex items-center justify-center flex-shrink-0">
+                    <Zap className="w-4 h-4 text-[#00B388]" />
                   </div>
                   <div className="flex items-center">
-                    <h3 className="text-base font-semibold text-[#36322F]">RAG Pipeline</h3>
+                    <h3 className="text-base font-semibold text-[#0E3D68]">RAG Pipeline</h3>
                   </div>
                 </div>
                 
                 <div className="bg-[#FBFAF9] rounded-xl border border-gray-200 px-6 py-4 flex items-center gap-3 hover:shadow-sm transition-shadow">
-                  <div className="w-8 h-8 bg-orange-100 rounded-lg flex items-center justify-center flex-shrink-0">
-                    <Sparkles className="w-4 h-4 text-orange-600" />
+                  <div className="w-8 h-8 bg-[#00B388]/10 rounded-lg flex items-center justify-center flex-shrink-0">
+                    <Sparkles className="w-4 h-4 text-[#00B388]" />
                   </div>
                   <div className="flex items-center">
-                    <h3 className="text-base font-semibold text-[#36322F]">Instant API</h3>
+                    <h3 className="text-base font-semibold text-[#0E3D68]">Instant API</h3>
                   </div>
                 </div>
               </div>
@@ -798,7 +819,7 @@ export default function FirestarterPage() {
           <div className="flex flex-col gap-4 py-4">
             <Button
               onClick={() => window.open('https://www.firecrawl.dev', '_blank')}
-              variant="outline"
+              variant="orange"
               size="sm"
               className="flex items-center justify-center gap-2 cursor-pointer"
             >
@@ -826,7 +847,7 @@ export default function FirestarterPage() {
           </div>
           <DialogFooter>
             <Button
-              variant="code"
+              variant="orange"
               onClick={() => setShowApiKeyModal(false)}
               disabled={isValidatingApiKey}
               className="font-medium"

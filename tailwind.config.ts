@@ -50,6 +50,13 @@ export default {
           DEFAULT: "hsl(var(--card))",
           foreground: "hsl(var(--card-foreground))",
         },
+        // MintAgents custom colors
+        mint: {
+          primary: "#0E3D68",
+          accent: "#00B388",
+          background: "#FFFFFF",
+          text: "#0E3D68",
+        }
       },
       borderRadius: {
         lg: "var(--radius)",

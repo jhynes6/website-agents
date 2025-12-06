@@ -71,14 +71,9 @@ export default function IndexesPage() {
   return (
     <div className="px-4 sm:px-6 lg:px-8 py-4 max-w-7xl mx-auto font-inter">
       <div className="flex justify-between items-center mb-8">
-        <Link href="https://www.firecrawl.dev/?utm_source=tool-firestarter" target="_blank" rel="noopener noreferrer">
-          <Image
-            src="/firecrawl-logo-with-fire.png"
-            alt="Firecrawl Logo"
-            width={113}
-            height={24}
-          />
-        </Link>
+        <div className="text-xl font-bold text-[#0E3D68]">
+          MintAgents
+        </div>
         <Button
           asChild
           variant="orange"
