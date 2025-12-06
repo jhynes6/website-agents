@@ -7,6 +7,7 @@ import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useStorage } from "@/hooks/useStorage";
+import { buildApiHeaders, getBackendUrl } from "@/lib/backend";
 import { clientConfig as config } from "@/firestarter.config";
 import { 
   Globe, 
@@ -55,6 +56,11 @@ export default function FirestarterPage() {
   const [firecrawlApiKey, setFirecrawlApiKey] = useState<string>('');
   const [isValidatingApiKey, setIsValidatingApiKey] = useState(false);
   const [hasFirecrawlKey, setHasFirecrawlKey] = useState(false);
+  const [mapLinks, setMapLinks] = useState<Array<{ url: string; title?: string; description?: string }>>([]);
+  const [selectedLinks, setSelectedLinks] = useState<Record<string, boolean>>({});
+  const [useMapFlow, setUseMapFlow] = useState(false);
+  const [isScrapingSelected, setIsScrapingSelected] = useState(false);
+  const [indexName, setIndexName] = useState<string>('');
 
   useEffect(() => {
     // Check environment and API keys
@@ -116,6 +122,7 @@ export default function FirestarterPage() {
     interface CrawlResponse {
       success: boolean
       namespace: string
+    index?: string
       crawlId?: string
       details: {
         url: string
@@ -133,6 +140,7 @@ export default function FirestarterPage() {
           ogImage?: string
           'og:image'?: string
           'twitter:image'?: string
+          indexName?: string
         }
       }>
     }
@@ -140,9 +148,28 @@ export default function FirestarterPage() {
     let data: CrawlResponse | null = null;
     
     try {
-      // Simulate progressive updates
+      // Map/scrape fallback flow
+      if (useMapFlow) {
+        const mapResp = await fetch(getBackendUrl('/api/firestarter/map'), {
+          method: 'POST',
+          headers: buildApiHeaders(),
+          body: JSON.stringify({ url: normalizedUrl, limit: pageLimit * 50, index: indexName || undefined })
+        });
+        const mapData = await mapResp.json();
+        if (!mapResp.ok || !mapData?.success) {
+          throw new Error(mapData?.error || 'Failed to map site');
+        }
+        const links = mapData.links || [];
+        setMapLinks(links);
+        setSelectedLinks({});
+        toast.success(`Mapped ${links.length} URLs. Select which to scrape.`);
+        setLoading(false);
+        setCrawlProgress(null);
+        return;
+      }
+
+      // Simulate progressive updates (crawl flow)
       let currentProgress = 0;
-      
       const progressInterval = setInterval(() => {
         currentProgress += Math.random() * 3;
         if (currentProgress > pageLimit * 0.8) {
@@ -164,38 +191,23 @@ export default function FirestarterPage() {
         });
       }, 300);
       
-      // Get API key from localStorage if not in environment
-      const firecrawlApiKey = localStorage.getItem('firecrawl_api_key');
-      
-      const headers: Record<string, string> = {
-        'Content-Type': 'application/json',
-      };
-      
-      // Add API key to headers if available from localStorage (and not in env)
-      if (firecrawlApiKey) {
-        headers['X-Firecrawl-API-Key'] = firecrawlApiKey;
-      }
-      
-      const response = await fetch('/api/firestarter/create', {
+      const response = await fetch(getBackendUrl('/api/firestarter/create'), {
         method: 'POST',
-        headers,
-        body: JSON.stringify({ url: normalizedUrl, limit: pageLimit })
+        headers: buildApiHeaders(),
+        body: JSON.stringify({ url: normalizedUrl, limit: pageLimit, index: indexName || undefined })
       });
 
       data = await response.json();
       
-      // Clear the interval
       if (progressInterval) clearInterval(progressInterval);
       
       if (data && data.success) {
-        // Update progress to show completion
         setCrawlProgress({
           status: 'Crawl complete!',
           pagesFound: data.details?.pagesCrawled || 0,
           pagesScraped: data.details?.pagesCrawled || 0
         });
         
-        // Find the homepage in crawled data for metadata
         let homepageMetadata: {
           title?: string
           ogTitle?: string
@@ -209,17 +221,16 @@ export default function FirestarterPage() {
         if (data.data && data.data.length > 0) {
           const homepage = data.data.find((page) => {
             const pageUrl = page.metadata?.sourceURL || page.url || '';
-            // Check if it's the homepage
             return pageUrl === normalizedUrl || pageUrl === normalizedUrl + '/' || pageUrl === normalizedUrl.replace(/\/$/, '');
-          }) || data.data[0]; // Fallback to first page
+          }) || data.data[0];
           
           homepageMetadata = homepage.metadata || {};
         }
         
-        // Store the crawl info and redirect to dashboard
         const siteInfo = {
           url: normalizedUrl,
           namespace: data.namespace,
+          index: data.index,
           crawlId: data.crawlId,
           pagesCrawled: data.details?.pagesCrawled || 0,
           crawlComplete: true,
@@ -228,14 +239,13 @@ export default function FirestarterPage() {
             title: homepageMetadata.ogTitle || homepageMetadata.title || new URL(normalizedUrl).hostname,
             description: homepageMetadata.ogDescription || homepageMetadata.description || 'Your custom website',
             favicon: homepageMetadata.favicon,
-            ogImage: homepageMetadata.ogImage || homepageMetadata['og:image'] || homepageMetadata['twitter:image']
+            ogImage: homepageMetadata.ogImage || homepageMetadata['og:image'] || homepageMetadata['twitter:image'],
+            indexName: data.index,
           }
         };
         
-        // Store only metadata for current session (no crawlData - that's in Upstash)
         sessionStorage.setItem('firestarter_current_data', JSON.stringify(siteInfo));
         
-        // Save index metadata using the storage hook
         await saveIndex({
           url: normalizedUrl,
           namespace: data.namespace,
@@ -245,11 +255,11 @@ export default function FirestarterPage() {
             title: homepageMetadata.ogTitle || homepageMetadata.title || new URL(normalizedUrl).hostname,
             description: homepageMetadata.ogDescription || homepageMetadata.description || 'Your custom website',
             favicon: homepageMetadata.favicon,
-            ogImage: homepageMetadata.ogImage || homepageMetadata['og:image'] || homepageMetadata['twitter:image']
-          }
+            ogImage: homepageMetadata.ogImage || homepageMetadata['og:image'] || homepageMetadata['twitter:image'],
+            indexName: data.index,
+          } as any
         });
         
-        // Small delay to show completion
         setTimeout(() => {
           router.push(`/dashboard?namespace=${siteInfo.namespace}`);
         }, 1000);
@@ -268,6 +278,68 @@ export default function FirestarterPage() {
         setLoading(false);
         setCrawlProgress(null);
       }
+    }
+  };
+
+  const handleScrapeSelected = async () => {
+    const chosen = Object.keys(selectedLinks).filter((url) => selectedLinks[url]);
+    if (chosen.length === 0) {
+      toast.error('Select at least one URL to scrape');
+      return;
+    }
+    setIsScrapingSelected(true);
+    try {
+      const resp = await fetch(getBackendUrl('/api/firestarter/scrape'), {
+        method: 'POST',
+        headers: buildApiHeaders(),
+        body: JSON.stringify({ urls: chosen, index: indexName || undefined }),
+      });
+      let result: any = null;
+      try {
+        result = await resp.json();
+      } catch {
+        // ignore JSON parse errors, handle below
+      }
+      if (!resp.ok || !result?.success) {
+        const message =
+          result?.error ||
+          `Failed to scrape selected URLs (status ${resp.status})`;
+        throw new Error(message);
+      }
+
+      const homepageMetadata = result.homepage || {};
+      const siteInfo = {
+        url: url,
+        namespace: result.namespace,
+        index: result.index,
+        pagesCrawled: result.details?.pagesScraped || 0,
+        crawlComplete: true,
+        crawlDate: new Date().toISOString(),
+        metadata: {
+          title: homepageMetadata.title || new URL(url).hostname,
+          description: homepageMetadata.description || 'Your custom website',
+          favicon: homepageMetadata.favicon,
+          ogImage: homepageMetadata.ogImage,
+          indexName: result.index,
+        },
+      };
+
+      sessionStorage.setItem('firestarter_current_data', JSON.stringify(siteInfo));
+      await saveIndex({
+        url: url,
+        namespace: result.namespace,
+        pagesCrawled: result.details?.pagesScraped || 0,
+        createdAt: new Date().toISOString(),
+        metadata: siteInfo.metadata as any,
+      });
+
+      toast.success(`Scraped ${result.details?.pagesScraped || chosen.length} pages`);
+      router.push(`/dashboard?namespace=${result.namespace}`);
+    } catch (err) {
+      console.error(err);
+      toast.error(err instanceof Error ? err.message : 'Failed to scrape selected URLs');
+    } finally {
+      setIsScrapingSelected(false);
     }
   };
 
@@ -459,7 +531,81 @@ export default function FirestarterPage() {
                   )}
                 </Button>
               </div>
+              <div className="flex flex-col sm:flex-row sm:items-center gap-3">
+                <div className="flex-1">
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                    Index Name (client-slug)
+                  </label>
+                  <Input
+                    type="text"
+                    value={indexName}
+                    onChange={(e) => setIndexName(e.target.value)}
+                    placeholder="e.g. movies"
+                    disabled={loading}
+                  />
+                  <p className="text-xs text-muted-foreground mt-1">
+                    Optional. If empty, uses backend default (`UPSTASH_SEARCH_INDEX`).
+                  </p>
+                </div>
+              </div>
+              <div className="flex items-center gap-3 text-sm text-muted-foreground">
+                <label className="flex items-center gap-2">
+                  <input
+                    type="checkbox"
+                    className="h-4 w-4 rounded border-gray-300 text-orange-600 focus:ring-orange-500"
+                    checked={useMapFlow}
+                    onChange={() => setUseMapFlow(!useMapFlow)}
+                    disabled={loading}
+                  />
+                  <span>Use map + select URLs (fallback when /crawl is down)</span>
+                </label>
+              </div>
             </form>
+
+            {/* Map results and selection */}
+            {mapLinks.length > 0 && (
+              <div className="mt-6 p-4 border rounded-xl bg-[#FBFAF9] space-y-3">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <h3 className="font-semibold text-[#36322F]">Mapped URLs</h3>
+                    <p className="text-sm text-gray-600">Select which pages to scrape.</p>
+                  </div>
+                  <Button
+                    type="button"
+                    size="sm"
+                    variant="orange"
+                    onClick={handleScrapeSelected}
+                    disabled={isScrapingSelected}
+                  >
+                    {isScrapingSelected ? 'Scraping...' : 'Scrape Selected'}
+                  </Button>
+                </div>
+                <div className="max-h-60 overflow-auto space-y-2">
+                  {mapLinks.map((link, idx) => (
+                    <label key={link.url + idx} className="flex items-start gap-2 text-sm text-gray-800">
+                      <input
+                        type="checkbox"
+                        className="mt-1 h-4 w-4 rounded border-gray-300 text-orange-600 focus:ring-orange-500"
+                        checked={!!selectedLinks[link.url]}
+                        onChange={(e) =>
+                          setSelectedLinks((prev) => ({
+                            ...prev,
+                            [link.url]: e.target.checked,
+                          }))
+                        }
+                      />
+                      <div className="flex-1">
+                        <p className="font-medium text-[#36322F]">{link.title || link.url}</p>
+                        <p className="text-xs text-gray-600 break-all">{link.url}</p>
+                        {link.description && (
+                          <p className="text-xs text-gray-500">{link.description}</p>
+                        )}
+                      </div>
+                    </label>
+                  ))}
+                </div>
+              </div>
+            )}
 
             {/* Loading Progress */}
             {loading && crawlProgress && (

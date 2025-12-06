@@ -8,6 +8,7 @@ import { Send, Globe, Copy, Check, FileText, Database, ArrowLeft, ExternalLink, 
 import Image from 'next/image'
 // Removed useChat - using custom implementation
 import { toast } from "sonner"
+import { buildApiHeaders, getBackendUrl } from "@/lib/backend"
 import {
   Dialog,
   DialogContent,
@@ -26,12 +27,14 @@ interface Source {
 interface SiteData {
   url: string
   namespace: string
+  index?: string
   pagesCrawled: number
   metadata: {
     title: string
     description: string
     favicon?: string
     ogImage?: string
+    indexName?: string
   }
   crawlId?: string
   crawlComplete?: boolean
@@ -249,12 +252,13 @@ function DashboardContent() {
     setIsLoading(true)
     
     try {
-      const response = await fetch('/api/firestarter/query', {
+      const response = await fetch(getBackendUrl('/api/firestarter/query'), {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: buildApiHeaders(),
         body: JSON.stringify({
           messages: [userMessage],
           namespace: siteData.namespace,
+          index: siteData.index || siteData.metadata.indexName,
           stream: true
         })
       })

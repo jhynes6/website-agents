@@ -76,7 +76,7 @@ const config = {
     minLimit: 10,
     limitOptions: [10, 25, 50, 100],
     scrapeTimeout: 15000,
-    cacheMaxAge: 604800,
+    cacheMaxAge: 1209600000,
   },
 
   search: {

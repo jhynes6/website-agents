@@ -1,0 +1,2 @@
+"""Firestarter Python backend package."""
+

@@ -4,6 +4,16 @@ import { searchIndex } from '@/lib/upstash-search'
 import { saveIndex } from '@/lib/storage'
 import { serverConfig as config } from '@/firestarter.config'
 
+// Lightweight structured logger for crawl flow
+const log = (message: string, data?: Record<string, unknown>) => {
+  const base = `[firestarter:create] ${message}`
+  if (data && Object.keys(data).length > 0) {
+    console.log(base, JSON.stringify(data))
+  } else {
+    console.log(base)
+  }
+}
+
 
 export async function POST(request: NextRequest) {
   try {
@@ -22,6 +32,7 @@ export async function POST(request: NextRequest) {
     }
     
     const { url, limit = config.crawling.defaultLimit, includePaths, excludePaths } = body
+    log('request.received', { url, limit, includePathsLength: includePaths?.length, excludePathsLength: excludePaths?.length })
     
     if (!url) {
       return NextResponse.json({ error: 'URL is required' }, { status: 400 })
@@ -64,6 +75,7 @@ export async function POST(request: NextRequest) {
       crawlOptions.excludePaths = excludePaths
     }
     
+    log('crawl.start', { url, limit, cacheMaxAge: crawlOptions.scrapeOptions.maxAge, includePaths, excludePaths })
     const crawlResponse = await firecrawl.crawlUrl(url, crawlOptions) as {
       success: boolean
       data: Array<{
@@ -81,6 +93,25 @@ export async function POST(request: NextRequest) {
         }
       }>
     }
+    log('crawl.complete', { success: crawlResponse.success, pages: crawlResponse.data?.length })
+    if (!crawlResponse.success) {
+      log('crawl.error', { message: 'Firecrawl returned success=false' })
+      return NextResponse.json({ error: 'Crawl failed to start' }, { status: 502 })
+    }
+    if (!crawlResponse.data || crawlResponse.data.length === 0) {
+      log('crawl.empty', { message: 'No pages returned from crawl' })
+      return NextResponse.json({ error: 'Crawl completed but returned no pages' }, { status: 502 })
+    }
+    const pages = crawlResponse.data
+    const pagesPreview = pages.slice(0, 5).map((page) => ({
+      title: page.metadata?.title || 'Untitled',
+      url: page.metadata?.sourceURL || page.url,
+      hasContent: Boolean(page.markdown || page.content)
+    }))
+    const missingContent = pages.filter((p) => !(p.markdown || p.content)).length
+    const missingUrl = pages.filter((p) => !(p.metadata?.sourceURL || p.url)).length
+    log('crawl.pages.preview', { sample: pagesPreview })
+    log('crawl.pages.summary', { total: pages.length, missingContent, missingUrl })
     
     
     // Store the crawl data for immediate use
@@ -96,14 +127,14 @@ export async function POST(request: NextRequest) {
       }) || crawlResponse.data[0] // Fallback to first page
       
       // Log homepage info for debugging
-      console.log('Homepage:', {
+      log('crawl.homepage', {
         title: homepage?.metadata?.title,
         url: homepage?.metadata?.sourceURL || homepage?.url
       })
     }
     
     // Store documents in Upstash Search
-    const documents = crawlResponse.data.map((page, index) => {
+    const documents = pages.map((page, index) => {
       // Get the content and metadata
       const fullContent = page.markdown || page.content || ''
       const title = page.metadata?.title || 'Untitled'
@@ -139,11 +170,13 @@ export async function POST(request: NextRequest) {
     
     // Store documents in batches
     const batchSize = 10
+    log('upsert.start', { totalDocuments: documents.length, batchSize })
     
     try {
       for (let i = 0; i < documents.length; i += batchSize) {
         const batch = documents.slice(i, i + batchSize)
         await searchIndex.upsert(batch)
+        log('upsert.batch', { batchIndex: i / batchSize, batchSize: batch.length })
       }
       
       
@@ -162,7 +195,8 @@ export async function POST(request: NextRequest) {
           filter: `metadata.namespace = "${namespace}"`,
           limit: 1
         })
-      } catch {
+      } catch (filterSearchError) {
+        log('verify.search.filter.error', { error: filterSearchError instanceof Error ? filterSearchError.message : 'unknown' })
         
         // Try without filter
         try {
@@ -180,14 +214,12 @@ export async function POST(request: NextRequest) {
             const docNamespace = doc.metadata?.namespace
             return docNamespace === namespace
           })
-        } catch {
-          console.error('Failed to search without filter')
+        } catch (searchError) {
+          log('verify.search.error', { error: searchError instanceof Error ? searchError.message : 'unknown' })
         }
       }
       
-      if (verifyResult.length === 0) {
-      } else {
-      }
+      log('verify.result', { matches: verifyResult.length })
     } catch (upsertError) {
       throw new Error(`Failed to store documents: ${upsertError instanceof Error ? upsertError.message : 'Unknown error'}`)
     }
@@ -211,6 +243,7 @@ export async function POST(request: NextRequest) {
           ogImage: homepage?.metadata?.ogImage || homepage?.metadata?.['og:image']
         }
       })
+      log('index.saved', { namespace, pagesCrawled: crawlResponse.data?.length || 0 })
     } catch {
       // Continue execution - storage error shouldn't fail the entire operation
       console.error('Failed to save index metadata')
@@ -230,6 +263,7 @@ export async function POST(request: NextRequest) {
       data: crawlResponse.data // Include the actual crawl data
     })
   } catch (error) {
+    log('crawl.failed', { error: error instanceof Error ? error.message : 'unknown' })
     
     const errorMessage = error instanceof Error ? error.message : 'Unknown error occurred'
     const statusCode = error && typeof error === 'object' && 'statusCode' in error ? error.statusCode : undefined
