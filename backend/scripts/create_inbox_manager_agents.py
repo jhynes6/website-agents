@@ -80,26 +80,30 @@ async def create_inbox_manager_for_client(client_slug: str, kb_uuid: str) -> boo
         agent_uuid = agent.get('uuid')
         logger.info(f"  ✓ Agent created: {agent_uuid}")
         
-        # 2. Get endpoint URL (make public)
-        logger.info(f"  2. Getting public endpoint...")
-        endpoint_url = await do_client.get_agent_chat_endpoint(agent_uuid)
+        # 2. Wait for agent to be ready for endpoint/API key operations
+        logger.info(f"  2. Waiting for agent to initialize...")
+        await do_client.wait_for_agent_ready(agent_uuid, wait_seconds=10)
+        
+        # 3. Get endpoint URL (make public) - with retries
+        logger.info(f"  3. Getting public endpoint (with retries)...")
+        endpoint_url = await do_client.get_agent_chat_endpoint(agent_uuid, max_retries=3)
         
         if endpoint_url:
             logger.info(f"  ✓ Endpoint: {endpoint_url[:50]}...")
         else:
-            logger.warning(f"  ⚠ No endpoint URL returned")
+            logger.warning(f"  ⚠ No endpoint URL returned after retries")
         
-        # 3. Create API key
-        logger.info(f"  3. Creating API key...")
-        api_key = await do_client.create_agent_api_key(agent_uuid)
+        # 4. Create API key - with retries
+        logger.info(f"  4. Creating API key (with retries)...")
+        api_key = await do_client.create_agent_api_key(agent_uuid, max_retries=3)
         
         if api_key:
             logger.info(f"  ✓ API key created: {api_key[:20]}...")
         else:
-            logger.warning(f"  ⚠ Failed to create API key")
+            logger.warning(f"  ⚠ Failed to create API key after retries")
         
-        # 4. Update registry
-        logger.info(f"  4. Updating agent registry...")
+        # 5. Update registry
+        logger.info(f"  5. Updating agent registry...")
         registry = AgentRegistry()
         registry.upsert_for(
             client_slug=client_slug,

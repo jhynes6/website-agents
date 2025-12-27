@@ -169,6 +169,25 @@ class DigitalOceanClient:
                     return all_agents if all_agents else []
             return all_agents
 
+    async def wait_for_agent_ready(
+        self, 
+        agent_uuid: str, 
+        wait_seconds: int = 10
+    ) -> None:
+        """
+        Wait for a newly created agent to be ready for endpoint/API key operations.
+        
+        Since there's no explicit deployment status in the API, we use a simple
+        delay to allow the agent infrastructure to be provisioned.
+        
+        Args:
+            agent_uuid: The agent UUID
+            wait_seconds: Seconds to wait (default 10s)
+        """
+        logger.info(f"[DO] Waiting {wait_seconds}s for agent {agent_uuid} to initialize...")
+        await asyncio.sleep(wait_seconds)
+        logger.info(f"[DO] Agent initialization wait complete")
+
     async def create_agent(
         self,
         name: str,
@@ -336,30 +355,54 @@ class DigitalOceanClient:
                 logger.error("[DO] Failed to attach KB %s to agent %s: %s", rec.kb_uuid, agent_uuid, e)
                 return False
 
-    async def get_agent_chat_endpoint(self, agent_uuid: str) -> Optional[str]:
-        """Get the endpoint URL for an agent (ensuring it's public/accessible)."""
-        # First check if we already have it? No easy way.
-        # We need to ensure visibility is public to get a URL, or use internal?
-        # Docs say: Update Agent Endpoint Visibility -> returns URL.
-        # Let's try setting it to PUBLIC (idempotent?)
-        async with httpx.AsyncClient() as client:
-            try:
-                payload = {"uuid": agent_uuid, "visibility": "VISIBILITY_PUBLIC"}
-                response = await client.put(
-                    f"{self.base_url}/agents/{agent_uuid}/deployment_visibility",
-                    headers=self.headers,
-                    json=payload
-                )
-                response.raise_for_status()
-                data = response.json() or {}
-                # Observed DO response shape: {"agent": {"deployment": {"url": "..."} } }
-                url = data.get("url")
-                if not url and isinstance(data.get("agent"), dict):
-                    url = (data.get("agent", {}).get("deployment") or {}).get("url")
-                return url
-            except Exception as e:
-                logger.error(f"[DO] Failed to get agent endpoint: {e}")
-                return None
+    async def get_agent_chat_endpoint(self, agent_uuid: str, max_retries: int = 3) -> Optional[str]:
+        """
+        Get the endpoint URL for an agent (ensuring it's public/accessible).
+        Includes retry logic for newly created agents.
+        
+        Args:
+            agent_uuid: The agent UUID
+            max_retries: Number of retry attempts (default 3)
+        """
+        for attempt in range(1, max_retries + 1):
+            async with httpx.AsyncClient() as client:
+                try:
+                    payload = {"uuid": agent_uuid, "visibility": "VISIBILITY_PUBLIC"}
+                    response = await client.put(
+                        f"{self.base_url}/agents/{agent_uuid}/deployment_visibility",
+                        headers=self.headers,
+                        json=payload
+                    )
+                    response.raise_for_status()
+                    data = response.json() or {}
+                    # Observed DO response shape: {"agent": {"deployment": {"url": "..."} } }
+                    url = data.get("url")
+                    if not url and isinstance(data.get("agent"), dict):
+                        url = (data.get("agent", {}).get("deployment") or {}).get("url")
+                    
+                    if url:
+                        return url
+                    elif attempt < max_retries:
+                        logger.warning(f"[DO] No URL in response (attempt {attempt}/{max_retries}), waiting 5s...")
+                        await asyncio.sleep(5)
+                    else:
+                        return None
+                        
+                except httpx.HTTPStatusError as e:
+                    if e.response.status_code == 400 and attempt < max_retries:
+                        logger.warning(f"[DO] Endpoint request failed (attempt {attempt}/{max_retries}), waiting 5s...")
+                        await asyncio.sleep(5)
+                    else:
+                        logger.error(f"[DO] Failed to get agent endpoint: {e}")
+                        if attempt == max_retries:
+                            return None
+                except Exception as e:
+                    logger.error(f"[DO] Error getting agent endpoint (attempt {attempt}): {e}")
+                    if attempt < max_retries:
+                        await asyncio.sleep(5)
+                    else:
+                        return None
+        return None
 
     async def get_agent(self, agent_uuid: str) -> Optional[Dict[str, Any]]:
         """Retrieve a single agent by UUID."""
@@ -390,27 +433,52 @@ class DigitalOceanClient:
                 logger.error(f"[DO] Failed to get agent {agent_uuid}: {e}")
                 return None
 
-    async def create_agent_api_key(self, agent_uuid: str) -> Optional[str]:
-        """Create an API key for the agent."""
-        async with httpx.AsyncClient() as client:
-            try:
-                payload = {"agent_uuid": agent_uuid, "name": f"key-{int(asyncio.get_event_loop().time())}"}
-                response = await client.post(
-                    f"{self.base_url}/agents/{agent_uuid}/api_keys",
-                    headers=self.headers,
-                    json=payload
-                )
-                response.raise_for_status()
-                data = response.json() or {}
-                # Observed DO response shape: {"api_key_info": {"secret_key": "..."}}
-                api_key_info = data.get("api_key_info") if isinstance(data.get("api_key_info"), dict) else {}
-                return (
-                    api_key_info.get("secret_key")
-                    or data.get("access_key")
-                    or data.get("key")
-                )
-            except Exception as e:
-                logger.error(f"[DO] Failed to create agent API key: {e}")
+    async def create_agent_api_key(self, agent_uuid: str, max_retries: int = 3) -> Optional[str]:
+        """
+        Create an API key for the agent.
+        Includes retry logic for newly created agents.
+        
+        Args:
+            agent_uuid: The agent UUID
+            max_retries: Number of retry attempts (default 3)
+        """
+        for attempt in range(1, max_retries + 1):
+            async with httpx.AsyncClient() as client:
+                try:
+                    payload = {"agent_uuid": agent_uuid, "name": f"key-{int(asyncio.get_event_loop().time())}"}
+                    response = await client.post(
+                        f"{self.base_url}/agents/{agent_uuid}/api_keys",
+                        headers=self.headers,
+                        json=payload
+                    )
+                    response.raise_for_status()
+                    data = response.json() or {}
+                    # Observed DO response shape: {"api_key_info": {"secret_key": "..."}}
+                    api_key_info = data.get("api_key_info") if isinstance(data.get("api_key_info"), dict) else {}
+                    api_key = (
+                        api_key_info.get("secret_key")
+                        or data.get("access_key")
+                        or data.get("key")
+                    )
+                    
+                    if api_key:
+                        return api_key
+                    elif attempt < max_retries:
+                        logger.warning(f"[DO] No API key in response (attempt {attempt}/{max_retries}), waiting 5s...")
+                        await asyncio.sleep(5)
+                    else:
+                        return None
+                        
+                except httpx.HTTPStatusError as e:
+                    if e.response.status_code in [400, 404] and attempt < max_retries:
+                        logger.warning(f"[DO] API key creation failed (attempt {attempt}/{max_retries}), waiting 5s...")
+                        await asyncio.sleep(5)
+                    else:
+                        logger.error(f"[DO] Failed to create agent API key: {e}")
+                        if attempt == max_retries:
+                            return None
+                except Exception as e:
+                    logger.error(f"[DO] Failed to create agent API key (attempt {attempt}): {e}")
                 return None
 
 
