@@ -100,7 +100,7 @@ class Settings(BaseSettings):
         le=1.0
     )
     digitalocean_agent_top_k: int = Field(
-        40,
+        10,
         alias="DIGITALOCEAN_AGENT_TOP_K",
         ge=1,
         le=100
