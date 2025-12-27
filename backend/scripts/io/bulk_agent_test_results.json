@@ -1,0 +1,83 @@
+{
+  "test_queries": [
+    "what does your company do?",
+    "tell me what you sell",
+    "what do you sell and what industries have you worked with?",
+    "do you have any case studies?"
+  ],
+  "results": [
+    {
+      "agent_name": "inbox-manager-pi-lit",
+      "client_slug": "pi-lit",
+      "endpoint_url": "https://qkajff2i3hkpuuwmrtktotre.agents.do-ai.run",
+      "has_api_key": true,
+      "tested_at": "2025-12-27T23:33:33.866288+00:00",
+      "queries": [
+        {
+          "query": "what does your company do?",
+          "response": "Could you please specify which aspect of our company you are interested in? For example, are you looking for information about our products, services, or industry focus?",
+          "error": null,
+          "duration_ms": 4037.73,
+          "status": "success",
+          "tokens": {
+            "prompt": 378,
+            "completion": 41,
+            "total": 419
+          }
+        },
+        {
+          "query": "tell me what you sell",
+          "response": "Could you please specify which products or services you are interested in? This will help me provide you with the most relevant information.",
+          "error": null,
+          "duration_ms": 2003.88,
+          "status": "success",
+          "tokens": {
+            "prompt": 377,
+            "completion": 31,
+            "total": 408
+          }
+        },
+        {
+          "query": "what do you sell and what industries have you worked with?",
+          "response": "I can provide information about our products and the industries we serve. Could you specify which product or service you are interested in? Additionally, are you looking for details on specific industries?",
+          "error": null,
+          "duration_ms": 2093.57,
+          "status": "success",
+          "tokens": {
+            "prompt": 390,
+            "completion": 53,
+            "total": 443
+          }
+        },
+        {
+          "query": "do you have any case studies?",
+          "response": "Yes, we have several case studies that showcase our solutions and their impact on various businesses. \n\nNext steps:\n- Please let me know which specific area or industry you are interested in, and I can share relevant case studies with you.",
+          "error": null,
+          "duration_ms": 2338.32,
+          "status": "success",
+          "tokens": {
+            "prompt": 380,
+            "completion": 61,
+            "total": 441
+          }
+        }
+      ],
+      "summary": {
+        "total_queries": 4,
+        "successful": 4,
+        "errors": 0,
+        "timeouts": 0,
+        "success_rate": 100.0,
+        "avg_duration_ms": 2618.38
+      }
+    }
+  ],
+  "summary": {
+    "total_agents_tested": 1,
+    "agents_with_results": 1,
+    "total_queries_sent": 4,
+    "successful_queries": 4,
+    "overall_success_rate": 100.0,
+    "tested_at": "2025-12-27T23:33:47.342546+00:00"
+  }
+}
