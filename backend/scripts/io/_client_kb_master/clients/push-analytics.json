@@ -14,7 +14,7 @@
       "mintleads-clients-kb/push-analytics/"
     ],
     "kb_status": "ok",
-    "last_audit_at": "2025-12-27T17:18:53.961698+00:00",
+    "last_audit_at": "2025-12-27T18:09:10.734333+00:00",
     "details_ref": "reports/kb_inspect/push-analytics.json"
   },
   "spaces": {
@@ -39,11 +39,11 @@
   },
   "warnings": [],
   "ui": {
-    "title": null,
-    "favicon": null
+    "title": "Push Analytics",
+    "favicon": "https://pushanalytics.com/wp-content/uploads/2022/05/cropped-Push_Ana_Web2-20-1-32x32.png"
   },
   "timestamps": {
     "created_at": "2025-12-27T16:13:07Z",
-    "updated_at": "2025-12-27T17:18:53.961698+00:00"
+    "updated_at": "2025-12-27T18:09:10.734333+00:00"
   }
 }

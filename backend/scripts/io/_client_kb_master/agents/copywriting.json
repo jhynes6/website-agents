@@ -13,7 +13,7 @@
     "name": "copywriting",
     "created_at": "2025-12-27T04:36:35Z",
     "updated_at": "2025-12-27T04:36:35Z",
-    "instruction": "You are a friendly assistant. If a user greets you or engages in small talk, \nrespond politely without referencing the website. For questions about the website, \nanswer using ONLY the provided context below. Do not use any other knowledge. \nIf the context isn't sufficient to answer, say so explicitly.",
+    "instruction_template": "copywriting",
     "model": {
       "uuid": "1b07e52b-73c5-11f0-b074-4e013e2ddde4",
       "name": "OpenAI GPT-5",

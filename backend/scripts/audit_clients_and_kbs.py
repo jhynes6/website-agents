@@ -594,6 +594,26 @@ async def main():
         json_output.append(row)
         
     json_file = kb_master_reports_dir / 'client_audit_results.json'
+
+    # If running for specific client, merge with existing data
+    if args.client and json_file.exists():
+        print(f"Merging results for {args.client} into existing audit report...")
+        try:
+            existing_rows = json.loads(json_file.read_text())
+            existing_dict = {row.get('Client Name'): row for row in existing_rows if row.get('Client Name')}
+            
+            # Update/Insert new rows
+            for new_row in json_output:
+                client_name = new_row.get('Client Name')
+                if client_name:
+                    existing_dict[client_name] = new_row
+            
+            # Rebuild json_output
+            json_output = sorted(list(existing_dict.values()), key=lambda x: x.get('Client Name', ''))
+            
+        except Exception as e:
+            logger.warning(f"Failed to merge with existing JSON, overwriting: {e}")
+
     try:
         json_file.write_text(json.dumps(json_output, indent=2))
         print(f"Successfully exported audit results to {json_file}")

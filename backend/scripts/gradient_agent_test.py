@@ -1,16 +1,24 @@
 import os
+import sys
+
 from gradient import Gradient, AgentDeploymentError, AgentDeploymentTimeoutError
+
+# Add backend directory to path so we can load the template-backed system prompt
+sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+
+from app.config import get_settings
 
 token = os.getenv("GRADIENT_ACCESS_TOKEN")
 if not token:
     raise SystemExit("Set GRADIENT_ACCESS_TOKEN to your DO token")
 
 client = Gradient(access_token=token)
+settings = get_settings()
 
 try:
     agent_resp = client.agents.create(
         name="gradient-sdk-test",
-        instruction="You are a helpful assistant",
+        instruction=settings.ai_system_prompt,
         model_uuid="1b07e52b-73c5-11f0-b074-4e013e2ddde4",
         region="nyc1",  # use tor1, since other regions failed for agents
     )

@@ -14,7 +14,7 @@
       "mintleads-clients-kb/klickrr/"
     ],
     "kb_status": "ok",
-    "last_audit_at": "2025-12-27T17:18:53.958029+00:00",
+    "last_audit_at": "2025-12-27T18:09:10.724735+00:00",
     "details_ref": "reports/kb_inspect/klickrr.json"
   },
   "spaces": {
@@ -36,11 +36,11 @@
   },
   "warnings": [],
   "ui": {
-    "title": null,
-    "favicon": null
+    "title": "Its Easy To Grow With Klickrr",
+    "favicon": "https://klickrr.com/wp-content/uploads/2024/01/cropped-fevicon-32x32.png"
   },
   "timestamps": {
     "created_at": "2025-12-27T15:59:18Z",
-    "updated_at": "2025-12-27T17:18:53.958029+00:00"
+    "updated_at": "2025-12-27T18:09:10.724735+00:00"
   }
 }

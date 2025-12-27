@@ -215,6 +215,8 @@ function DashboardContent() {
   const [messages, setMessages] = useState<Array<{ role: 'user' | 'assistant'; content: string; sources?: Source[] }>>([])
   const [input, setInput] = useState('')
   const [isLoading, setIsLoading] = useState(false)
+  const [agentEnsuring, setAgentEnsuring] = useState(false)
+  const [agentReady, setAgentReady] = useState(false)
   const [showApiModal, setShowApiModal] = useState(false)
   const [activeTab, setActiveTab] = useState<'curl' | 'javascript' | 'python' | 'openai-js' | 'openai-python'>('curl')
   const scrollAreaRef = useRef<HTMLDivElement>(null)
@@ -243,6 +245,10 @@ function DashboardContent() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     if (!input.trim() || !siteData) return
+    if (!agentReady) {
+      toast.message(agentEnsuring ? 'Preparing agent…' : 'Agent not ready yet')
+      return
+    }
 
     let processedInput = input.trim()
     
@@ -269,6 +275,7 @@ function DashboardContent() {
           messages: [userMessage],
           clientSlug: siteData.clientSlug,
           index: indexName,
+          agentType: searchParams.get('agentType') || 'inbox_manager',
           stream: true
         })
       })
@@ -372,6 +379,7 @@ function DashboardContent() {
   useEffect(() => {
     // Get clientSlug from URL params (fallback to namespace for compat)
     const clientSlugParam = searchParams.get('clientSlug') || searchParams.get('namespace')
+    const agentTypeParam = searchParams.get('agentType') || 'inbox_manager'
     console.log(`[Dashboard] Init with clientSlug: ${clientSlugParam}`)
     
     if (clientSlugParam) {
@@ -390,6 +398,7 @@ function DashboardContent() {
             setSiteData(data.index)
             sessionStorage.setItem('firestarter_current_data', JSON.stringify(data.index))
             setMessages([])
+            setAgentReady(false)
             
             // Extract index from clientSlug if not provided
             const indexName = data.index.index || data.index.metadata?.indexName || 
@@ -397,6 +406,29 @@ function DashboardContent() {
             
             // Fetch stats for this clientSlug
             fetchStats(data.index.clientSlug, indexName)
+
+            // Ensure per-client agent exists so chat is ready immediately
+            setAgentEnsuring(true)
+            fetch(getBackendUrl('/api/firestarter/ensure-agent'), {
+              method: 'POST',
+              headers: buildApiHeaders(),
+              body: JSON.stringify({ clientSlug: data.index.clientSlug, agentType: agentTypeParam })
+            })
+              .then(async (res) => {
+                if (!res.ok) {
+                  const text = await res.text()
+                  throw new Error(text || 'ensure-agent failed')
+                }
+                return res.json()
+              })
+              .then(() => setAgentReady(true))
+              .catch((err) => {
+                console.error('[Dashboard] ensure-agent failed:', err)
+                const msg = err instanceof Error ? err.message : String(err)
+                toast.error(`Failed to prepare agent: ${msg.slice(0, 140)}`)
+                setAgentReady(false)
+              })
+              .finally(() => setAgentEnsuring(false))
             return
           } else {
             throw new Error('Index not found in API response')
@@ -417,12 +449,36 @@ function DashboardContent() {
               setSiteData(matchingIndex)
               sessionStorage.setItem('firestarter_current_data', JSON.stringify(matchingIndex))
               setMessages([])
+              setAgentReady(false)
               
               const indexName = matchingIndex.index || matchingIndex.metadata?.indexName || 
                 (matchingIndex.clientSlug ? matchingIndex.clientSlug.replace(/-\d+$/, '') : undefined)
               
               // Fetch stats for this clientSlug
               fetchStats(matchingIndex.clientSlug || matchingIndex.namespace, indexName)
+
+              // Ensure per-client agent exists so chat is ready immediately
+              setAgentEnsuring(true)
+              fetch(getBackendUrl('/api/firestarter/ensure-agent'), {
+                method: 'POST',
+                headers: buildApiHeaders(),
+                body: JSON.stringify({ clientSlug: matchingIndex.clientSlug || matchingIndex.namespace, agentType: agentTypeParam })
+              })
+                .then(async (res) => {
+                  if (!res.ok) {
+                    const text = await res.text()
+                    throw new Error(text || 'ensure-agent failed')
+                  }
+                  return res.json()
+                })
+                .then(() => setAgentReady(true))
+                .catch((err) => {
+                  console.error('[Dashboard] ensure-agent failed:', err)
+                  const msg = err instanceof Error ? err.message : String(err)
+                  toast.error(`Failed to prepare agent: ${msg.slice(0, 140)}`)
+                  setAgentReady(false)
+                })
+                .finally(() => setAgentEnsuring(false))
               return
             }
           }
@@ -774,6 +830,11 @@ print(data['choices'][0]['message']['content'])`
             <div className="flex flex-col lg:flex-row gap-6 lg:h-full">
               {/* Chat Panel */}
               <div className="w-full lg:w-2/3 bg-white rounded-xl border border-gray-200 flex flex-col overflow-hidden h-[500px] lg:h-full">
+                {!agentReady && (
+                  <div className="px-6 py-3 border-b border-gray-100 text-sm text-gray-600">
+                    {agentEnsuring ? 'Preparing agent for this client…' : 'Agent not ready yet.'}
+                  </div>
+                )}
                 <div ref={scrollAreaRef} className="flex-1 overflow-y-auto p-6 pb-0">
                   {messages.length === 0 && (
                     <div className="text-center py-20">

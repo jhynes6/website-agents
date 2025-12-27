@@ -1,11 +1,11 @@
 {
-  "generated_at": "2025-12-27T17:18:53.951203+00:00",
+  "generated_at": "2025-12-27T18:09:10.714466+00:00",
   "totals": {
-    "clients": 54,
+    "clients": 52,
     "kbs_ok": 50,
     "kbs_misconfigured": 0,
     "kbs_root": 0,
-    "kbs_missing": 4,
+    "kbs_missing": 2,
     "clients_zero_files": 0,
     "clients_missing_intake": 0,
     "region_mismatches": 0
@@ -30,14 +30,6 @@
     ]
   },
   "top_warnings": [
-    {
-      "client_slug": "_client_kb_master",
-      "warning": "KB status: missing"
-    },
-    {
-      "client_slug": "_mintleads_kb_master",
-      "warning": "KB status: missing"
-    },
     {
       "client_slug": "iconic-supply-co.",
       "warning": "KB status: missing"

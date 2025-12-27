@@ -14,7 +14,7 @@
       "mintleads-clients-kb/a-perfect-promotion/"
     ],
     "kb_status": "ok",
-    "last_audit_at": "2025-12-27T17:18:53.953090+00:00",
+    "last_audit_at": "2025-12-27T18:09:10.716556+00:00",
     "details_ref": "reports/kb_inspect/a-perfect-promotion.json"
   },
   "spaces": {
@@ -39,11 +39,11 @@
   },
   "warnings": [],
   "ui": {
-    "title": null,
-    "favicon": null
+    "title": "A Perfect Promotion",
+    "favicon": "https://images.squarespace-cdn.com/content/v1/66749d45406493675da9236b/0dd44f8e-4f35-438d-8971-90529f16012c/favicon.ico?format=100w"
   },
   "timestamps": {
     "created_at": "2025-12-27T15:32:36Z",
-    "updated_at": "2025-12-27T17:18:53.953090+00:00"
+    "updated_at": "2025-12-27T18:09:10.716556+00:00"
   }
 }

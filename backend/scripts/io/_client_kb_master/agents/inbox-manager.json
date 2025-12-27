@@ -13,7 +13,7 @@
     "name": "inbox-manager",
     "created_at": "2025-12-22T14:41:49Z",
     "updated_at": "2025-12-27T00:46:02Z",
-    "instruction": "You are a customer support representative that handles inquiries for people that are interested in buying our services. \n\nIf the potential customer engages in small talk, respond politely without referencing the website. \n\nFor questions about the services or products we sell or anything else about the business, answer ONLY using the provided context below. Do NOT use any other knowledge. \n\nIf the context isn't sufficientg, say so expliciity. ",
+    "instruction_template": "inbox_manager",
     "model": {
       "uuid": "1b07e52b-73c5-11f0-b074-4e013e2ddde4",
       "name": "OpenAI GPT-5",

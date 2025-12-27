@@ -1,6 +1,8 @@
 from functools import lru_cache
 from typing import Optional
 
+from .clients.agent_templates.loader import load_agent_template
+
 from pydantic import Field, HttpUrl
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
@@ -22,12 +24,12 @@ class Settings(BaseSettings):
     # Timeout for crawl jobs (ms). Default: 90s. Max allowed: 10m.
     firecrawl_poll_timeout_ms: int = Field(600_000, ge=5_000, le=600_000, alias="FIRECRAWL_POLL_TIMEOUT_MS")
 
-    # Upstash Search
-    upstash_search_rest_url: HttpUrl = Field(..., alias="UPSTASH_SEARCH_REST_URL")
-    upstash_search_rest_token: str = Field(..., alias="UPSTASH_SEARCH_REST_TOKEN")
+    # Upstash (deprecated - DO-only path). Keep optional for backwards compatibility.
+    upstash_search_rest_url: Optional[HttpUrl] = Field(None, alias="UPSTASH_SEARCH_REST_URL")
+    upstash_search_rest_token: Optional[str] = Field(None, alias="UPSTASH_SEARCH_REST_TOKEN")
     upstash_search_index: str = Field("firestarter", alias="UPSTASH_SEARCH_INDEX")
 
-    # Redis (optional, parity with TS)
+    # Redis (deprecated - DO-only path). Keep optional for backwards compatibility.
     upstash_redis_rest_url: Optional[HttpUrl] = Field(None, alias="UPSTASH_REDIS_REST_URL")
     upstash_redis_rest_token: Optional[str] = Field(None, alias="UPSTASH_REDIS_REST_TOKEN")
 
@@ -44,6 +46,9 @@ class Settings(BaseSettings):
     digitalocean_db_id: Optional[str] = Field("e27f23bd-d953-48c5-8923-f827868ba230", alias="DIGITALOCEAN_DB_ID") 
     # Model access key (for DO-managed foundation models)
     digitalocean_model_access_key: Optional[str] = Field(None, alias="DIGITAL_OCEAN_MODEL_ACCESS_KEY")
+    # Optional: workspace/provider key IDs used by some org setups for agent creation
+    digitalocean_workspace_uuid: Optional[str] = Field(None, alias="DIGITALOCEAN_WORKSPACE_UUID")
+    digitalocean_openai_key_uuid: Optional[str] = Field(None, alias="DIGITALOCEAN_OPENAI_KEY_UUID")
     # Chunking algorithm for KB data sources
     digitalocean_chunking_algorithm: str = Field(
         "CHUNKING_ALGORITHM_HIERARCHICAL",
@@ -76,6 +81,10 @@ class Settings(BaseSettings):
         True,
         alias="DIGITAL_OCEAN_AGENT_LOG_INSIGHTS_ENABLED",
     )
+    digitalocean_agent_model_uuid: str = Field(
+        "1b07e52b-73c5-11f0-b074-4e013e2ddde4",
+        alias="DIGITALOCEAN_AGENT_MODEL_UUID"
+    )
 
     # AI providers
     openai_api_key: Optional[str] = Field(None, alias="OPENAI_API_KEY")
@@ -83,9 +92,17 @@ class Settings(BaseSettings):
     groq_api_key: Optional[str] = Field(None, alias="GROQ_API_KEY")
     ai_temperature: float = Field(0.7, alias="AI_TEMPERATURE")
     ai_max_tokens: int = Field(800, alias="AI_MAX_TOKENS")
-    ai_system_prompt: str = Field("You are a customer support representative that handles inquiries for people that are interested in buying our services. If the potential customer engages in small talk, respond politely without referencing the website. For questions about the services or products we sell or anything else about the business, answer ONLY using information from the knowledge base. Do NOT use any other knowledge. If the context isn't sufficientg, say so expliciity.",
-        alias="AI_SYSTEM_PROMPT",
-    )
+
+    @staticmethod
+    def _default_ai_system_prompt() -> str:
+        # Default to inbox manager template. Override via AI_SYSTEM_PROMPT env if desired.
+        try:
+            return load_agent_template("inbox_manager")
+        except Exception:
+            # Defensive fallback: keep non-empty string so startup doesn't crash in odd envs.
+            return "System Prompt: Inbox Manager\n\n(Template missing)"
+
+    ai_system_prompt: str = Field(default_factory=_default_ai_system_prompt, alias="AI_SYSTEM_PROMPT")
 
     # Search display limits
     search_max_results: int = Field(100, alias="SEARCH_MAX_RESULTS")

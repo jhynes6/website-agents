@@ -13,14 +13,19 @@
             "cwd": "${workspaceFolder}/backend",
             "args": [
                 "app.main:app",
-                "--reload",
+                "--host",
+                "127.0.0.1",
                 "--port",
                 "8000"
             ],
             "jinja": true,
             "justMyCode": false,
+            "console": "integratedTerminal",
+            "env": {
+                "PYTHONPATH": "${workspaceFolder}/backend"
+            },
             "envFile": "${workspaceFolder}/backend/.env",
-            "python": "${workspaceFolder}/backend/venv/bin/python",
+            "python": "${workspaceFolder}/backend/venv/bin/python"
         },
         {
             "name": "Python: Current File (backend venv)",

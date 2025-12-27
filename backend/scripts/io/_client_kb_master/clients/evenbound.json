@@ -14,7 +14,7 @@
       "mintleads-clients-kb/evenbound/"
     ],
     "kb_status": "ok",
-    "last_audit_at": "2025-12-27T17:18:53.956565+00:00",
+    "last_audit_at": "2025-12-27T18:09:10.722558+00:00",
     "details_ref": "reports/kb_inspect/evenbound.json"
   },
   "spaces": {
@@ -39,11 +39,11 @@
   },
   "warnings": [],
   "ui": {
-    "title": null,
-    "favicon": null
+    "title": "Evenbound | HubSpot RevOps & B2B Growth Marketing",
+    "favicon": "https://evenbound.com/hubfs/Evenbound%20Favicon.png"
   },
   "timestamps": {
     "created_at": "2025-12-27T15:52:06Z",
-    "updated_at": "2025-12-27T17:18:53.956565+00:00"
+    "updated_at": "2025-12-27T18:09:10.722558+00:00"
   }
 }

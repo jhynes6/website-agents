@@ -14,7 +14,7 @@
       "mintleads-clients-kb/x-agency/"
     ],
     "kb_status": "ok",
-    "last_audit_at": "2025-12-27T17:18:53.965543+00:00",
+    "last_audit_at": "2025-12-27T18:09:10.738173+00:00",
     "details_ref": "reports/kb_inspect/x-agency.json"
   },
   "spaces": {
@@ -44,11 +44,11 @@
   },
   "warnings": [],
   "ui": {
-    "title": null,
-    "favicon": null
+    "title": "X Agency | Digital Marketing",
+    "favicon": "https://www.xagency.com/hubfs/x-logo-header-1.png"
   },
   "timestamps": {
     "created_at": "2025-12-27T16:35:51Z",
-    "updated_at": "2025-12-27T17:18:53.965543+00:00"
+    "updated_at": "2025-12-27T18:09:10.738173+00:00"
   }
 }

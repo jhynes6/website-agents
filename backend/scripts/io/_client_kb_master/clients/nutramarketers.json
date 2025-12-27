@@ -14,7 +14,7 @@
       "mintleads-clients-kb/nutramarketers/"
     ],
     "kb_status": "ok",
-    "last_audit_at": "2025-12-27T17:18:53.960455+00:00",
+    "last_audit_at": "2025-12-27T18:09:10.728071+00:00",
     "details_ref": "reports/kb_inspect/nutramarketers.json"
   },
   "spaces": {
@@ -41,11 +41,11 @@
   },
   "warnings": [],
   "ui": {
-    "title": null,
-    "favicon": null
+    "title": "Nutritional Supplement Marketing Agency | NutraMarketers",
+    "favicon": "https://nutramarketers.com/wp-content/uploads/2025/03/cropped-NM-favicon-32x32.png"
   },
   "timestamps": {
     "created_at": "2025-12-27T16:09:31Z",
-    "updated_at": "2025-12-27T17:18:53.960455+00:00"
+    "updated_at": "2025-12-27T18:09:10.728071+00:00"
   }
 }

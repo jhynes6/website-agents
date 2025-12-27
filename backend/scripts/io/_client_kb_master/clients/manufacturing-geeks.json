@@ -14,7 +14,7 @@
       "mintleads-clients-kb/manufacturing-geeks/"
     ],
     "kb_status": "ok",
-    "last_audit_at": "2025-12-27T17:18:53.959097+00:00",
+    "last_audit_at": "2025-12-27T18:09:10.725755+00:00",
     "details_ref": "reports/kb_inspect/manufacturing-geeks.json"
   },
   "spaces": {
@@ -39,11 +39,11 @@
   },
   "warnings": [],
   "ui": {
-    "title": null,
-    "favicon": null
+    "title": "Manufacturing Geeks \u2014 Marketing & Growth for Manufacturers",
+    "favicon": "https://cdn.prod.website-files.com/66d649ce5f83a4a456bf96ec/67688215d4d68e1306811fb7_256.png"
   },
   "timestamps": {
     "created_at": "2025-12-27T16:06:22Z",
-    "updated_at": "2025-12-27T17:18:53.959097+00:00"
+    "updated_at": "2025-12-27T18:09:10.725755+00:00"
   }
 }

@@ -14,7 +14,7 @@
       "mintleads-clients-kb/integrity-professionals/"
     ],
     "kb_status": "ok",
-    "last_audit_at": "2025-12-27T17:18:53.957682+00:00",
+    "last_audit_at": "2025-12-27T18:09:10.724309+00:00",
     "details_ref": "reports/kb_inspect/integrity-professionals.json"
   },
   "spaces": {
@@ -36,11 +36,11 @@
   },
   "warnings": [],
   "ui": {
-    "title": null,
-    "favicon": null
+    "title": "Outsourced CFO | Integrity Professionals | United States",
+    "favicon": "https://static.parastorage.com/client/pfavico.ico"
   },
   "timestamps": {
     "created_at": "2025-12-27T15:58:06Z",
-    "updated_at": "2025-12-27T17:18:53.957682+00:00"
+    "updated_at": "2025-12-27T18:09:10.724309+00:00"
   }
 }

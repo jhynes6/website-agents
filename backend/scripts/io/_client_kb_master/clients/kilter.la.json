@@ -9,7 +9,7 @@
     "kb_tags": [],
     "kb_sources": [],
     "kb_status": "missing",
-    "last_audit_at": "2025-12-27T17:18:53.957912+00:00",
+    "last_audit_at": "2025-12-27T18:09:10.724583+00:00",
     "details_ref": null
   },
   "spaces": {
@@ -38,11 +38,11 @@
     "KB status: missing"
   ],
   "ui": {
-    "title": null,
-    "favicon": null
+    "title": "Home - Kilter",
+    "favicon": "https://kilter.la/wp-content/uploads/2025/01/Kilter-K-Icon-All.svg"
   },
   "timestamps": {
     "created_at": null,
-    "updated_at": "2025-12-27T17:18:53.957912+00:00"
+    "updated_at": "2025-12-27T18:09:10.724583+00:00"
   }
 }

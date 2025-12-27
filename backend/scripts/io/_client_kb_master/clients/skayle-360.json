@@ -14,7 +14,7 @@
       "mintleads-clients-kb/skayle-360/"
     ],
     "kb_status": "ok",
-    "last_audit_at": "2025-12-27T17:18:53.963469+00:00",
+    "last_audit_at": "2025-12-27T18:09:10.735946+00:00",
     "details_ref": "reports/kb_inspect/skayle-360.json"
   },
   "spaces": {
@@ -39,11 +39,11 @@
   },
   "warnings": [],
   "ui": {
-    "title": null,
-    "favicon": null
+    "title": "Unlock Business Growth with 360\u00b0 Training | Skayle360",
+    "favicon": "https://cdn.prod.website-files.com/67d72d9223bb50175bfb170f/67ffef2844c1588a2bc1f420_Vector.png"
   },
   "timestamps": {
     "created_at": "2025-12-27T16:21:30Z",
-    "updated_at": "2025-12-27T17:18:53.963469+00:00"
+    "updated_at": "2025-12-27T18:09:10.735946+00:00"
   }
 }

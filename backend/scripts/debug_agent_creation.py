@@ -14,8 +14,9 @@ logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
 def debug_agent_creation():
+    settings = get_settings()
     # Target KB provided by user
-    target_kb_uuid = "239d76f2-e314-11f0-b074-4e013e2ddde4"
+    target_kb_uuid = "7130339a-e343-11f0-b074-4e013e2ddde4"
     # agent_name = "inbox-manager-vew-media"
     
     print(f"--- Debugging Agent Creation for KB {target_kb_uuid} ---")
@@ -53,7 +54,7 @@ def debug_agent_creation():
     payload = {
         # required/essential fields
         "name": agent_name,
-        "instruction": "You are a customer support representative that handles inquiries for people that are interested in buying our services. If the potential customer engages in small talk, respond politely without referencing the website. For questions about the services or products we sell or anything else about the business, answer ONLY using the provided context below. Do NOT use any other knowledge. If the context isn't sufficientg, say so expliciity.",
+        "instruction": settings.ai_system_prompt, # from config.py
         "knowledge_base_uuid": [target_kb_uuid],
         # Use a DO-managed model that doesn't require a provider key
         # "model_uuid": "9a3644c7-f300-11ef-bf8f-4e013e2ddde4", # 4o-mini

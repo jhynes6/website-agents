@@ -14,7 +14,7 @@
       "mintleads-clients-kb/dodeka-digital/"
     ],
     "kb_status": "ok",
-    "last_audit_at": "2025-12-27T17:18:53.956291+00:00",
+    "last_audit_at": "2025-12-27T18:09:10.722300+00:00",
     "details_ref": "reports/kb_inspect/dodeka-digital.json"
   },
   "spaces": {
@@ -41,11 +41,11 @@
   },
   "warnings": [],
   "ui": {
-    "title": null,
-    "favicon": null
+    "title": "Dodeka Digital | ROI-Focused Growth Marketing, Websites & Creative",
+    "favicon": "https://cdn.prod.website-files.com/67f1a8f421d7196ce43f5615/691631e19fbdc97755531ffb_Group%2046959.png"
   },
   "timestamps": {
     "created_at": "2025-12-27T15:49:56Z",
-    "updated_at": "2025-12-27T17:18:53.956291+00:00"
+    "updated_at": "2025-12-27T18:09:10.722300+00:00"
   }
 }

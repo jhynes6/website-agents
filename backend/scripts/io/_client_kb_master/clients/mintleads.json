@@ -14,7 +14,7 @@
       "mintleads-clients-kb/mintleads/"
     ],
     "kb_status": "ok",
-    "last_audit_at": "2025-12-27T17:18:53.959337+00:00",
+    "last_audit_at": "2025-12-27T18:09:10.726323+00:00",
     "details_ref": "reports/kb_inspect/mintleads.json"
   },
   "spaces": {
@@ -37,11 +37,11 @@
   },
   "warnings": [],
   "ui": {
-    "title": null,
-    "favicon": null
+    "title": "MintLeads | Done-for-you Lead Generation",
+    "favicon": "https://cdn.prod.website-files.com/60d7ec65541c0d2106d59da2/60de032dfc7e0ff0b5341bec_favicon-32x32.png"
   },
   "timestamps": {
     "created_at": "2025-12-27T16:07:35Z",
-    "updated_at": "2025-12-27T17:18:53.959337+00:00"
+    "updated_at": "2025-12-27T18:09:10.726323+00:00"
   }
 }

@@ -14,7 +14,7 @@
       "mintleads-clients-kb/cogent-consulting/"
     ],
     "kb_status": "ok",
-    "last_audit_at": "2025-12-27T17:18:53.955811+00:00",
+    "last_audit_at": "2025-12-27T18:09:10.721507+00:00",
     "details_ref": "reports/kb_inspect/cogent-consulting.json"
   },
   "spaces": {
@@ -42,11 +42,11 @@
   },
   "warnings": [],
   "ui": {
-    "title": null,
-    "favicon": null
+    "title": "Cogent Consulting Group",
+    "favicon": "https://images.squarespace-cdn.com/content/v1/64524a447b17a223249e2b96/210fb5ec-3bd7-4f7c-83eb-fd64f80e8598/favicon.ico?format=100w"
   },
   "timestamps": {
     "created_at": "2025-12-27T15:48:45Z",
-    "updated_at": "2025-12-27T17:18:53.955811+00:00"
+    "updated_at": "2025-12-27T18:09:10.721507+00:00"
   }
 }

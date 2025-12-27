@@ -14,7 +14,7 @@
       "mintleads-clients-kb/terra-collective/"
     ],
     "kb_status": "ok",
-    "last_audit_at": "2025-12-27T17:18:53.964442+00:00",
+    "last_audit_at": "2025-12-27T18:09:10.737073+00:00",
     "details_ref": "reports/kb_inspect/terra-collective.json"
   },
   "spaces": {
@@ -39,11 +39,11 @@
   },
   "warnings": [],
   "ui": {
-    "title": null,
-    "favicon": null
+    "title": "Terra Collective",
+    "favicon": "https://images.squarespace-cdn.com/content/v1/68af476d04f873301deb1a62/028563ad-09b1-495e-ae8b-d2227918a09f/favicon.ico?format=100w"
   },
   "timestamps": {
     "created_at": "2025-12-27T16:25:53Z",
-    "updated_at": "2025-12-27T17:18:53.964442+00:00"
+    "updated_at": "2025-12-27T18:09:10.737073+00:00"
   }
 }

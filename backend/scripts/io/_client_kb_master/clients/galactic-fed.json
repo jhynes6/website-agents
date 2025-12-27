@@ -14,7 +14,7 @@
       "mintleads-clients-kb/galactic-fed/"
     ],
     "kb_status": "ok",
-    "last_audit_at": "2025-12-27T17:18:53.957095+00:00",
+    "last_audit_at": "2025-12-27T18:09:10.723520+00:00",
     "details_ref": "reports/kb_inspect/galactic-fed.json"
   },
   "spaces": {
@@ -40,11 +40,11 @@
   },
   "warnings": [],
   "ui": {
-    "title": null,
-    "favicon": null
+    "title": "Top 1% Marketing Agency that Grows Your Digital ROI | Galactic Fed",
+    "favicon": "https://www.galacticfed.com/wp-content/uploads/favicon.png"
   },
   "timestamps": {
     "created_at": "2025-12-27T15:55:53Z",
-    "updated_at": "2025-12-27T17:18:53.957095+00:00"
+    "updated_at": "2025-12-27T18:09:10.723520+00:00"
   }
 }

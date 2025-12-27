@@ -9,7 +9,7 @@
     "kb_tags": [],
     "kb_sources": [],
     "kb_status": "missing",
-    "last_audit_at": "2025-12-27T17:18:53.957310+00:00",
+    "last_audit_at": "2025-12-27T18:09:10.723868+00:00",
     "details_ref": null
   },
   "spaces": {
@@ -36,11 +36,11 @@
     "KB status: missing"
   ],
   "ui": {
-    "title": null,
-    "favicon": null
+    "title": "iconic supply co.",
+    "favicon": "https://assets.squarespace.com/universal/default-favicon.ico"
   },
   "timestamps": {
     "created_at": null,
-    "updated_at": "2025-12-27T17:18:53.957310+00:00"
+    "updated_at": "2025-12-27T18:09:10.723868+00:00"
   }
 }

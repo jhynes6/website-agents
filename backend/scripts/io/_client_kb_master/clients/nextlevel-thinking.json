@@ -14,7 +14,7 @@
       "mintleads-clients-kb/nextlevel-thinking/"
     ],
     "kb_status": "ok",
-    "last_audit_at": "2025-12-27T17:18:53.959812+00:00",
+    "last_audit_at": "2025-12-27T18:09:10.726648+00:00",
     "details_ref": "reports/kb_inspect/nextlevel-thinking.json"
   },
   "spaces": {
@@ -41,11 +41,11 @@
   },
   "warnings": [],
   "ui": {
-    "title": null,
-    "favicon": null
+    "title": "Next Level Thinking \u2013 We do digital different.",
+    "favicon": "https://nextlevelthinking.ca/wp-content/uploads/2021/01/favicon-150x150.png"
   },
   "timestamps": {
     "created_at": "2025-12-27T16:08:53Z",
-    "updated_at": "2025-12-27T17:18:53.959812+00:00"
+    "updated_at": "2025-12-27T18:09:10.726648+00:00"
   }
 }

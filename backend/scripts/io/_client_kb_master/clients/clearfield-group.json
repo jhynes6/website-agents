@@ -14,7 +14,7 @@
       "mintleads-clients-kb/clearfield-group/"
     ],
     "kb_status": "ok",
-    "last_audit_at": "2025-12-27T17:18:53.955572+00:00",
+    "last_audit_at": "2025-12-27T18:09:10.721218+00:00",
     "details_ref": "reports/kb_inspect/clearfield-group.json"
   },
   "spaces": {
@@ -35,11 +35,11 @@
   },
   "warnings": [],
   "ui": {
-    "title": null,
-    "favicon": null
+    "title": "Clearfield Leadership",
+    "favicon": "https://images.squarespace-cdn.com/content/v1/67bdcb5851bf4f43a28acc8b/cbe2505e-f6c9-4d38-b734-70f739112661/favicon.ico?format=100w"
   },
   "timestamps": {
     "created_at": "2025-12-27T15:48:05Z",
-    "updated_at": "2025-12-27T17:18:53.955572+00:00"
+    "updated_at": "2025-12-27T18:09:10.721218+00:00"
   }
 }

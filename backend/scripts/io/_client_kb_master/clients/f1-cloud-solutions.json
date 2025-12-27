@@ -14,7 +14,7 @@
       "mintleads-clients-kb/f1-cloud-solutions/"
     ],
     "kb_status": "ok",
-    "last_audit_at": "2025-12-27T17:18:53.956777+00:00",
+    "last_audit_at": "2025-12-27T18:09:10.722843+00:00",
     "details_ref": "reports/kb_inspect/f1-cloud-solutions.json"
   },
   "spaces": {
@@ -42,11 +42,11 @@
   },
   "warnings": [],
   "ui": {
-    "title": null,
-    "favicon": null
+    "title": "Innovative Technology Solutions Provider | F1 Cloud Solutions",
+    "favicon": "https://static.wixstatic.com/media/de53fa_645cb1dbcaf947f7a40a47f74d813dee%7Emv2.jpg/v1/fill/w_192%2Ch_192%2Clg_1%2Cusm_0.66_1.00_0.01/de53fa_645cb1dbcaf947f7a40a47f74d813dee%7Emv2.jpg"
   },
   "timestamps": {
     "created_at": "2025-12-27T15:53:01Z",
-    "updated_at": "2025-12-27T17:18:53.956777+00:00"
+    "updated_at": "2025-12-27T18:09:10.722843+00:00"
   }
 }

@@ -310,5 +310,293 @@
       "mintleads"
     ],
     "updated_at": "2025-12-27T16:07:38.873197+00:00"
+  },
+  "nextlevel-thinking": {
+    "created_at": "2025-12-27T16:08:53Z",
+    "data_sources": [],
+    "kb_uuid": "57259466-e33e-11f0-b074-4e013e2ddde4",
+    "region": "tor1",
+    "slug": "nextlevel-thinking",
+    "tags": [
+      "client-docs",
+      "nextlevel-thinking"
+    ],
+    "updated_at": "2025-12-27T16:09:00.347339+00:00"
+  },
+  "nga-healthcare": {
+    "created_at": "2025-12-27T16:08:05Z",
+    "data_sources": [],
+    "kb_uuid": "3a5e908d-e33e-11f0-b074-4e013e2ddde4",
+    "region": "tor1",
+    "slug": "nga-healthcare",
+    "tags": [
+      "client-docs",
+      "nga-healthcare"
+    ],
+    "updated_at": "2025-12-27T16:08:15.362953+00:00"
+  },
+  "nutramarketers": {
+    "created_at": "2025-12-27T16:09:31Z",
+    "data_sources": [],
+    "kb_uuid": "6d522636-e33e-11f0-b074-4e013e2ddde4",
+    "region": "tor1",
+    "slug": "nutramarketers",
+    "tags": [
+      "client-docs",
+      "nutramarketers"
+    ],
+    "updated_at": "2025-12-27T16:09:37.479105+00:00"
+  },
+  "on-the-marc-media": {
+    "created_at": "2025-12-27T16:10:34Z",
+    "data_sources": [],
+    "kb_uuid": "92f10193-e33e-11f0-b074-4e013e2ddde4",
+    "region": "tor1",
+    "slug": "on-the-marc-media",
+    "tags": [
+      "client-docs",
+      "on-the-marc-media"
+    ],
+    "updated_at": "2025-12-27T16:10:40.904643+00:00"
+  },
+  "peachtree-va": {
+    "created_at": "2025-12-27T16:11:03Z",
+    "data_sources": [],
+    "kb_uuid": "a4b2a275-e33e-11f0-b074-4e013e2ddde4",
+    "region": "tor1",
+    "slug": "peachtree-va",
+    "tags": [
+      "client-docs",
+      "peachtree-va"
+    ],
+    "updated_at": "2025-12-27T16:11:10.563288+00:00"
+  },
+  "pi-lit": {
+    "created_at": "2025-12-27T16:45:24Z",
+    "data_sources": [],
+    "kb_uuid": "7130339a-e343-11f0-b074-4e013e2ddde4",
+    "region": "tor1",
+    "slug": "pi-lit",
+    "tags": [
+      "client-docs",
+      "pi-lit"
+    ],
+    "updated_at": "2025-12-27T20:22:47.069149+00:00"
+  },
+  "pipefy": {
+    "created_at": "2025-12-27T16:12:10Z",
+    "data_sources": [],
+    "kb_uuid": "cc56baa7-e33e-11f0-b074-4e013e2ddde4",
+    "region": "tor1",
+    "slug": "pipefy",
+    "tags": [
+      "client-docs",
+      "pipefy"
+    ],
+    "updated_at": "2025-12-27T16:12:16.959941+00:00"
+  },
+  "push-analytics": {
+    "created_at": "2025-12-27T16:13:07Z",
+    "data_sources": [],
+    "kb_uuid": "ee17f8c5-e33e-11f0-b074-4e013e2ddde4",
+    "region": "tor1",
+    "slug": "push-analytics",
+    "tags": [
+      "client-docs",
+      "push-analytics"
+    ],
+    "updated_at": "2025-12-27T16:13:14.288783+00:00"
+  },
+  "quintessa-marketing": {
+    "created_at": "2025-12-27T16:14:56Z",
+    "data_sources": [],
+    "kb_uuid": "2f98a559-e33f-11f0-b074-4e013e2ddde4",
+    "region": "tor1",
+    "slug": "quintessa-marketing",
+    "tags": [
+      "client-docs",
+      "quintessa-marketing"
+    ],
+    "updated_at": "2025-12-27T16:15:03.585683+00:00"
+  },
+  "reach-marketing": {
+    "created_at": "2025-12-27T16:16:05Z",
+    "data_sources": [],
+    "kb_uuid": "58a6cb68-e33f-11f0-b074-4e013e2ddde4",
+    "region": "tor1",
+    "slug": "reach-marketing",
+    "tags": [
+      "client-docs",
+      "reach-marketing"
+    ],
+    "updated_at": "2025-12-27T16:16:09.788801+00:00"
+  },
+  "revdrive": {
+    "created_at": "2025-12-27T16:17:18Z",
+    "data_sources": [],
+    "kb_uuid": "84418f99-e33f-11f0-b074-4e013e2ddde4",
+    "region": "tor1",
+    "slug": "revdrive",
+    "tags": [
+      "client-docs",
+      "revdrive"
+    ],
+    "updated_at": "2025-12-27T16:17:23.133902+00:00"
+  },
+  "revolttek": {
+    "created_at": "2025-12-27T16:18:24Z",
+    "data_sources": [],
+    "kb_uuid": "ab367101-e33f-11f0-b074-4e013e2ddde4",
+    "region": "tor1",
+    "slug": "revolttek",
+    "tags": [
+      "client-docs",
+      "revolttek"
+    ],
+    "updated_at": "2025-12-27T16:18:31.009959+00:00"
+  },
+  "simple-machines": {
+    "created_at": "2025-12-27T16:20:17Z",
+    "data_sources": [],
+    "kb_uuid": "eeb34136-e33f-11f0-b074-4e013e2ddde4",
+    "region": "tor1",
+    "slug": "simple-machines",
+    "tags": [
+      "client-docs",
+      "simple-machines"
+    ],
+    "updated_at": "2025-12-27T16:20:24.837732+00:00"
+  },
+  "skayle-360": {
+    "created_at": "2025-12-27T16:21:30Z",
+    "data_sources": [],
+    "kb_uuid": "1a767590-e340-11f0-b074-4e013e2ddde4",
+    "region": "tor1",
+    "slug": "skayle-360",
+    "tags": [
+      "client-docs",
+      "skayle-360"
+    ],
+    "updated_at": "2025-12-27T16:21:38.268338+00:00"
+  },
+  "slice-communications": {
+    "created_at": "2025-12-27T16:22:18Z",
+    "data_sources": [],
+    "kb_uuid": "3690e9b9-e340-11f0-b074-4e013e2ddde4",
+    "region": "tor1",
+    "slug": "slice-communications",
+    "tags": [
+      "client-docs",
+      "slice-communications"
+    ],
+    "updated_at": "2025-12-27T16:22:26.137825+00:00"
+  },
+  "slingshot": {
+    "created_at": "2025-12-27T16:23:45Z",
+    "data_sources": [],
+    "kb_uuid": "6a7f50df-e340-11f0-b074-4e013e2ddde4",
+    "region": "tor1",
+    "slug": "slingshot",
+    "tags": [
+      "client-docs",
+      "slingshot"
+    ],
+    "updated_at": "2025-12-27T16:23:52.525853+00:00"
+  },
+  "sock-fancy": {
+    "created_at": "2025-12-27T16:25:29Z",
+    "data_sources": [],
+    "kb_uuid": "a89af903-e340-11f0-b074-4e013e2ddde4",
+    "region": "tor1",
+    "slug": "sock-fancy",
+    "tags": [
+      "client-docs",
+      "sock-fancy"
+    ],
+    "updated_at": "2025-12-27T16:25:33.581795+00:00"
+  },
+  "terra-collective": {
+    "created_at": "2025-12-27T16:25:53Z",
+    "data_sources": [],
+    "kb_uuid": "b6d69708-e340-11f0-b074-4e013e2ddde4",
+    "region": "tor1",
+    "slug": "terra-collective",
+    "tags": [
+      "client-docs",
+      "terra-collective"
+    ],
+    "updated_at": "2025-12-27T16:26:00.180480+00:00"
+  },
+  "ubiq-education": {
+    "created_at": "2025-12-27T16:26:49Z",
+    "data_sources": [],
+    "kb_uuid": "d87777c6-e340-11f0-b074-4e013e2ddde4",
+    "region": "tor1",
+    "slug": "ubiq-education",
+    "tags": [
+      "client-docs",
+      "ubiq-education"
+    ],
+    "updated_at": "2025-12-27T16:26:56.252607+00:00"
+  },
+  "vew-media": {
+    "created_at": "2025-12-27T16:27:26Z",
+    "data_sources": [],
+    "kb_uuid": "ee965ba9-e340-11f0-b074-4e013e2ddde4",
+    "region": "tor1",
+    "slug": "vew-media",
+    "tags": [
+      "client-docs",
+      "vew-media"
+    ],
+    "updated_at": "2025-12-27T16:27:33.474018+00:00"
+  },
+  "wendt-partners": {
+    "created_at": "2025-12-27T16:28:18Z",
+    "data_sources": [],
+    "kb_uuid": "0d970d8f-e341-11f0-b074-4e013e2ddde4",
+    "region": "tor1",
+    "slug": "wendt-partners",
+    "tags": [
+      "client-docs",
+      "wendt-partners"
+    ],
+    "updated_at": "2025-12-27T16:28:22.205972+00:00"
+  },
+  "white-label-digital": {
+    "created_at": "2025-12-27T16:29:59Z",
+    "data_sources": [],
+    "kb_uuid": "4967c2a1-e341-11f0-b074-4e013e2ddde4",
+    "region": "tor1",
+    "slug": "white-label-digital",
+    "tags": [
+      "client-docs",
+      "white-label-digital"
+    ],
+    "updated_at": "2025-12-27T16:30:04.191223+00:00"
+  },
+  "x-agency": {
+    "created_at": "2025-12-27T16:35:51Z",
+    "data_sources": [],
+    "kb_uuid": "1b5875a9-e342-11f0-b074-4e013e2ddde4",
+    "region": "tor1",
+    "slug": "x-agency",
+    "tags": [
+      "client-docs",
+      "x-agency"
+    ],
+    "updated_at": "2025-12-27T16:35:58.408570+00:00"
+  },
+  "zoomgrants": {
+    "created_at": "2025-12-27T16:43:14Z",
+    "data_sources": [],
+    "kb_uuid": "2389fcce-e343-11f0-b074-4e013e2ddde4",
+    "region": "tor1",
+    "slug": "zoomgrants",
+    "tags": [
+      "client-docs",
+      "zoomgrants"
+    ],
+    "updated_at": "2025-12-27T16:43:18.960956+00:00"
   }
 }

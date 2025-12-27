@@ -14,7 +14,7 @@
       "mintleads-clients-kb/slingshot/"
     ],
     "kb_status": "ok",
-    "last_audit_at": "2025-12-27T17:18:53.964009+00:00",
+    "last_audit_at": "2025-12-27T18:09:10.736599+00:00",
     "details_ref": "reports/kb_inspect/slingshot.json"
   },
   "spaces": {
@@ -43,11 +43,11 @@
   },
   "warnings": [],
   "ui": {
-    "title": null,
-    "favicon": null
+    "title": "Slingshot Product Design & Development",
+    "favicon": "https://www.slingshotpdg.com/wp-content/uploads/2024/08/cropped-favicon-32x32.png"
   },
   "timestamps": {
     "created_at": "2025-12-27T16:23:45Z",
-    "updated_at": "2025-12-27T17:18:53.964009+00:00"
+    "updated_at": "2025-12-27T18:09:10.736599+00:00"
   }
 }

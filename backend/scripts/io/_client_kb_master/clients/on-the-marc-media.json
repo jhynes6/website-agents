@@ -14,7 +14,7 @@
       "mintleads-clients-kb/on-the-marc-media/"
     ],
     "kb_status": "ok",
-    "last_audit_at": "2025-12-27T17:18:53.960699+00:00",
+    "last_audit_at": "2025-12-27T18:09:10.733424+00:00",
     "details_ref": "reports/kb_inspect/on-the-marc-media.json"
   },
   "spaces": {
@@ -37,11 +37,11 @@
   },
   "warnings": [],
   "ui": {
-    "title": null,
+    "title": "on-the-marc-media",
     "favicon": null
   },
   "timestamps": {
     "created_at": "2025-12-27T16:10:34Z",
-    "updated_at": "2025-12-27T17:18:53.960699+00:00"
+    "updated_at": "2025-12-27T18:09:10.733424+00:00"
   }
 }

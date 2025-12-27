@@ -14,7 +14,7 @@
       "mintleads-clients-kb/ubiq-education/"
     ],
     "kb_status": "ok",
-    "last_audit_at": "2025-12-27T17:18:53.964660+00:00",
+    "last_audit_at": "2025-12-27T18:09:10.737288+00:00",
     "details_ref": "reports/kb_inspect/ubiq-education.json"
   },
   "spaces": {
@@ -43,11 +43,11 @@
   },
   "warnings": [],
   "ui": {
-    "title": null,
-    "favicon": null
+    "title": "Data-Driven School Websites | UBIQ Education",
+    "favicon": "https://www.ubiqeducation.com/ams/ubiqfavicon-478.png"
   },
   "timestamps": {
     "created_at": "2025-12-27T16:26:49Z",
-    "updated_at": "2025-12-27T17:18:53.964660+00:00"
+    "updated_at": "2025-12-27T18:09:10.737288+00:00"
   }
 }

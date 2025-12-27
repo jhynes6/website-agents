@@ -10,6 +10,7 @@ from fastapi.responses import JSONResponse, StreamingResponse
 from ..clients.digital_ocean_client import do_client
 from ..config import get_settings
 from ..logging import log
+from ..services.do_agent_manager import ensure_agent
 
 router = APIRouter()
 
@@ -21,6 +22,7 @@ async def query(payload: Dict[str, Any]) -> StreamingResponse:
     query_text: Optional[str] = payload.get("query")
     client_slug: Optional[str] = payload.get("clientSlug") or payload.get("namespace")
     index_name: Optional[str] = payload.get("index")
+    agent_type: str = str(payload.get("agentType") or payload.get("agent_type") or "inbox_manager")
     stream: bool = bool(payload.get("stream", False))
 
     # Support chat-style payloads
@@ -38,45 +40,18 @@ async def query(payload: Dict[str, Any]) -> StreamingResponse:
 
     log("query.start", {"client_slug": kb_name, "query_len": len(query_text)})
 
-    # 1. Resolve Knowledge Base
-    kb = await do_client.get_knowledge_base_by_name(kb_name)
-    if not kb:
+    # Ensure per-client agent exists (DO-only; cached on disk)
+    try:
+        agent_rec = await ensure_agent(kb_name, agent_type=agent_type)
+    except ValueError:
         answer = "I don't have any indexed content for this website (Knowledge Base not found)."
         return StreamingResponse(iter([answer]), media_type="text/plain")
-    
-    kb_uuid = kb["uuid"]
-    # Agent Name: inbox-manager-{client_slug}
-    agent_name = f"inbox-manager-{kb_name}"
 
-    # 2. Resolve or Create Agent
-    # We check if an agent with this name exists
-    agent = None
-    agents = await do_client.list_agents()
-    for a in agents:
-        if a.get("name") == agent_name:
-            agent = a
-            break
-            
-    if not agent:
-        log("query.agent_create", {"name": agent_name})
-        agent = await do_client.create_agent(agent_name, [kb_uuid])
-        if not agent:
-            raise HTTPException(status_code=500, detail="Failed to create agent for this chatbot")
-
-    agent_uuid = agent["uuid"]
-    
-    # 3. Get Agent Endpoint & Key
-    # Ideally, we should cache these
-    agent_endpoint = await do_client.get_agent_chat_endpoint(agent_uuid)
-    if not agent_endpoint:
-        raise HTTPException(status_code=500, detail="Failed to retrieve agent endpoint")
-        
-    # We need a key to talk to the agent.
-    # We'll create a transient key or reuse one if we had a store.
-    # For now, create one.
-    agent_key = await do_client.create_agent_api_key(agent_uuid)
-    if not agent_key:
-         raise HTTPException(status_code=500, detail="Failed to create agent API key")
+    agent_uuid = agent_rec.agent_uuid
+    agent_endpoint = agent_rec.endpoint_url
+    agent_key = agent_rec.api_key
+    if not agent_endpoint or not agent_key:
+        raise HTTPException(status_code=500, detail="Failed to resolve agent endpoint/key")
 
     # 4. Chat with Agent
     try:
