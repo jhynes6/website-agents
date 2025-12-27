@@ -32,6 +32,11 @@ def test_retrieval(kb_uuid: str, query: str, num_results: int = 5):
     
     settings = get_settings()
     
+    # Check for required token
+    if not settings.digitalocean_token:
+        logger.error("✗ DIGITALOCEAN_TOKEN not set in environment")
+        return False
+    
     print(f"\n{'='*80}")
     print(f"Testing KB Retrieval")
     print(f"{'='*80}")
@@ -41,7 +46,8 @@ def test_retrieval(kb_uuid: str, query: str, num_results: int = 5):
     print(f"{'='*80}\n")
     
     try:
-        client = Gradient()
+        # Initialize Gradient client with access token
+        client = Gradient(access_token=settings.digitalocean_token)
         
         response = client.retrieve.documents(
             knowledge_base_id=kb_uuid,

@@ -111,16 +111,34 @@ PI-LIT offers LED road flares and warning lights for traffic safety...
 
 ## Troubleshooting
 
+**Error: "DIGITALOCEAN_TOKEN not set"**
+- Make sure your `.env` file has `DIGITALOCEAN_TOKEN` set
+- The Gradient SDK needs this for authentication
+
 **Error: "Client not found"**
 - Run `--list` to see available clients
 - Check that KB registry is up to date
 
-**Error: "No results returned"**
-- KB might be empty or not indexed
-- Try a more general query
-- Check KB indexing status with audit script
+**0 results returned**
+- KB might be empty or not yet indexed
+- The retrieve endpoint may require the KB to have completed indexing
+- Try testing with an agent endpoint instead (agents.do-ai.run)
+- Verify KB has documents in Spaces: `mintleads-clients-kb/{client-slug}/`
 
 **Error: "Authentication failed"**
 - Check `DIGITALOCEAN_TOKEN` in `.env`
 - Verify token has GenAI API access
+
+## Note on Retrieve Endpoint
+
+The `retrieve.documents()` endpoint is for direct KB querying without an agent. If you're getting 0 results but documents exist:
+
+1. **Check KB indexing status**:
+   ```bash
+   python scripts/audit_clients_and_kbs.py --client your-client
+   ```
+
+2. **Test via agent instead**: Agents have a different retrieval pipeline that may work better
+
+3. **Verify documents in Spaces**: Check that files exist in `mintleads-clients-kb/{client}/`
 
