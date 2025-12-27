@@ -69,7 +69,7 @@ class Settings(BaseSettings):
         alias="DIGITAL_OCEAN_AGENT_PROVIDE_CITATIONS",
     )
     digitalocean_agent_k: int = Field(
-        10,
+        8,
         alias="DIGITAL_OCEAN_AGENT_K",
         ge=1,
     )
@@ -106,7 +106,7 @@ class Settings(BaseSettings):
         le=100
     )
     digitalocean_agent_max_tokens: int = Field(
-        4096,
+        2048,
         alias="DIGITALOCEAN_AGENT_MAX_TOKENS",
         ge=1,
         le=4096
