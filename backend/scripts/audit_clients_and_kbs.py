@@ -5,6 +5,8 @@ import re
 import csv
 import json
 import argparse
+import boto3
+from botocore.client import Config
 from collections import defaultdict
 from datetime import datetime, timezone
 from pathlib import Path
@@ -257,6 +259,37 @@ async def upload_directory_to_spaces(directory: Path, bucket: str, prefix: str):
                 logger.error(f"Failed to upload {path}: {e}")
                 
     logger.info("Upload complete.")
+
+def generate_presigned_url(bucket: str, key: str, expiration: int = 604800):
+    """
+    Generates a presigned URL for a file in Spaces.
+    Default expiration: 7 days (604800 seconds).
+    """
+    settings = get_settings()
+    
+    if not (settings.digitalocean_spaces_key and settings.digitalocean_spaces_secret and settings.digitalocean_spaces_region):
+        logger.error("DigitalOcean Spaces credentials missing for share link generation.")
+        return None
+
+    try:
+        session = boto3.session.Session()
+        client = session.client('s3',
+                                region_name=settings.digitalocean_spaces_region,
+                                endpoint_url=f"https://{settings.digitalocean_spaces_region}.digitaloceanspaces.com",
+                                aws_access_key_id=settings.digitalocean_spaces_key,
+                                aws_secret_access_key=settings.digitalocean_spaces_secret,
+                                config=Config(signature_version='s3v4'))
+
+        url = client.generate_presigned_url(ClientMethod='get_object',
+                                            Params={
+                                                'Bucket': bucket,
+                                                'Key': key,
+                                            },
+                                            ExpiresIn=expiration)
+        return url
+    except Exception as e:
+        logger.error(f"Error generating presigned URL for {key}: {e}")
+        return None
 
 async def main():
     parser = argparse.ArgumentParser(description="Audit DigitalOcean Spaces and Knowledge Bases")
@@ -518,6 +551,18 @@ async def main():
     csv_file = kb_master_reports_dir / 'client_audit_results.csv'
     # (Simplified CSV export logic for brevity, reusing collected stats)
     # ...
+
+    # 8. Generate Share Links
+    print("\n=== GENERATING SHARE LINKS ===")
+    files_to_share = [
+        "_client_kb_master/summary.json",
+        "_client_kb_master/reports/client_audit_results.csv"
+    ]
+    for file_key in files_to_share:
+        url = generate_presigned_url(settings.digitalocean_spaces_bucket, file_key)
+        if url:
+            print(f"File: {file_key}")
+            print(f"Link (Expires in 7 days): {url}\n")
 
 if __name__ == "__main__":
     asyncio.run(main())
