@@ -216,6 +216,7 @@ class DigitalOceanClient:
             # Generation parameters
             "temperature": self.settings.digitalocean_agent_temperature,
             "top_p": self.settings.digitalocean_agent_top_p,
+            "top_k": self.settings.digitalocean_agent_top_k,
             "max_tokens": self.settings.digitalocean_agent_max_tokens,
         }
 

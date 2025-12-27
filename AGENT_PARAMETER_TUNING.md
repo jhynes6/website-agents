@@ -36,6 +36,28 @@ Agents not responding to queries even when relevant information is available in 
 - **Lower to 0.6-0.7**: If responses are too wordy or straying off-topic
 - **Raise to 0.9**: If responses feel too constrained
 
+### Top-K: `40` (Moderate Token Limiting)
+**What it does**: Limits model to only consider the top K most likely tokens at each generation step
+- `1` = Always pick the most likely token (deterministic)
+- `10-20` = Very focused, limited vocabulary
+- `40-50` = Balanced, good for customer support
+- `100+` = Very diverse vocabulary
+
+**Why 40 for customer support**:
+- ✅ Provides good vocabulary diversity
+- ✅ Prevents overly repetitive phrasing
+- ✅ Still maintains professional tone
+- ✅ Works well with temperature 0.3
+
+**When to adjust**:
+- **Lower to 20-30**: If responses are too creative or inconsistent
+- **Raise to 60-80**: If responses feel too constrained or robotic
+
+**⚠️ Note**: Top-P and Top-K work together. The model applies **both** filters:
+1. First filters to top K tokens
+2. Then applies top-P within those K tokens
+3. Use **one as primary** and the other for fine-tuning
+
 ### Max Tokens: `1024` (Medium Length)
 **What it does**: Maximum length of response
 - `256` = Short, concise answers
@@ -54,9 +76,26 @@ Agents not responding to queries even when relevant information is available in 
 - **Raise to 2048**: If you need very detailed technical explanations
 
 ### K (Retrieval): `10` (Already configured)
-**What it does**: Number of KB chunks to retrieve
-- Your current setting of `10` is good
-- Consider raising to `15-20` if agents can't find relevant info
+**What it does**: Number of KB chunks to retrieve for context
+- **This is different from Top-K** (generation parameter above)
+- Controls how much information from the Knowledge Base is given to the model
+
+**Why 10 for customer support**:
+- Your current setting of `10` is good for most queries
+- Provides enough context without overwhelming the model
+
+**When to adjust**:
+- **Raise to 15-20**: If agents can't find relevant info or responses lack detail
+- **Lower to 5-8**: If responses are too long or pulling irrelevant information
+
+## Important: K vs Top-K
+
+| Parameter | What It Controls | Range | Current Setting |
+|-----------|-----------------|-------|-----------------|
+| **K** (Retrieval) | Number of KB chunks retrieved | 1-50+ | **10** |
+| **Top-K** (Generation) | Token selection during generation | 1-100+ | **40** |
+
+**Don't confuse them!** They serve completely different purposes.
 
 ## Configuration
 
@@ -65,9 +104,10 @@ Agents not responding to queries even when relevant information is available in 
 # Recommended for customer support
 DIGITALOCEAN_AGENT_TEMPERATURE=0.3
 DIGITALOCEAN_AGENT_TOP_P=0.8
+DIGITALOCEAN_AGENT_TOP_K=40
 DIGITALOCEAN_AGENT_MAX_TOKENS=1024
 
-# Already configured
+# Already configured (KB retrieval)
 DIGITALOCEAN_AGENT_K=10
 ```
 
@@ -77,6 +117,7 @@ DIGITALOCEAN_AGENT_K=10
 ```bash
 DIGITALOCEAN_AGENT_TEMPERATURE=0.1
 DIGITALOCEAN_AGENT_TOP_P=0.7
+DIGITALOCEAN_AGENT_TOP_K=30
 DIGITALOCEAN_AGENT_MAX_TOKENS=1024
 DIGITALOCEAN_AGENT_K=15
 ```
@@ -85,6 +126,7 @@ DIGITALOCEAN_AGENT_K=15
 ```bash
 DIGITALOCEAN_AGENT_TEMPERATURE=0.7
 DIGITALOCEAN_AGENT_TOP_P=0.9
+DIGITALOCEAN_AGENT_TOP_K=60
 DIGITALOCEAN_AGENT_MAX_TOKENS=512
 DIGITALOCEAN_AGENT_K=8
 ```
@@ -93,6 +135,7 @@ DIGITALOCEAN_AGENT_K=8
 ```bash
 DIGITALOCEAN_AGENT_TEMPERATURE=0.2
 DIGITALOCEAN_AGENT_TOP_P=0.7
+DIGITALOCEAN_AGENT_TOP_K=30
 DIGITALOCEAN_AGENT_MAX_TOKENS=256
 DIGITALOCEAN_AGENT_K=5
 ```
@@ -177,10 +220,16 @@ curl -X POST "https://AGENT_ENDPOINT/chat" \
 
 ## Interaction Between Parameters
 
-### Temperature + Top-P
-- Both control randomness, but differently
-- **Best practice**: Use one OR the other as primary control
-- **Recommended**: Keep temperature low (0.3) and adjust top_p for fine-tuning
+### Temperature + Top-P + Top-K
+- All three control randomness/diversity, but at different stages
+- **Best practice**: Set temperature as primary control, use top-p and top-k for fine-tuning
+- **Recommended**: Keep temperature low (0.3), top-p moderate (0.8), top-k moderate (40)
+
+**How they work together**:
+1. Model calculates probabilities for all possible next tokens
+2. **Top-K filter**: Keeps only the top K most likely tokens
+3. **Top-P filter**: Within those K tokens, keeps tokens until cumulative probability reaches P
+4. **Temperature**: Adjusts the final probabilities before sampling
 
 ### Max Tokens + Response Quality
 - Too low: Incomplete answers, truncated mid-sentence
