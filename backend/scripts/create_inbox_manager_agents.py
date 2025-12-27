@@ -103,9 +103,8 @@ async def create_inbox_manager_for_client(client_slug: str, kb_uuid: str) -> boo
         
         logger.info(f"  ✓ Agent deployed (STATUS_RUNNING)")
         
-        # 3. Get endpoint URL (make public) - with retries
-        logger.info(f"  3. Getting public endpoint (with retries)...")
-        endpoint_url = await do_client.get_agent_chat_endpoint(agent_uuid, max_retries=3)
+        # 3. Make agent public and get endpoint URL - with retries
+        logger.info(f"  3. Setting visibility to PUBLIC and getting endpoint...")
         endpoint_url = await do_client.get_agent_chat_endpoint(agent_uuid, max_retries=3)
         
         if endpoint_url:
