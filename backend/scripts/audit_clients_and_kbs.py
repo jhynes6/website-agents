@@ -545,18 +545,66 @@ async def main():
     print("\n=== UPLOADING TO SPACES ===")
     await upload_directory_to_spaces(kb_master_dir, settings.digitalocean_spaces_bucket, "_client_kb_master")
     
-    # 7. Export CSV (Optional but good for quick check)
-    print("\n=== EXPORTING CSV ===")
-    # ... reused existing CSV logic if needed, but updating path to reports/client_audit_results.csv
-    csv_file = kb_master_reports_dir / 'client_audit_results.csv'
-    # (Simplified CSV export logic for brevity, reusing collected stats)
-    # ...
+    # 7. Export JSON
+    print("\n=== EXPORTING JSON ===")
+    
+    # Identify all unique dynamic keys (content types, doc sources) across all clients
+    all_content_types = set()
+    all_doc_sources = set()
+    
+    for stats in client_stats.values():
+        all_content_types.update(stats['content_types'].keys())
+        all_doc_sources.update(stats['document_sources'].keys())
+        
+    sorted_ct_keys = sorted(list(all_content_types))
+    sorted_ds_keys = sorted(list(all_doc_sources))
+    
+    # Build list of dicts for JSON
+    json_output = []
+    
+    for client in sorted(list(all_clients)):
+        row = {'Client Name': client}
+        
+        # Fill Spaces Data
+        if client in client_stats:
+            stats = client_stats[client]
+            row['Total Files'] = stats['total_files']
+            for ct, count in stats['content_types'].items():
+                row[f'Type: {ct}'] = count
+            for ds, count in stats['document_sources'].items():
+                row[f'Source: {ds}'] = count
+        else:
+            row['Total Files'] = 0
+        
+        # Fill KB Data
+        if client in kb_map:
+            kb = kb_map[client]
+            status = "OK"
+            if not kb['is_correctly_configured']:
+                status = "MISCONFIGURED"
+            if kb['pointing_to_root']:
+                status = "DANGER (Points to Root)"
+                
+            row['KB Status'] = status
+            row['KB UUID'] = kb['uuid']
+            row['KB Sources'] = "; ".join(kb['sources'])
+        else:
+            row['KB Status'] = "MISSING"
+            
+        json_output.append(row)
+        
+    json_file = kb_master_reports_dir / 'client_audit_results.json'
+    try:
+        json_file.write_text(json.dumps(json_output, indent=2))
+        print(f"Successfully exported audit results to {json_file}")
+    except Exception as e:
+        logger.error(f"Failed to write JSON: {e}")
 
     # 8. Generate Share Links
     print("\n=== GENERATING SHARE LINKS ===")
     files_to_share = [
         "_client_kb_master/summary.json",
-        "_client_kb_master/reports/client_audit_results.csv"
+        "_client_kb_master/reports/client_audit_results.json"
     ]
     for file_key in files_to_share:
         url = generate_presigned_url(settings.digitalocean_spaces_bucket, file_key)
