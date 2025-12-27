@@ -1,0 +1,51 @@
+{
+  "knowledge_base": {
+    "uuid": "d87777c6-e340-11f0-b074-4e013e2ddde4",
+    "name": "ubiq-education",
+    "created_at": "2025-12-27T16:26:49Z",
+    "updated_at": "2025-12-27T16:45:25Z",
+    "tags": [
+      "client-docs",
+      "ubiq-education"
+    ],
+    "region": "tor1",
+    "embedding_model_uuid": "22653204-79ed-11ef-bf8f-4e013e2ddde4",
+    "project_id": "cb4a32d2-7e9f-44d8-86c7-63b3304c077b",
+    "database_id": "e27f23bd-d953-48c5-8923-f827868ba230",
+    "last_indexing_job": {
+      "uuid": "dab2a298-e340-11f0-b074-4e013e2ddde4",
+      "knowledge_base_uuid": "d87777c6-e340-11f0-b074-4e013e2ddde4",
+      "created_at": "2025-12-27T16:26:53Z",
+      "updated_at": "2025-12-27T16:27:49Z",
+      "started_at": "2025-12-27T16:26:53Z",
+      "finished_at": "2025-12-27T16:27:48Z",
+      "phase": "BATCH_JOB_PHASE_SUCCEEDED",
+      "total_datasources": 1,
+      "completed_datasources": 1,
+      "tokens": 157993,
+      "total_tokens": "157993",
+      "status": "INDEX_JOB_STATUS_COMPLETED",
+      "data_source_jobs": [
+        {
+          "data_source_uuid": "d8afc5db-e340-11f0-b074-4e013e2ddde4",
+          "total_file_count": "103",
+          "indexed_file_count": "103",
+          "total_bytes": "1499558",
+          "total_bytes_indexed": "1499558",
+          "started_at": "2025-12-27T16:27:16Z",
+          "completed_at": "2025-12-27T16:27:36Z",
+          "indexed_item_count": "103",
+          "status": "DATA_SOURCE_STATUS_UPDATED"
+        }
+      ],
+      "is_report_available": true
+    }
+  },
+  "sources": [
+    "mintleads-clients-kb/ubiq-education/"
+  ],
+  "status": {
+    "is_correctly_configured": true,
+    "pointing_to_root": false
+  }
+}

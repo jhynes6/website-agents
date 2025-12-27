@@ -1,0 +1,51 @@
+{
+  "knowledge_base": {
+    "uuid": "0d970d8f-e341-11f0-b074-4e013e2ddde4",
+    "name": "wendt-partners",
+    "created_at": "2025-12-27T16:28:18Z",
+    "updated_at": "2025-12-27T16:45:25Z",
+    "tags": [
+      "client-docs",
+      "wendt-partners"
+    ],
+    "region": "tor1",
+    "embedding_model_uuid": "22653204-79ed-11ef-bf8f-4e013e2ddde4",
+    "project_id": "cb4a32d2-7e9f-44d8-86c7-63b3304c077b",
+    "database_id": "e27f23bd-d953-48c5-8923-f827868ba230",
+    "last_indexing_job": {
+      "uuid": "0e0352e2-e341-11f0-b074-4e013e2ddde4",
+      "knowledge_base_uuid": "0d970d8f-e341-11f0-b074-4e013e2ddde4",
+      "created_at": "2025-12-27T16:28:19Z",
+      "updated_at": "2025-12-27T16:29:24Z",
+      "started_at": "2025-12-27T16:28:19Z",
+      "finished_at": "2025-12-27T16:29:24Z",
+      "phase": "BATCH_JOB_PHASE_SUCCEEDED",
+      "total_datasources": 1,
+      "completed_datasources": 1,
+      "tokens": 202531,
+      "total_tokens": "202531",
+      "status": "INDEX_JOB_STATUS_COMPLETED",
+      "data_source_jobs": [
+        {
+          "data_source_uuid": "0dcd0b48-e341-11f0-b074-4e013e2ddde4",
+          "total_file_count": "153",
+          "indexed_file_count": "153",
+          "total_bytes": "2117976",
+          "total_bytes_indexed": "2117976",
+          "started_at": "2025-12-27T16:28:42Z",
+          "completed_at": "2025-12-27T16:29:10Z",
+          "indexed_item_count": "153",
+          "status": "DATA_SOURCE_STATUS_UPDATED"
+        }
+      ],
+      "is_report_available": true
+    }
+  },
+  "sources": [
+    "mintleads-clients-kb/wendt-partners/"
+  ],
+  "status": {
+    "is_correctly_configured": true,
+    "pointing_to_root": false
+  }
+}

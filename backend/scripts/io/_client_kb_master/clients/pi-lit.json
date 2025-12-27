@@ -1,0 +1,48 @@
+{
+  "client_slug": "pi-lit",
+  "drive_folder_url": "https://drive.google.com/drive/folders/1lulCrD5-VPx4yUmazQC0vjiXqHDns0gF",
+  "website_url": "https://pi-lit.com",
+  "intake_form_url": "https://drive.google.com/file/d/1grag7nrXTx9IfA2k85EWq1HLui9-CR8B/view?usp=drivesdk",
+  "kb": {
+    "kb_uuid": "7130339a-e343-11f0-b074-4e013e2ddde4",
+    "kb_region": "tor1",
+    "kb_tags": [
+      "client-docs",
+      "pi-lit"
+    ],
+    "kb_sources": [
+      "mintleads-clients-kb/pi-lit/"
+    ],
+    "kb_status": "ok",
+    "last_audit_at": "2025-12-27T17:18:53.961124+00:00",
+    "details_ref": "reports/kb_inspect/pi-lit.json"
+  },
+  "spaces": {
+    "spaces_prefix": "pi-lit/",
+    "total_files": 109,
+    "content_types": {
+      "intake_form": 1,
+      "other": 27,
+      "about": 1,
+      "blogs_resources": 37,
+      "industry_markets": 6,
+      "services_products": 37
+    },
+    "document_sources": {
+      "intake_form": 1,
+      "website": 108
+    }
+  },
+  "ingest": {
+    "last_reindex_at": "2025-12-27T16:48:23Z"
+  },
+  "warnings": [],
+  "ui": {
+    "title": null,
+    "favicon": null
+  },
+  "timestamps": {
+    "created_at": "2025-12-27T16:45:24Z",
+    "updated_at": "2025-12-27T17:18:53.961124+00:00"
+  }
+}

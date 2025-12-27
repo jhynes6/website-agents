@@ -1,0 +1,55 @@
+{
+  "generated_at": "2025-12-27T17:18:53.951203+00:00",
+  "totals": {
+    "clients": 54,
+    "kbs_ok": 50,
+    "kbs_misconfigured": 0,
+    "kbs_root": 0,
+    "kbs_missing": 4,
+    "clients_zero_files": 0,
+    "clients_missing_intake": 0,
+    "region_mismatches": 0
+  },
+  "agents": {
+    "total": 2,
+    "by_region": {
+      "tor1": 2
+    },
+    "with_kb_region_mismatch": 0,
+    "list": [
+      {
+        "name": "copywriting",
+        "uuid": "a020bcae-e2dd-11f0-b074-4e013e2ddde4",
+        "link": "agents/copywriting.json"
+      },
+      {
+        "name": "inbox-manager",
+        "uuid": "59506efd-df44-11f0-b074-4e013e2ddde4",
+        "link": "agents/inbox-manager.json"
+      }
+    ]
+  },
+  "top_warnings": [
+    {
+      "client_slug": "_client_kb_master",
+      "warning": "KB status: missing"
+    },
+    {
+      "client_slug": "_mintleads_kb_master",
+      "warning": "KB status: missing"
+    },
+    {
+      "client_slug": "iconic-supply-co.",
+      "warning": "KB status: missing"
+    },
+    {
+      "client_slug": "kilter.la",
+      "warning": "KB status: missing"
+    }
+  ],
+  "reports": {
+    "client_audit_results_csv": "reports/client_audit_results.csv",
+    "kb_inspect_dir": "reports/kb_inspect/",
+    "agents_dir": "agents/"
+  }
+}

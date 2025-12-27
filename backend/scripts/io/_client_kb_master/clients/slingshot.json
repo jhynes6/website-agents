@@ -1,0 +1,53 @@
+{
+  "client_slug": "slingshot",
+  "drive_folder_url": "https://drive.google.com/drive/folders/1fbcn8XXWZvFFF_xqagY1Gy6Cqew0E-AJ",
+  "website_url": "https://slingshotpdg.com",
+  "intake_form_url": "https://docs.google.com/document/d/1FXSpl5heNZECBB7sHVHqejuHwZtjloT1V-Upzef7oqg/edit?usp=drivesdk",
+  "kb": {
+    "kb_uuid": "6a7f50df-e340-11f0-b074-4e013e2ddde4",
+    "kb_region": "tor1",
+    "kb_tags": [
+      "client-docs",
+      "slingshot"
+    ],
+    "kb_sources": [
+      "mintleads-clients-kb/slingshot/"
+    ],
+    "kb_status": "ok",
+    "last_audit_at": "2025-12-27T17:18:53.964009+00:00",
+    "details_ref": "reports/kb_inspect/slingshot.json"
+  },
+  "spaces": {
+    "spaces_prefix": "slingshot/",
+    "total_files": 68,
+    "content_types": {
+      "capabilities_overview": 2,
+      "other": 12,
+      "brochures_newsletters": 1,
+      "pitch_decks": 2,
+      "intake_form": 3,
+      "homepage": 1,
+      "services_products": 4,
+      "blogs_resources": 7,
+      "case_studies": 35,
+      "about": 1
+    },
+    "document_sources": {
+      "client_materials": 13,
+      "intake_form": 3,
+      "website": 52
+    }
+  },
+  "ingest": {
+    "last_reindex_at": "2025-12-27T16:24:37Z"
+  },
+  "warnings": [],
+  "ui": {
+    "title": null,
+    "favicon": null
+  },
+  "timestamps": {
+    "created_at": "2025-12-27T16:23:45Z",
+    "updated_at": "2025-12-27T17:18:53.964009+00:00"
+  }
+}

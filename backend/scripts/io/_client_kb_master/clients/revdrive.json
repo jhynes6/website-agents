@@ -1,0 +1,46 @@
+{
+  "client_slug": "revdrive",
+  "drive_folder_url": "https://drive.google.com/drive/folders/1HOdjVENBMArB4S8PGg54r9ui5qDLXzzI",
+  "website_url": "https://revdrive.co",
+  "intake_form_url": null,
+  "kb": {
+    "kb_uuid": "84418f99-e33f-11f0-b074-4e013e2ddde4",
+    "kb_region": "tor1",
+    "kb_tags": [
+      "client-docs",
+      "revdrive"
+    ],
+    "kb_sources": [
+      "mintleads-clients-kb/revdrive/"
+    ],
+    "kb_status": "ok",
+    "last_audit_at": "2025-12-27T17:18:53.962273+00:00",
+    "details_ref": "reports/kb_inspect/revdrive.json"
+  },
+  "spaces": {
+    "spaces_prefix": "revdrive/",
+    "total_files": 5,
+    "content_types": {
+      "homepage": 1,
+      "about": 1,
+      "blogs_resources": 1,
+      "other": 1,
+      "services_products": 1
+    },
+    "document_sources": {
+      "website": 5
+    }
+  },
+  "ingest": {
+    "last_reindex_at": "2025-12-27T16:17:56Z"
+  },
+  "warnings": [],
+  "ui": {
+    "title": null,
+    "favicon": null
+  },
+  "timestamps": {
+    "created_at": "2025-12-27T16:17:18Z",
+    "updated_at": "2025-12-27T17:18:53.962273+00:00"
+  }
+}

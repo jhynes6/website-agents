@@ -1,0 +1,51 @@
+{
+  "knowledge_base": {
+    "uuid": "b6d69708-e340-11f0-b074-4e013e2ddde4",
+    "name": "terra-collective",
+    "created_at": "2025-12-27T16:25:53Z",
+    "updated_at": "2025-12-27T16:45:25Z",
+    "tags": [
+      "client-docs",
+      "terra-collective"
+    ],
+    "region": "tor1",
+    "embedding_model_uuid": "22653204-79ed-11ef-bf8f-4e013e2ddde4",
+    "project_id": "cb4a32d2-7e9f-44d8-86c7-63b3304c077b",
+    "database_id": "e27f23bd-d953-48c5-8923-f827868ba230",
+    "last_indexing_job": {
+      "uuid": "b92cba4c-e340-11f0-b074-4e013e2ddde4",
+      "knowledge_base_uuid": "b6d69708-e340-11f0-b074-4e013e2ddde4",
+      "created_at": "2025-12-27T16:25:57Z",
+      "updated_at": "2025-12-27T16:26:38Z",
+      "started_at": "2025-12-27T16:25:57Z",
+      "finished_at": "2025-12-27T16:26:37Z",
+      "phase": "BATCH_JOB_PHASE_SUCCEEDED",
+      "total_datasources": 1,
+      "completed_datasources": 1,
+      "tokens": 9947,
+      "total_tokens": "9947",
+      "status": "INDEX_JOB_STATUS_COMPLETED",
+      "data_source_jobs": [
+        {
+          "data_source_uuid": "b7283e42-e340-11f0-b074-4e013e2ddde4",
+          "total_file_count": "22",
+          "indexed_file_count": "22",
+          "total_bytes": "103560",
+          "total_bytes_indexed": "103560",
+          "started_at": "2025-12-27T16:26:21Z",
+          "completed_at": "2025-12-27T16:26:25Z",
+          "indexed_item_count": "22",
+          "status": "DATA_SOURCE_STATUS_UPDATED"
+        }
+      ],
+      "is_report_available": true
+    }
+  },
+  "sources": [
+    "mintleads-clients-kb/terra-collective/"
+  ],
+  "status": {
+    "is_correctly_configured": true,
+    "pointing_to_root": false
+  }
+}

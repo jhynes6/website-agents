@@ -1,0 +1,49 @@
+{
+  "client_slug": "pipefy",
+  "drive_folder_url": "https://drive.google.com/drive/folders/1HAVlTuoBxDWfeYwXkrM402f9_fEJCPaN",
+  "website_url": "https://pipefy.com",
+  "intake_form_url": "https://docs.google.com/document/d/1_-H2zGO8EhPoghhfaame8qKqX96yLgOjwQPmdOSB5LQ/edit?usp=drivesdk",
+  "kb": {
+    "kb_uuid": "cc56baa7-e33e-11f0-b074-4e013e2ddde4",
+    "kb_region": "tor1",
+    "kb_tags": [
+      "client-docs",
+      "pipefy"
+    ],
+    "kb_sources": [
+      "mintleads-clients-kb/pipefy/"
+    ],
+    "kb_status": "ok",
+    "last_audit_at": "2025-12-27T17:18:53.961517+00:00",
+    "details_ref": "reports/kb_inspect/pipefy.json"
+  },
+  "spaces": {
+    "spaces_prefix": "pipefy/",
+    "total_files": 151,
+    "content_types": {
+      "intake_form": 1,
+      "homepage": 2,
+      "blogs_resources": 67,
+      "services_products": 57,
+      "case_studies": 5,
+      "industry_markets": 12,
+      "other": 7
+    },
+    "document_sources": {
+      "intake_form": 1,
+      "website": 150
+    }
+  },
+  "ingest": {
+    "last_reindex_at": "2025-12-27T16:13:22Z"
+  },
+  "warnings": [],
+  "ui": {
+    "title": null,
+    "favicon": null
+  },
+  "timestamps": {
+    "created_at": "2025-12-27T16:12:10Z",
+    "updated_at": "2025-12-27T17:18:53.961517+00:00"
+  }
+}

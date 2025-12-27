@@ -1,0 +1,50 @@
+{
+  "client_slug": "wendt-partners",
+  "drive_folder_url": "https://drive.google.com/drive/folders/1tQD-JTTN6dojJYeYpOeS8fUHTYtzyEzt",
+  "website_url": "https://wendtpartners.com",
+  "intake_form_url": "https://docs.google.com/document/d/1Bhghwc1p-5jbeLqbvn8a-zqh6sAWvIVJSeZ2g9O-_EQ/edit?usp=drivesdk",
+  "kb": {
+    "kb_uuid": "0d970d8f-e341-11f0-b074-4e013e2ddde4",
+    "kb_region": "tor1",
+    "kb_tags": [
+      "client-docs",
+      "wendt-partners"
+    ],
+    "kb_sources": [
+      "mintleads-clients-kb/wendt-partners/"
+    ],
+    "kb_status": "ok",
+    "last_audit_at": "2025-12-27T17:18:53.965079+00:00",
+    "details_ref": "reports/kb_inspect/wendt-partners.json"
+  },
+  "spaces": {
+    "spaces_prefix": "wendt-partners/",
+    "total_files": 153,
+    "content_types": {
+      "other": 8,
+      "intake_form": 2,
+      "homepage": 1,
+      "blogs_resources": 114,
+      "case_studies": 16,
+      "services_products": 6,
+      "industry_markets": 6
+    },
+    "document_sources": {
+      "client_materials": 1,
+      "intake_form": 2,
+      "website": 150
+    }
+  },
+  "ingest": {
+    "last_reindex_at": "2025-12-27T16:29:24Z"
+  },
+  "warnings": [],
+  "ui": {
+    "title": null,
+    "favicon": null
+  },
+  "timestamps": {
+    "created_at": "2025-12-27T16:28:18Z",
+    "updated_at": "2025-12-27T17:18:53.965079+00:00"
+  }
+}

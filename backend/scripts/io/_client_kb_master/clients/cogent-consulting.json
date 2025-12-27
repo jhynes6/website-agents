@@ -1,0 +1,52 @@
+{
+  "client_slug": "cogent-consulting",
+  "drive_folder_url": "https://drive.google.com/drive/folders/1JjPS0MeTfDGM2j0ovcmscN29B_E9OLjK",
+  "website_url": "https://cogent-llc.com",
+  "intake_form_url": "https://docs.google.com/document/d/1vsLOjr4r7zIfuIclKggiU_zsPFF29K9Mv-RRb6QoQ28/edit?usp=drivesdk",
+  "kb": {
+    "kb_uuid": "870b6e31-e33b-11f0-b074-4e013e2ddde4",
+    "kb_region": "tor1",
+    "kb_tags": [
+      "client-docs",
+      "cogent-consulting"
+    ],
+    "kb_sources": [
+      "mintleads-clients-kb/cogent-consulting/"
+    ],
+    "kb_status": "ok",
+    "last_audit_at": "2025-12-27T17:18:53.955811+00:00",
+    "details_ref": "reports/kb_inspect/cogent-consulting.json"
+  },
+  "spaces": {
+    "spaces_prefix": "cogent-consulting/",
+    "total_files": 50,
+    "content_types": {
+      "capabilities_overview": 5,
+      "other": 4,
+      "intake_form": 1,
+      "homepage": 2,
+      "about": 1,
+      "services_products": 3,
+      "blogs_resources": 30,
+      "case_studies": 3,
+      "testimonials": 1
+    },
+    "document_sources": {
+      "client_materials": 7,
+      "intake_form": 1,
+      "website": 42
+    }
+  },
+  "ingest": {
+    "last_reindex_at": "2025-12-27T15:49:31Z"
+  },
+  "warnings": [],
+  "ui": {
+    "title": null,
+    "favicon": null
+  },
+  "timestamps": {
+    "created_at": "2025-12-27T15:48:45Z",
+    "updated_at": "2025-12-27T17:18:53.955811+00:00"
+  }
+}

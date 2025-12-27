@@ -1,0 +1,49 @@
+{
+  "client_slug": "manufacturing-geeks",
+  "drive_folder_url": "https://drive.google.com/drive/folders/1Vjc_5eiisgOdeOmmH2ht1NG36T0dh_5y",
+  "website_url": "https://manufacturing-geeks.webflow.io",
+  "intake_form_url": "https://docs.google.com/document/d/1OiKKP6Dtd9TmpyTKtVjdQkQ_1JBFx9tQiHAfgeQgsIc/edit?usp=drivesdk",
+  "kb": {
+    "kb_uuid": "fd0590cb-e33d-11f0-b074-4e013e2ddde4",
+    "kb_region": "tor1",
+    "kb_tags": [
+      "client-docs",
+      "manufacturing-geeks"
+    ],
+    "kb_sources": [
+      "mintleads-clients-kb/manufacturing-geeks/"
+    ],
+    "kb_status": "ok",
+    "last_audit_at": "2025-12-27T17:18:53.959097+00:00",
+    "details_ref": "reports/kb_inspect/manufacturing-geeks.json"
+  },
+  "spaces": {
+    "spaces_prefix": "manufacturing-geeks/",
+    "total_files": 62,
+    "content_types": {
+      "intake_form": 1,
+      "homepage": 1,
+      "blogs_resources": 12,
+      "other": 7,
+      "pricing": 2,
+      "about": 1,
+      "services_products": 38
+    },
+    "document_sources": {
+      "intake_form": 1,
+      "website": 61
+    }
+  },
+  "ingest": {
+    "last_reindex_at": "2025-12-27T16:07:15Z"
+  },
+  "warnings": [],
+  "ui": {
+    "title": null,
+    "favicon": null
+  },
+  "timestamps": {
+    "created_at": "2025-12-27T16:06:22Z",
+    "updated_at": "2025-12-27T17:18:53.959097+00:00"
+  }
+}

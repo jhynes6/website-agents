@@ -1,0 +1,54 @@
+{
+  "client_slug": "x-agency",
+  "drive_folder_url": "https://drive.google.com/drive/folders/1IvlP-PHdDBqGkvC_Q07Ju9PLqxruot8Y",
+  "website_url": "https://xagency.com",
+  "intake_form_url": "https://docs.google.com/document/d/19qO9NH47VE04AYW7tnJOh2IkEYTJLBBO694G7rYFIOQ/edit?usp=drivesdk",
+  "kb": {
+    "kb_uuid": "1b5875a9-e342-11f0-b074-4e013e2ddde4",
+    "kb_region": "tor1",
+    "kb_tags": [
+      "client-docs",
+      "x-agency"
+    ],
+    "kb_sources": [
+      "mintleads-clients-kb/x-agency/"
+    ],
+    "kb_status": "ok",
+    "last_audit_at": "2025-12-27T17:18:53.965543+00:00",
+    "details_ref": "reports/kb_inspect/x-agency.json"
+  },
+  "spaces": {
+    "spaces_prefix": "x-agency/",
+    "total_files": 87,
+    "content_types": {
+      "other": 8,
+      "capabilities_overview": 1,
+      "intake_form": 1,
+      "homepage": 1,
+      "services_products": 12,
+      "case_studies": 9,
+      "careers": 2,
+      "blogs_resources": 48,
+      "pricing": 1,
+      "testimonials": 1,
+      "about": 3
+    },
+    "document_sources": {
+      "client_materials": 2,
+      "intake_form": 1,
+      "website": 84
+    }
+  },
+  "ingest": {
+    "last_reindex_at": "2025-12-27T16:36:47Z"
+  },
+  "warnings": [],
+  "ui": {
+    "title": null,
+    "favicon": null
+  },
+  "timestamps": {
+    "created_at": "2025-12-27T16:35:51Z",
+    "updated_at": "2025-12-27T17:18:53.965543+00:00"
+  }
+}

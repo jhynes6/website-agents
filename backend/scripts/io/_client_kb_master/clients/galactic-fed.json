@@ -1,0 +1,50 @@
+{
+  "client_slug": "galactic-fed",
+  "drive_folder_url": "https://drive.google.com/drive/folders/1C0lsL3SPl_wH4Yl4e-46xpNMPbf2Lwfg",
+  "website_url": "https://galacticfed.com",
+  "intake_form_url": "https://docs.google.com/document/d/1qOTx0ZDApJefNTa5ik1R3Nm5hicjFOgcJZPGBoPS3Qc/edit?usp=drivesdk",
+  "kb": {
+    "kb_uuid": "85e606ea-e33c-11f0-b074-4e013e2ddde4",
+    "kb_region": "tor1",
+    "kb_tags": [
+      "client-docs",
+      "galactic-fed"
+    ],
+    "kb_sources": [
+      "mintleads-clients-kb/galactic-fed/"
+    ],
+    "kb_status": "ok",
+    "last_audit_at": "2025-12-27T17:18:53.957095+00:00",
+    "details_ref": "reports/kb_inspect/galactic-fed.json"
+  },
+  "spaces": {
+    "spaces_prefix": "galactic-fed/",
+    "total_files": 151,
+    "content_types": {
+      "intake_form": 1,
+      "homepage": 4,
+      "about": 4,
+      "blogs_resources": 51,
+      "careers": 24,
+      "case_studies": 49,
+      "other": 9,
+      "services_products": 9
+    },
+    "document_sources": {
+      "intake_form": 1,
+      "website": 150
+    }
+  },
+  "ingest": {
+    "last_reindex_at": "2025-12-27T15:56:56Z"
+  },
+  "warnings": [],
+  "ui": {
+    "title": null,
+    "favicon": null
+  },
+  "timestamps": {
+    "created_at": "2025-12-27T15:55:53Z",
+    "updated_at": "2025-12-27T17:18:53.957095+00:00"
+  }
+}

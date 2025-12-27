@@ -1,0 +1,51 @@
+{
+  "knowledge_base": {
+    "uuid": "1b5875a9-e342-11f0-b074-4e013e2ddde4",
+    "name": "x-agency",
+    "created_at": "2025-12-27T16:35:51Z",
+    "updated_at": "2025-12-27T16:45:25Z",
+    "tags": [
+      "client-docs",
+      "x-agency"
+    ],
+    "region": "tor1",
+    "embedding_model_uuid": "22653204-79ed-11ef-bf8f-4e013e2ddde4",
+    "project_id": "cb4a32d2-7e9f-44d8-86c7-63b3304c077b",
+    "database_id": "e27f23bd-d953-48c5-8923-f827868ba230",
+    "last_indexing_job": {
+      "uuid": "1da31d49-e342-11f0-b074-4e013e2ddde4",
+      "knowledge_base_uuid": "1b5875a9-e342-11f0-b074-4e013e2ddde4",
+      "created_at": "2025-12-27T16:35:55Z",
+      "updated_at": "2025-12-27T16:36:47Z",
+      "started_at": "2025-12-27T16:35:55Z",
+      "finished_at": "2025-12-27T16:36:47Z",
+      "phase": "BATCH_JOB_PHASE_SUCCEEDED",
+      "total_datasources": 1,
+      "completed_datasources": 1,
+      "tokens": 82927,
+      "total_tokens": "82927",
+      "status": "INDEX_JOB_STATUS_COMPLETED",
+      "data_source_jobs": [
+        {
+          "data_source_uuid": "1ba4f6ec-e342-11f0-b074-4e013e2ddde4",
+          "total_file_count": "88",
+          "indexed_file_count": "88",
+          "total_bytes": "774084",
+          "total_bytes_indexed": "774084",
+          "started_at": "2025-12-27T16:36:19Z",
+          "completed_at": "2025-12-27T16:36:33Z",
+          "indexed_item_count": "88",
+          "status": "DATA_SOURCE_STATUS_UPDATED"
+        }
+      ],
+      "is_report_available": true
+    }
+  },
+  "sources": [
+    "mintleads-clients-kb/x-agency/"
+  ],
+  "status": {
+    "is_correctly_configured": true,
+    "pointing_to_root": false
+  }
+}

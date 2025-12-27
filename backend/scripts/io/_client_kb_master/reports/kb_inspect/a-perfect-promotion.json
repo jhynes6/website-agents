@@ -1,0 +1,44 @@
+{
+  "knowledge_base": {
+    "uuid": "4579e84e-e339-11f0-b074-4e013e2ddde4",
+    "name": "a-perfect-promotion",
+    "created_at": "2025-12-27T15:32:36Z",
+    "updated_at": "2025-12-27T16:45:25Z",
+    "tags": [
+      "client-docs",
+      "a-perfect-promotion"
+    ],
+    "region": "tor1",
+    "embedding_model_uuid": "22653204-79ed-11ef-bf8f-4e013e2ddde4",
+    "project_id": "cb4a32d2-7e9f-44d8-86c7-63b3304c077b",
+    "database_id": "e27f23bd-d953-48c5-8923-f827868ba230",
+    "last_indexing_job": {
+      "uuid": "ea531fd7-e339-11f0-b074-4e013e2ddde4",
+      "knowledge_base_uuid": "4579e84e-e339-11f0-b074-4e013e2ddde4",
+      "created_at": "2025-12-27T15:37:13Z",
+      "updated_at": "2025-12-27T15:37:47Z",
+      "started_at": "2025-12-27T15:37:13Z",
+      "finished_at": "2025-12-27T15:37:47Z",
+      "phase": "BATCH_JOB_PHASE_SUCCEEDED",
+      "total_datasources": 1,
+      "completed_datasources": 1,
+      "status": "INDEX_JOB_STATUS_COMPLETED",
+      "data_source_jobs": [
+        {
+          "data_source_uuid": "45d2ab93-e339-11f0-b074-4e013e2ddde4",
+          "completed_at": "2025-12-27T15:37:34Z",
+          "removed_item_count": "33",
+          "status": "DATA_SOURCE_STATUS_UPDATED"
+        }
+      ],
+      "is_report_available": true
+    }
+  },
+  "sources": [
+    "mintleads-clients-kb/a-perfect-promotion/"
+  ],
+  "status": {
+    "is_correctly_configured": true,
+    "pointing_to_root": false
+  }
+}

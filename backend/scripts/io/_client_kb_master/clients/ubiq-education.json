@@ -1,0 +1,53 @@
+{
+  "client_slug": "ubiq-education",
+  "drive_folder_url": "https://drive.google.com/drive/folders/1J-PTkl51J0UKB9F0DMFpuHiPyGOkWacs",
+  "website_url": "https://ubiqeducation.com",
+  "intake_form_url": "https://docs.google.com/document/d/1PsJvLOeU6aptBZET6TApSoauda-4p_N0/edit?usp=drivesdk&ouid=107537814481162421611&rtpof=true&sd=true",
+  "kb": {
+    "kb_uuid": "d87777c6-e340-11f0-b074-4e013e2ddde4",
+    "kb_region": "tor1",
+    "kb_tags": [
+      "client-docs",
+      "ubiq-education"
+    ],
+    "kb_sources": [
+      "mintleads-clients-kb/ubiq-education/"
+    ],
+    "kb_status": "ok",
+    "last_audit_at": "2025-12-27T17:18:53.964660+00:00",
+    "details_ref": "reports/kb_inspect/ubiq-education.json"
+  },
+  "spaces": {
+    "spaces_prefix": "ubiq-education/",
+    "total_files": 102,
+    "content_types": {
+      "other": 33,
+      "capabilities_overview": 1,
+      "case_studies": 6,
+      "intake_form": 2,
+      "homepage": 1,
+      "blogs_resources": 42,
+      "services_products": 11,
+      "about": 4,
+      "industry_markets": 1,
+      "pricing": 1
+    },
+    "document_sources": {
+      "client_materials": 6,
+      "intake_form": 2,
+      "website": 94
+    }
+  },
+  "ingest": {
+    "last_reindex_at": "2025-12-27T16:27:48Z"
+  },
+  "warnings": [],
+  "ui": {
+    "title": null,
+    "favicon": null
+  },
+  "timestamps": {
+    "created_at": "2025-12-27T16:26:49Z",
+    "updated_at": "2025-12-27T17:18:53.964660+00:00"
+  }
+}

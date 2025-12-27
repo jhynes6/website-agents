@@ -1,0 +1,49 @@
+{
+  "client_slug": "bucklandco",
+  "drive_folder_url": "https://drive.google.com/drive/folders/1JjSsQnPVcZySy_c-nbwtfiF2zTSLAXxx",
+  "website_url": "https://bucklandco.com",
+  "intake_form_url": "https://docs.google.com/document/d/1OH5YID_0Ri18bNZUWm3cRhHpJyu7RNe2y9-J-ySkjhk/edit?usp=drivesdk",
+  "kb": {
+    "kb_uuid": "ddd6c82a-e33a-11f0-b074-4e013e2ddde4",
+    "kb_region": "tor1",
+    "kb_tags": [
+      "client-docs",
+      "bucklandco"
+    ],
+    "kb_sources": [
+      "mintleads-clients-kb/bucklandco/"
+    ],
+    "kb_status": "ok",
+    "last_audit_at": "2025-12-27T17:18:53.954938+00:00",
+    "details_ref": "reports/kb_inspect/bucklandco.json"
+  },
+  "spaces": {
+    "spaces_prefix": "bucklandco/",
+    "total_files": 50,
+    "content_types": {
+      "intake_form": 1,
+      "homepage": 2,
+      "other": 6,
+      "blogs_resources": 33,
+      "case_studies": 3,
+      "services_products": 4,
+      "about": 1
+    },
+    "document_sources": {
+      "intake_form": 1,
+      "website": 49
+    }
+  },
+  "ingest": {
+    "last_reindex_at": "2025-12-27T15:44:50Z"
+  },
+  "warnings": [],
+  "ui": {
+    "title": null,
+    "favicon": null
+  },
+  "timestamps": {
+    "created_at": "2025-12-27T15:44:01Z",
+    "updated_at": "2025-12-27T17:18:53.954938+00:00"
+  }
+}

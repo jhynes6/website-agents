@@ -1,0 +1,52 @@
+{
+  "client_slug": "white-label-digital",
+  "drive_folder_url": "https://drive.google.com/drive/folders/13RE7L-DeYRBf1H6RI2y62AG5UzyT6FSJ",
+  "website_url": "https://whitelabeldigital.co",
+  "intake_form_url": "https://docs.google.com/document/d/1Ge3FiBij15hejeKrEMAMNxkfMpWMELM5_3WDk_7ocJA/edit?usp=drivesdk",
+  "kb": {
+    "kb_uuid": "4967c2a1-e341-11f0-b074-4e013e2ddde4",
+    "kb_region": "tor1",
+    "kb_tags": [
+      "client-docs",
+      "white-label-digital"
+    ],
+    "kb_sources": [
+      "mintleads-clients-kb/white-label-digital/"
+    ],
+    "kb_status": "ok",
+    "last_audit_at": "2025-12-27T17:18:53.965304+00:00",
+    "details_ref": "reports/kb_inspect/white-label-digital.json"
+  },
+  "spaces": {
+    "spaces_prefix": "white-label-digital/",
+    "total_files": 121,
+    "content_types": {
+      "other": 30,
+      "pitch_decks": 2,
+      "case_studies": 4,
+      "capabilities_overview": 2,
+      "intake_form": 1,
+      "homepage": 1,
+      "blogs_resources": 73,
+      "about": 2,
+      "services_products": 6
+    },
+    "document_sources": {
+      "client_materials": 20,
+      "intake_form": 1,
+      "website": 100
+    }
+  },
+  "ingest": {
+    "last_reindex_at": "2025-12-27T16:30:58Z"
+  },
+  "warnings": [],
+  "ui": {
+    "title": null,
+    "favicon": null
+  },
+  "timestamps": {
+    "created_at": "2025-12-27T16:29:59Z",
+    "updated_at": "2025-12-27T17:18:53.965304+00:00"
+  }
+}

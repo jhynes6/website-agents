@@ -1,0 +1,42 @@
+{
+  "client_slug": "_client_kb_master",
+  "drive_folder_url": "",
+  "website_url": "",
+  "intake_form_url": null,
+  "kb": {
+    "kb_uuid": null,
+    "kb_region": null,
+    "kb_tags": [],
+    "kb_sources": [],
+    "kb_status": "missing",
+    "last_audit_at": "2025-12-27T17:18:53.952415+00:00",
+    "details_ref": null
+  },
+  "spaces": {
+    "spaces_prefix": "_client_kb_master/",
+    "total_files": 107,
+    "content_types": {
+      "unknown": 107
+    },
+    "document_sources": {
+      "agents": 2,
+      "clients": 52,
+      "reports": 52,
+      "unknown": 1
+    }
+  },
+  "ingest": {
+    "last_reindex_at": null
+  },
+  "warnings": [
+    "KB status: missing"
+  ],
+  "ui": {
+    "title": null,
+    "favicon": null
+  },
+  "timestamps": {
+    "created_at": null,
+    "updated_at": "2025-12-27T17:18:53.952415+00:00"
+  }
+}

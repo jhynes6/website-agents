@@ -1,0 +1,49 @@
+{
+  "client_slug": "skayle-360",
+  "drive_folder_url": "https://drive.google.com/drive/folders/1oqcUtgi7Yf7pqE5B4VhxrSJ6JPXZ2SdC",
+  "website_url": "https://skayle360.com",
+  "intake_form_url": "https://docs.google.com/document/d/1LD1OBgtcfZnhAnJxaqLlmyVGSv0QZQgBHKdZZ2PdVFg/edit?usp=drivesdk",
+  "kb": {
+    "kb_uuid": "1a767590-e340-11f0-b074-4e013e2ddde4",
+    "kb_region": "tor1",
+    "kb_tags": [
+      "client-docs",
+      "skayle-360"
+    ],
+    "kb_sources": [
+      "mintleads-clients-kb/skayle-360/"
+    ],
+    "kb_status": "ok",
+    "last_audit_at": "2025-12-27T17:18:53.963469+00:00",
+    "details_ref": "reports/kb_inspect/skayle-360.json"
+  },
+  "spaces": {
+    "spaces_prefix": "skayle-360/",
+    "total_files": 28,
+    "content_types": {
+      "other": 7,
+      "intake_form": 1,
+      "homepage": 1,
+      "services_products": 4,
+      "blogs_resources": 14,
+      "testimonials": 1
+    },
+    "document_sources": {
+      "client_materials": 1,
+      "intake_form": 1,
+      "website": 26
+    }
+  },
+  "ingest": {
+    "last_reindex_at": "2025-12-27T16:22:18Z"
+  },
+  "warnings": [],
+  "ui": {
+    "title": null,
+    "favicon": null
+  },
+  "timestamps": {
+    "created_at": "2025-12-27T16:21:30Z",
+    "updated_at": "2025-12-27T17:18:53.963469+00:00"
+  }
+}

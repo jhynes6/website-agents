@@ -1,0 +1,51 @@
+{
+  "client_slug": "incyte-media",
+  "drive_folder_url": "https://drive.google.com/drive/folders/1oAjv07kb8pOpdHdeLoOh9sfiZl4vsRHN",
+  "website_url": "https://incytemedia.com",
+  "intake_form_url": "https://docs.google.com/document/d/1KMmtVghCtyrSYmmRfrEoopnoKt1-KvLP3_AzG0nBar4/edit?usp=drivesdk",
+  "kb": {
+    "kb_uuid": "c10bf3c1-e33c-11f0-b074-4e013e2ddde4",
+    "kb_region": "tor1",
+    "kb_tags": [
+      "client-docs",
+      "incyte-media"
+    ],
+    "kb_sources": [
+      "mintleads-clients-kb/incyte-media/"
+    ],
+    "kb_status": "ok",
+    "last_audit_at": "2025-12-27T17:18:53.957443+00:00",
+    "details_ref": "reports/kb_inspect/incyte-media.json"
+  },
+  "spaces": {
+    "spaces_prefix": "incyte-media/",
+    "total_files": 71,
+    "content_types": {
+      "brochures_newsletters": 1,
+      "case_studies": 2,
+      "intake_form": 1,
+      "homepage": 1,
+      "about": 1,
+      "blogs_resources": 47,
+      "other": 11,
+      "services_products": 7
+    },
+    "document_sources": {
+      "client_materials": 2,
+      "intake_form": 1,
+      "website": 68
+    }
+  },
+  "ingest": {
+    "last_reindex_at": "2025-12-27T15:58:23Z"
+  },
+  "warnings": [],
+  "ui": {
+    "title": null,
+    "favicon": null
+  },
+  "timestamps": {
+    "created_at": "2025-12-27T15:57:32Z",
+    "updated_at": "2025-12-27T17:18:53.957443+00:00"
+  }
+}

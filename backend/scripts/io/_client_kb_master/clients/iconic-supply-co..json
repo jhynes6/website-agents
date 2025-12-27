@@ -1,0 +1,46 @@
+{
+  "client_slug": "iconic-supply-co.",
+  "drive_folder_url": "https://drive.google.com/drive/folders/15P-yz7XyYAFP4C1iedw6otq-aznPTy6r",
+  "website_url": "https://iconicsupply.co",
+  "intake_form_url": "https://docs.google.com/document/d/1dPNK_eXnNPWFN1smkuhFXfDZzxPKGFKx4-1Enq81g8o/edit?usp=drivesdk",
+  "kb": {
+    "kb_uuid": null,
+    "kb_region": null,
+    "kb_tags": [],
+    "kb_sources": [],
+    "kb_status": "missing",
+    "last_audit_at": "2025-12-27T17:18:53.957310+00:00",
+    "details_ref": null
+  },
+  "spaces": {
+    "spaces_prefix": "iconic-supply-co./",
+    "total_files": 24,
+    "content_types": {
+      "intake_form": 1,
+      "homepage": 2,
+      "about": 1,
+      "other": 7,
+      "services_products": 11,
+      "pricing": 1,
+      "case_studies": 1
+    },
+    "document_sources": {
+      "intake_form": 1,
+      "website": 23
+    }
+  },
+  "ingest": {
+    "last_reindex_at": null
+  },
+  "warnings": [
+    "KB status: missing"
+  ],
+  "ui": {
+    "title": null,
+    "favicon": null
+  },
+  "timestamps": {
+    "created_at": null,
+    "updated_at": "2025-12-27T17:18:53.957310+00:00"
+  }
+}

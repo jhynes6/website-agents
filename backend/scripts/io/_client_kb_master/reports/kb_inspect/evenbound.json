@@ -1,0 +1,51 @@
+{
+  "knowledge_base": {
+    "uuid": "fea0c23d-e33b-11f0-b074-4e013e2ddde4",
+    "name": "evenbound",
+    "created_at": "2025-12-27T15:52:06Z",
+    "updated_at": "2025-12-27T16:45:25Z",
+    "tags": [
+      "client-docs",
+      "evenbound"
+    ],
+    "region": "tor1",
+    "embedding_model_uuid": "22653204-79ed-11ef-bf8f-4e013e2ddde4",
+    "project_id": "cb4a32d2-7e9f-44d8-86c7-63b3304c077b",
+    "database_id": "e27f23bd-d953-48c5-8923-f827868ba230",
+    "last_indexing_job": {
+      "uuid": "019a45ae-e33c-11f0-b074-4e013e2ddde4",
+      "knowledge_base_uuid": "fea0c23d-e33b-11f0-b074-4e013e2ddde4",
+      "created_at": "2025-12-27T15:52:11Z",
+      "updated_at": "2025-12-27T15:53:24Z",
+      "started_at": "2025-12-27T15:52:12Z",
+      "finished_at": "2025-12-27T15:53:23Z",
+      "phase": "BATCH_JOB_PHASE_SUCCEEDED",
+      "total_datasources": 1,
+      "completed_datasources": 1,
+      "tokens": 380840,
+      "total_tokens": "380840",
+      "status": "INDEX_JOB_STATUS_COMPLETED",
+      "data_source_jobs": [
+        {
+          "data_source_uuid": "ff90164b-e33b-11f0-b074-4e013e2ddde4",
+          "total_file_count": "130",
+          "indexed_file_count": "130",
+          "total_bytes": "1617653",
+          "total_bytes_indexed": "1617653",
+          "started_at": "2025-12-27T15:52:35Z",
+          "completed_at": "2025-12-27T15:53:10Z",
+          "indexed_item_count": "130",
+          "status": "DATA_SOURCE_STATUS_UPDATED"
+        }
+      ],
+      "is_report_available": true
+    }
+  },
+  "sources": [
+    "mintleads-clients-kb/evenbound/"
+  ],
+  "status": {
+    "is_correctly_configured": true,
+    "pointing_to_root": false
+  }
+}

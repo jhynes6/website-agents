@@ -1,0 +1,94 @@
+{
+  "name": "copywriting",
+  "uuid": "a020bcae-e2dd-11f0-b074-4e013e2ddde4",
+  "region": "tor1",
+  "model_uuid": "1b07e52b-73c5-11f0-b074-4e013e2ddde4",
+  "model_name": "openai-gpt-5",
+  "parent_uuid": "00000000-0000-0000-0000-000000000000",
+  "retrieval_method": "RETRIEVAL_METHOD_NONE",
+  "knowledge_base_uuids": [],
+  "has_region_mismatch": false,
+  "raw": {
+    "uuid": "a020bcae-e2dd-11f0-b074-4e013e2ddde4",
+    "name": "copywriting",
+    "created_at": "2025-12-27T04:36:35Z",
+    "updated_at": "2025-12-27T04:36:35Z",
+    "instruction": "You are a friendly assistant. If a user greets you or engages in small talk, \nrespond politely without referencing the website. For questions about the website, \nanswer using ONLY the provided context below. Do not use any other knowledge. \nIf the context isn't sufficient to answer, say so explicitly.",
+    "model": {
+      "uuid": "1b07e52b-73c5-11f0-b074-4e013e2ddde4",
+      "name": "OpenAI GPT-5",
+      "inference_name": "openai-gpt-5",
+      "version": {
+        "major": 1
+      },
+      "inference_version": "4294967296",
+      "is_foundational": true,
+      "upload_complete": true,
+      "created_at": "2025-08-07T19:31:24Z",
+      "updated_at": "2025-08-22T21:58:27Z",
+      "metadata": {
+        "agreements": {
+          "list": [
+            {
+              "title": "OpenAI Policies",
+              "url": "https://www.openai.com/policies"
+            }
+          ],
+          "title": "OpenAI GPT-5"
+        },
+        "description": "OpenAI's cutting-edge proprietary model, offering state-of-the-art performance across reasoning, coding, and language tasks.",
+        "max_tokens": {
+          "default": 2048,
+          "max": 128000,
+          "min": 128
+        },
+        "temperature": {
+          "default": 1,
+          "max": 1,
+          "min": 0
+        },
+        "top_p": {
+          "default": 1,
+          "max": 1,
+          "min": 0.1
+        }
+      },
+      "parent_uuid": "00000000-0000-0000-0000-000000000000",
+      "agreement": {
+        "uuid": "11eff300-7792-cabe-bf8f-4e013e2ddde4",
+        "name": "OpenAI Policies",
+        "description": "By purchasing, deploying, accessing, or using any OpenAI model, you and your team are bound to, and will comply with, the relevant",
+        "url": "https://openai.com/policies/"
+      },
+      "provider": "MODEL_PROVIDER_OPENAI",
+      "usecases": [
+        "MODEL_USECASE_AGENT",
+        "MODEL_USECASE_SERVERLESS",
+        "MODEL_USECASE_REASONING"
+      ]
+    },
+    "deployment": {
+      "uuid": "a023f5f8-e2dd-11f0-b074-4e013e2ddde4",
+      "url": "https://mqmpos4e7eqo2lmqd55bo44m.agents.do-ai.run",
+      "status": "STATUS_RUNNING",
+      "visibility": "VISIBILITY_PLAYGROUND",
+      "created_at": "2025-12-27T04:36:35Z",
+      "updated_at": "2025-12-27T04:39:59Z"
+    },
+    "k": 10,
+    "temperature": 1,
+    "top_p": 1,
+    "max_tokens": 2048,
+    "project_id": "cb4a32d2-7e9f-44d8-86c7-63b3304c077b",
+    "route_uuid": "00000000-0000-0000-0000-000000000000",
+    "region": "tor1",
+    "route_created_at": "0001-01-01T00:00:00Z",
+    "user_id": "24575518",
+    "chatbot_identifiers": [
+      {
+        "agent_chatbot_identifier": "8WaFgVstxVQXpDZtRvZOrVBuT8xGhyxk"
+      }
+    ],
+    "retrieval_method": "RETRIEVAL_METHOD_NONE"
+  }
+}

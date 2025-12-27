@@ -1,0 +1,48 @@
+{
+  "client_slug": "archway-learning-solutions",
+  "drive_folder_url": "https://drive.google.com/drive/folders/1_u8c3bI3EvrceVYuvkBdx3hRc3mej6ON",
+  "website_url": "https://archwaylearningsolutions.com",
+  "intake_form_url": null,
+  "kb": {
+    "kb_uuid": "0c82bfaf-e33a-11f0-b074-4e013e2ddde4",
+    "kb_region": "tor1",
+    "kb_tags": [
+      "client-docs",
+      "archway-learning-solutions"
+    ],
+    "kb_sources": [
+      "mintleads-clients-kb/archway-learning-solutions/"
+    ],
+    "kb_status": "ok",
+    "last_audit_at": "2025-12-27T17:18:53.954159+00:00",
+    "details_ref": "reports/kb_inspect/archway-learning-solutions.json"
+  },
+  "spaces": {
+    "spaces_prefix": "archway-learning-solutions/",
+    "total_files": 51,
+    "content_types": {
+      "other": 6,
+      "brochures_newsletters": 4,
+      "capabilities_overview": 2,
+      "homepage": 1,
+      "about": 1,
+      "blogs_resources": 37
+    },
+    "document_sources": {
+      "client_materials": 7,
+      "website": 44
+    }
+  },
+  "ingest": {
+    "last_reindex_at": "2025-12-27T15:38:59Z"
+  },
+  "warnings": [],
+  "ui": {
+    "title": null,
+    "favicon": null
+  },
+  "timestamps": {
+    "created_at": "2025-12-27T15:38:10Z",
+    "updated_at": "2025-12-27T17:18:53.954159+00:00"
+  }
+}

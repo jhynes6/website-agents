@@ -1,0 +1,48 @@
+{
+  "client_slug": "vew-media",
+  "drive_folder_url": "https://drive.google.com/drive/folders/1PazrUSwuntGcow-AXvcHo8gpIt_V8Wcc",
+  "website_url": "https://vewprmedia.com",
+  "intake_form_url": "https://docs.google.com/document/d/1O4MACv5ekaLZOLELDwCg3e4Y87ZvRW9NMsgEv7TesSI/edit?usp=drivesdk",
+  "kb": {
+    "kb_uuid": "ee965ba9-e340-11f0-b074-4e013e2ddde4",
+    "kb_region": "tor1",
+    "kb_tags": [
+      "client-docs",
+      "vew-media"
+    ],
+    "kb_sources": [
+      "mintleads-clients-kb/vew-media/"
+    ],
+    "kb_status": "ok",
+    "last_audit_at": "2025-12-27T17:18:53.964871+00:00",
+    "details_ref": "reports/kb_inspect/vew-media.json"
+  },
+  "spaces": {
+    "spaces_prefix": "vew-media/",
+    "total_files": 45,
+    "content_types": {
+      "intake_form": 1,
+      "homepage": 1,
+      "blogs_resources": 26,
+      "other": 13,
+      "about": 2,
+      "services_products": 2
+    },
+    "document_sources": {
+      "intake_form": 1,
+      "website": 44
+    }
+  },
+  "ingest": {
+    "last_reindex_at": "2025-12-27T16:28:14Z"
+  },
+  "warnings": [],
+  "ui": {
+    "title": null,
+    "favicon": null
+  },
+  "timestamps": {
+    "created_at": "2025-12-27T16:27:26Z",
+    "updated_at": "2025-12-27T17:18:53.964871+00:00"
+  }
+}

@@ -1,0 +1,55 @@
+{
+  "client_slug": "zoomgrants",
+  "drive_folder_url": "https://drive.google.com/drive/folders/1fG-_X9iusyNsLrGG1fc0SLGHNiOUeKNW",
+  "website_url": "https://zoomgrants.com",
+  "intake_form_url": "https://drive.google.com/file/d/1qUA__FVwGuSVaIqrFK6NBsHt-ZAT0mqI/view?usp=drivesdk",
+  "kb": {
+    "kb_uuid": "2389fcce-e343-11f0-b074-4e013e2ddde4",
+    "kb_region": "tor1",
+    "kb_tags": [
+      "client-docs",
+      "zoomgrants"
+    ],
+    "kb_sources": [
+      "mintleads-clients-kb/zoomgrants/"
+    ],
+    "kb_status": "ok",
+    "last_audit_at": "2025-12-27T17:18:53.966378+00:00",
+    "details_ref": "reports/kb_inspect/zoomgrants.json"
+  },
+  "spaces": {
+    "spaces_prefix": "zoomgrants/",
+    "total_files": 101,
+    "content_types": {
+      "other": 33,
+      "brochures_newsletters": 1,
+      "case_studies": 2,
+      "capabilities_overview": 1,
+      "intake_form": 1,
+      "homepage": 1,
+      "blogs_resources": 24,
+      "about": 2,
+      "careers": 1,
+      "services_products": 15,
+      "industry_markets": 19,
+      "pricing": 1
+    },
+    "document_sources": {
+      "client_materials": 18,
+      "intake_form": 1,
+      "website": 82
+    }
+  },
+  "ingest": {
+    "last_reindex_at": "2025-12-27T16:44:07Z"
+  },
+  "warnings": [],
+  "ui": {
+    "title": null,
+    "favicon": null
+  },
+  "timestamps": {
+    "created_at": "2025-12-27T16:43:14Z",
+    "updated_at": "2025-12-27T17:18:53.966378+00:00"
+  }
+}

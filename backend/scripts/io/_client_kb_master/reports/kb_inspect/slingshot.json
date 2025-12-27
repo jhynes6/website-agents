@@ -1,0 +1,51 @@
+{
+  "knowledge_base": {
+    "uuid": "6a7f50df-e340-11f0-b074-4e013e2ddde4",
+    "name": "slingshot",
+    "created_at": "2025-12-27T16:23:45Z",
+    "updated_at": "2025-12-27T16:45:25Z",
+    "tags": [
+      "client-docs",
+      "slingshot"
+    ],
+    "region": "tor1",
+    "embedding_model_uuid": "22653204-79ed-11ef-bf8f-4e013e2ddde4",
+    "project_id": "cb4a32d2-7e9f-44d8-86c7-63b3304c077b",
+    "database_id": "e27f23bd-d953-48c5-8923-f827868ba230",
+    "last_indexing_job": {
+      "uuid": "6d010ceb-e340-11f0-b074-4e013e2ddde4",
+      "knowledge_base_uuid": "6a7f50df-e340-11f0-b074-4e013e2ddde4",
+      "created_at": "2025-12-27T16:23:49Z",
+      "updated_at": "2025-12-27T16:24:37Z",
+      "started_at": "2025-12-27T16:23:49Z",
+      "finished_at": "2025-12-27T16:24:37Z",
+      "phase": "BATCH_JOB_PHASE_SUCCEEDED",
+      "total_datasources": 1,
+      "completed_datasources": 1,
+      "tokens": 26392,
+      "total_tokens": "26392",
+      "status": "INDEX_JOB_STATUS_COMPLETED",
+      "data_source_jobs": [
+        {
+          "data_source_uuid": "6aeb1bf3-e340-11f0-b074-4e013e2ddde4",
+          "total_file_count": "69",
+          "indexed_file_count": "69",
+          "total_bytes": "268310",
+          "total_bytes_indexed": "268310",
+          "started_at": "2025-12-27T16:24:13Z",
+          "completed_at": "2025-12-27T16:24:24Z",
+          "indexed_item_count": "69",
+          "status": "DATA_SOURCE_STATUS_UPDATED"
+        }
+      ],
+      "is_report_available": true
+    }
+  },
+  "sources": [
+    "mintleads-clients-kb/slingshot/"
+  ],
+  "status": {
+    "is_correctly_configured": true,
+    "pointing_to_root": false
+  }
+}

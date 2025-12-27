@@ -1,0 +1,51 @@
+{
+  "client_slug": "nextlevel-thinking",
+  "drive_folder_url": "https://drive.google.com/drive/folders/17SzYvmavXNgnhZYeBLJLuR607yzoC2At",
+  "website_url": "https://nextlevelthinking.ca",
+  "intake_form_url": "https://docs.google.com/document/d/1p_gT1puqC3YEoNsCpJXL4dHDhRs1p7P5Gp1MoOMnU1g/edit?usp=drivesdk",
+  "kb": {
+    "kb_uuid": "57259466-e33e-11f0-b074-4e013e2ddde4",
+    "kb_region": "tor1",
+    "kb_tags": [
+      "client-docs",
+      "nextlevel-thinking"
+    ],
+    "kb_sources": [
+      "mintleads-clients-kb/nextlevel-thinking/"
+    ],
+    "kb_status": "ok",
+    "last_audit_at": "2025-12-27T17:18:53.959812+00:00",
+    "details_ref": "reports/kb_inspect/nextlevel-thinking.json"
+  },
+  "spaces": {
+    "spaces_prefix": "nextlevel-thinking/",
+    "total_files": 39,
+    "content_types": {
+      "other": 5,
+      "intake_form": 1,
+      "homepage": 1,
+      "about": 1,
+      "blogs_resources": 2,
+      "case_studies": 24,
+      "services_products": 3,
+      "industry_markets": 2
+    },
+    "document_sources": {
+      "client_materials": 1,
+      "intake_form": 1,
+      "website": 37
+    }
+  },
+  "ingest": {
+    "last_reindex_at": "2025-12-27T16:09:40Z"
+  },
+  "warnings": [],
+  "ui": {
+    "title": null,
+    "favicon": null
+  },
+  "timestamps": {
+    "created_at": "2025-12-27T16:08:53Z",
+    "updated_at": "2025-12-27T17:18:53.959812+00:00"
+  }
+}

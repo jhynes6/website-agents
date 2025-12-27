@@ -1,0 +1,51 @@
+{
+  "knowledge_base": {
+    "uuid": "870b6e31-e33b-11f0-b074-4e013e2ddde4",
+    "name": "cogent-consulting",
+    "created_at": "2025-12-27T15:48:45Z",
+    "updated_at": "2025-12-27T16:45:25Z",
+    "tags": [
+      "client-docs",
+      "cogent-consulting"
+    ],
+    "region": "tor1",
+    "embedding_model_uuid": "22653204-79ed-11ef-bf8f-4e013e2ddde4",
+    "project_id": "cb4a32d2-7e9f-44d8-86c7-63b3304c077b",
+    "database_id": "e27f23bd-d953-48c5-8923-f827868ba230",
+    "last_indexing_job": {
+      "uuid": "8778f959-e33b-11f0-b074-4e013e2ddde4",
+      "knowledge_base_uuid": "870b6e31-e33b-11f0-b074-4e013e2ddde4",
+      "created_at": "2025-12-27T15:48:46Z",
+      "updated_at": "2025-12-27T15:49:31Z",
+      "started_at": "2025-12-27T15:48:46Z",
+      "finished_at": "2025-12-27T15:49:31Z",
+      "phase": "BATCH_JOB_PHASE_SUCCEEDED",
+      "total_datasources": 1,
+      "completed_datasources": 1,
+      "tokens": 33982,
+      "total_tokens": "33982",
+      "status": "INDEX_JOB_STATUS_COMPLETED",
+      "data_source_jobs": [
+        {
+          "data_source_uuid": "873fa3fb-e33b-11f0-b074-4e013e2ddde4",
+          "total_file_count": "51",
+          "indexed_file_count": "51",
+          "total_bytes": "205420",
+          "total_bytes_indexed": "205420",
+          "started_at": "2025-12-27T15:49:09Z",
+          "completed_at": "2025-12-27T15:49:18Z",
+          "indexed_item_count": "51",
+          "status": "DATA_SOURCE_STATUS_UPDATED"
+        }
+      ],
+      "is_report_available": true
+    }
+  },
+  "sources": [
+    "mintleads-clients-kb/cogent-consulting/"
+  ],
+  "status": {
+    "is_correctly_configured": true,
+    "pointing_to_root": false
+  }
+}

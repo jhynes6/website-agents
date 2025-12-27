@@ -1,0 +1,48 @@
+{
+  "client_slug": "lib-consulting-group",
+  "drive_folder_url": "https://drive.google.com/drive/folders/1r6RVh8AJOqkyOHY7lH-ZUNU-bvEbd2zu",
+  "website_url": "https://libconsultinggroup.com",
+  "intake_form_url": "https://docs.google.com/document/d/1eL04rNcNi4TVzjuIi5xGhXUelkmIsNBNzensPL7Vg2o/edit?usp=drivesdk",
+  "kb": {
+    "kb_uuid": "10ececb5-e33d-11f0-b074-4e013e2ddde4",
+    "kb_region": "tor1",
+    "kb_tags": [
+      "client-docs",
+      "lib-consulting-group"
+    ],
+    "kb_sources": [
+      "mintleads-clients-kb/lib-consulting-group/"
+    ],
+    "kb_status": "ok",
+    "last_audit_at": "2025-12-27T17:18:53.958308+00:00",
+    "details_ref": "reports/kb_inspect/lib-consulting-group.json"
+  },
+  "spaces": {
+    "spaces_prefix": "lib-consulting-group/",
+    "total_files": 14,
+    "content_types": {
+      "other": 8,
+      "intake_form": 1,
+      "homepage": 2,
+      "about": 2,
+      "services_products": 1
+    },
+    "document_sources": {
+      "client_materials": 3,
+      "intake_form": 1,
+      "website": 10
+    }
+  },
+  "ingest": {
+    "last_reindex_at": "2025-12-27T16:00:33Z"
+  },
+  "warnings": [],
+  "ui": {
+    "title": null,
+    "favicon": null
+  },
+  "timestamps": {
+    "created_at": "2025-12-27T15:59:46Z",
+    "updated_at": "2025-12-27T17:18:53.958308+00:00"
+  }
+}

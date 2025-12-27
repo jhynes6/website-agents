@@ -1,0 +1,49 @@
+{
+  "client_slug": "terra-collective",
+  "drive_folder_url": "https://drive.google.com/drive/folders/1RQuE7OP3nOakPI-mu2OiQrYgoprFkBeN",
+  "website_url": "https://terracollectiveagency.com",
+  "intake_form_url": "https://docs.google.com/document/d/1bcytbFX37T6uqoDbXorNs3Wqb-S1gOrd-88pHcjpa8k/edit?usp=drivesdk",
+  "kb": {
+    "kb_uuid": "b6d69708-e340-11f0-b074-4e013e2ddde4",
+    "kb_region": "tor1",
+    "kb_tags": [
+      "client-docs",
+      "terra-collective"
+    ],
+    "kb_sources": [
+      "mintleads-clients-kb/terra-collective/"
+    ],
+    "kb_status": "ok",
+    "last_audit_at": "2025-12-27T17:18:53.964442+00:00",
+    "details_ref": "reports/kb_inspect/terra-collective.json"
+  },
+  "spaces": {
+    "spaces_prefix": "terra-collective/",
+    "total_files": 21,
+    "content_types": {
+      "other": 9,
+      "case_studies": 2,
+      "intake_form": 1,
+      "homepage": 2,
+      "about": 2,
+      "services_products": 5
+    },
+    "document_sources": {
+      "client_materials": 2,
+      "intake_form": 1,
+      "website": 18
+    }
+  },
+  "ingest": {
+    "last_reindex_at": "2025-12-27T16:26:37Z"
+  },
+  "warnings": [],
+  "ui": {
+    "title": null,
+    "favicon": null
+  },
+  "timestamps": {
+    "created_at": "2025-12-27T16:25:53Z",
+    "updated_at": "2025-12-27T17:18:53.964442+00:00"
+  }
+}

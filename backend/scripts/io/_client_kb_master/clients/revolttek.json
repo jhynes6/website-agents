@@ -1,0 +1,49 @@
+{
+  "client_slug": "revolttek",
+  "drive_folder_url": "https://drive.google.com/drive/folders/14ZQPU0Rg1mdCH8QvtoDv3mMRpbid5oo3",
+  "website_url": "https://revolttek.com",
+  "intake_form_url": "https://docs.google.com/document/d/1o2CWQ3hENxc4xrLR0dT3BeovI8kQ6FZ_tpEtGMFXTA4/edit?usp=drivesdk",
+  "kb": {
+    "kb_uuid": "ab367101-e33f-11f0-b074-4e013e2ddde4",
+    "kb_region": "tor1",
+    "kb_tags": [
+      "client-docs",
+      "revolttek"
+    ],
+    "kb_sources": [
+      "mintleads-clients-kb/revolttek/"
+    ],
+    "kb_status": "ok",
+    "last_audit_at": "2025-12-27T17:18:53.962685+00:00",
+    "details_ref": "reports/kb_inspect/revolttek.json"
+  },
+  "spaces": {
+    "spaces_prefix": "revolttek/",
+    "total_files": 48,
+    "content_types": {
+      "intake_form": 3,
+      "homepage": 1,
+      "about": 1,
+      "blogs_resources": 36,
+      "other": 2,
+      "services_products": 4,
+      "testimonials": 1
+    },
+    "document_sources": {
+      "intake_form": 3,
+      "website": 45
+    }
+  },
+  "ingest": {
+    "last_reindex_at": "2025-12-27T16:19:13Z"
+  },
+  "warnings": [],
+  "ui": {
+    "title": null,
+    "favicon": null
+  },
+  "timestamps": {
+    "created_at": "2025-12-27T16:18:24Z",
+    "updated_at": "2025-12-27T17:18:53.962685+00:00"
+  }
+}

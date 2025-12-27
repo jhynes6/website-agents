@@ -1,0 +1,51 @@
+{
+  "knowledge_base": {
+    "uuid": "3690e9b9-e340-11f0-b074-4e013e2ddde4",
+    "name": "slice-communications",
+    "created_at": "2025-12-27T16:22:18Z",
+    "updated_at": "2025-12-27T16:45:25Z",
+    "tags": [
+      "client-docs",
+      "slice-communications"
+    ],
+    "region": "tor1",
+    "embedding_model_uuid": "22653204-79ed-11ef-bf8f-4e013e2ddde4",
+    "project_id": "cb4a32d2-7e9f-44d8-86c7-63b3304c077b",
+    "database_id": "e27f23bd-d953-48c5-8923-f827868ba230",
+    "last_indexing_job": {
+      "uuid": "38c55ad5-e340-11f0-b074-4e013e2ddde4",
+      "knowledge_base_uuid": "3690e9b9-e340-11f0-b074-4e013e2ddde4",
+      "created_at": "2025-12-27T16:22:21Z",
+      "updated_at": "2025-12-27T16:23:23Z",
+      "started_at": "2025-12-27T16:22:23Z",
+      "finished_at": "2025-12-27T16:23:23Z",
+      "phase": "BATCH_JOB_PHASE_SUCCEEDED",
+      "total_datasources": 1,
+      "completed_datasources": 1,
+      "tokens": 50486,
+      "total_tokens": "50486",
+      "status": "INDEX_JOB_STATUS_COMPLETED",
+      "data_source_jobs": [
+        {
+          "data_source_uuid": "36c49eb8-e340-11f0-b074-4e013e2ddde4",
+          "total_file_count": "155",
+          "indexed_file_count": "155",
+          "total_bytes": "338285",
+          "total_bytes_indexed": "338285",
+          "started_at": "2025-12-27T16:22:46Z",
+          "completed_at": "2025-12-27T16:23:10Z",
+          "indexed_item_count": "155",
+          "status": "DATA_SOURCE_STATUS_UPDATED"
+        }
+      ],
+      "is_report_available": true
+    }
+  },
+  "sources": [
+    "mintleads-clients-kb/slice-communications/"
+  ],
+  "status": {
+    "is_correctly_configured": true,
+    "pointing_to_root": false
+  }
+}
