@@ -213,6 +213,10 @@ class DigitalOceanClient:
             "project_id": project_id or self.settings.digitalocean_project_id or await self.get_default_project_id(),
             # DO API expects knowledge_base_uuid (array) per docs; keep field name aligned.
             "knowledge_base_uuid": validated_kb_uuids,
+            # Generation parameters
+            "temperature": self.settings.digitalocean_agent_temperature,
+            "top_p": self.settings.digitalocean_agent_top_p,
+            "max_tokens": self.settings.digitalocean_agent_max_tokens,
         }
 
         # Optional workspace/provider key wiring (some setups require these to create agents)

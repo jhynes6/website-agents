@@ -85,13 +85,33 @@ class Settings(BaseSettings):
         "1b07e52b-73c5-11f0-b074-4e013e2ddde4",
         alias="DIGITALOCEAN_AGENT_MODEL_UUID"
     )
+    
+    # Agent generation parameters
+    digitalocean_agent_temperature: float = Field(
+        0.3,
+        alias="DIGITALOCEAN_AGENT_TEMPERATURE",
+        ge=0.0,
+        le=2.0
+    )
+    digitalocean_agent_top_p: float = Field(
+        0.8,
+        alias="DIGITALOCEAN_AGENT_TOP_P",
+        ge=0.0,
+        le=1.0
+    )
+    digitalocean_agent_max_tokens: int = Field(
+        1024,
+        alias="DIGITALOCEAN_AGENT_MAX_TOKENS",
+        ge=1,
+        le=4096
+    )
 
     # AI providers
     openai_api_key: Optional[str] = Field(None, alias="OPENAI_API_KEY")
     anthropic_api_key: Optional[str] = Field(None, alias="ANTHROPIC_API_KEY")
     groq_api_key: Optional[str] = Field(None, alias="GROQ_API_KEY")
     ai_temperature: float = Field(0.7, alias="AI_TEMPERATURE")
-    ai_max_tokens: int = Field(800, alias="AI_MAX_TOKENS")
+    ai_max_tokens: int = Field(4096, alias="AI_MAX_TOKENS")
 
     @staticmethod
     def _default_ai_system_prompt() -> str:
