@@ -26,17 +26,25 @@ logging.basicConfig(
 logger = logging.getLogger("update_agent_params")
 
 
-async def update_agent_params(agent_uuid: str, agent_name: str, params: dict) -> bool:
-    """Update an agent's generation parameters."""
+async def update_agent_params(agent_uuid: str, agent_name: str, params: dict, preserve_kb_uuids: list) -> bool:
+    """
+    Update an agent's generation parameters.
+    
+    IMPORTANT: The PUT endpoint replaces the entire agent config,
+    so we must include knowledge_base_uuids to preserve KB connections.
+    """
     try:
+        # Add KB UUIDs to preserve connections
+        params_with_kbs = {**params, "knowledge_base_uuids": preserve_kb_uuids}
+        
         async with __import__('httpx').AsyncClient() as client:
             response = await client.put(
                 f"{do_client.base_url}/agents/{agent_uuid}",
                 headers=do_client.headers,
-                json=params
+                json=params_with_kbs
             )
             response.raise_for_status()
-            logger.info(f"✓ Updated {agent_name}")
+            logger.info(f"✓ Updated {agent_name} (preserved {len(preserve_kb_uuids)} KBs)")
             return True
     except Exception as e:
         logger.error(f"✗ Failed to update {agent_name}: {e}")
@@ -135,10 +143,11 @@ async def main():
     for idx, agent in enumerate(needs_update, 1):
         agent_uuid = agent.get('uuid')
         agent_name = agent.get('name')
+        kb_uuids = agent.get('knowledge_base_uuids', [])
         
         logger.info(f"[{idx}/{len(needs_update)}] Updating {agent_name}...")
         
-        success = await update_agent_params(agent_uuid, agent_name, new_params)
+        success = await update_agent_params(agent_uuid, agent_name, new_params, kb_uuids)
         
         if success:
             success_count += 1
