@@ -15,6 +15,7 @@ backend_dir = Path(__file__).resolve().parent.parent
 sys.path.append(str(backend_dir))
 
 from app.clients.digital_ocean_client import do_client
+from app.clients.agent_templates.loader import load_agent_template
 from app.config import get_settings
 
 # Setup logging
@@ -52,20 +53,27 @@ async def main():
     
     settings = get_settings()
     
+    # Load the latest inbox_manager system prompt
+    new_instruction = load_agent_template("inbox_manager")
+    
     # Parameters to update
     new_params = {
         "temperature": settings.digitalocean_agent_temperature,
         "top_p": settings.digitalocean_agent_top_p,
         "top_k": settings.digitalocean_agent_top_k,
         "max_tokens": settings.digitalocean_agent_max_tokens,
+        "instruction": new_instruction,
     }
     
-    print("\n=== UPDATING AGENT GENERATION PARAMETERS ===\n")
+    print("\n=== UPDATING AGENT GENERATION PARAMETERS & SYSTEM PROMPT ===\n")
     print("New parameters:")
     print(f"  Temperature: {new_params['temperature']}")
     print(f"  Top-P: {new_params['top_p']}")
     print(f"  Top-K: {new_params['top_k']}")
     print(f"  Max Tokens: {new_params['max_tokens']}")
+    print(f"\nNew system prompt (inbox_manager):")
+    print(f"  Length: {len(new_instruction)} characters")
+    print(f"  Preview: {new_instruction[:150]}...")
     print()
     
     # Fetch all agents
@@ -86,6 +94,7 @@ async def main():
         current_top_p = agent.get('top_p', 0.9)
         current_top_k = agent.get('top_k')
         current_max_tokens = agent.get('max_tokens', 512)
+        current_instruction = agent.get('instruction', '')
         
         needs_update_fields = []
         if current_temp != new_params['temperature']:
@@ -96,6 +105,8 @@ async def main():
             needs_update_fields.append(f"top_k: {current_top_k}→{new_params['top_k']}")
         if current_max_tokens != new_params['max_tokens']:
             needs_update_fields.append(f"max_tokens: {current_max_tokens}→{new_params['max_tokens']}")
+        if current_instruction.strip() != new_instruction.strip():
+            needs_update_fields.append(f"instruction: {len(current_instruction)}→{len(new_instruction)} chars")
         
         if needs_update_fields:
             needs_update.append(agent)
@@ -154,6 +165,7 @@ async def main():
         print(f"  - Top-P: {new_params['top_p']} (balanced)")
         print(f"  - Top-K: {new_params['top_k']} (moderate diversity)")
         print(f"  - Max Tokens: {new_params['max_tokens']} (longer responses)")
+        print(f"  - System Prompt: Updated from inbox_manager.md template")
 
 
 if __name__ == "__main__":

@@ -7,58 +7,58 @@
   ],
   "results": [
     {
-      "agent_name": "inbox-manager-pi-lit",
-      "client_slug": "pi-lit",
-      "endpoint_url": "https://qkajff2i3hkpuuwmrtktotre.agents.do-ai.run",
+      "agent_name": "inbox-manager",
+      "client_slug": "inbox_manager",
+      "endpoint_url": "https://baztvwnwvpesr3xnhzuyldyu.agents.do-ai.run",
       "has_api_key": true,
-      "tested_at": "2025-12-27T23:33:33.866288+00:00",
+      "tested_at": "2025-12-27T23:35:21.593322+00:00",
       "queries": [
         {
           "query": "what does your company do?",
-          "response": "Could you please specify which aspect of our company you are interested in? For example, are you looking for information about our products, services, or industry focus?",
+          "response": "I'm sorry, but I don't have information about what our company does. If you have any specific questions about our services or products, feel free to ask!",
           "error": null,
-          "duration_ms": 4037.73,
+          "duration_ms": 2793.15,
           "status": "success",
           "tokens": {
-            "prompt": 378,
-            "completion": 41,
-            "total": 419
+            "prompt": 270,
+            "completion": 31,
+            "total": 301
           }
         },
         {
           "query": "tell me what you sell",
-          "response": "Could you please specify which products or services you are interested in? This will help me provide you with the most relevant information.",
+          "response": "I'm sorry, but I don't have information about the services or products we sell.",
           "error": null,
-          "duration_ms": 2003.88,
+          "duration_ms": 1786.57,
           "status": "success",
           "tokens": {
-            "prompt": 377,
-            "completion": 31,
-            "total": 408
+            "prompt": 269,
+            "completion": 16,
+            "total": 285
           }
         },
         {
           "query": "what do you sell and what industries have you worked with?",
-          "response": "I can provide information about our products and the industries we serve. Could you specify which product or service you are interested in? Additionally, are you looking for details on specific industries?",
+          "response": "I'm sorry, but I don't have information about the services or products we sell or the industries we have worked with.",
           "error": null,
-          "duration_ms": 2093.57,
+          "duration_ms": 1964.41,
           "status": "success",
           "tokens": {
-            "prompt": 390,
-            "completion": 53,
-            "total": 443
+            "prompt": 276,
+            "completion": 23,
+            "total": 299
           }
         },
         {
           "query": "do you have any case studies?",
-          "response": "Yes, we have several case studies that showcase our solutions and their impact on various businesses. \n\nNext steps:\n- Please let me know which specific area or industry you are interested in, and I can share relevant case studies with you.",
+          "response": "I'm sorry, but I don't have information about case studies available at the moment. If you have any other questions about our services or products, feel free to ask!",
           "error": null,
-          "duration_ms": 2338.32,
+          "duration_ms": 1245.94,
           "status": "success",
           "tokens": {
-            "prompt": 380,
-            "completion": 61,
-            "total": 441
+            "prompt": 271,
+            "completion": 33,
+            "total": 304
           }
         }
       ],
@@ -68,16 +68,276 @@
         "errors": 0,
         "timeouts": 0,
         "success_rate": 100.0,
-        "avg_duration_ms": 2618.38
+        "avg_duration_ms": 1947.52
+      }
+    },
+    {
+      "agent_name": "inbox-manager-a-perfect-promotion",
+      "client_slug": "a-perfect-promotion",
+      "endpoint_url": "https://nwxvolduakitg5drqxik7o6w.agents.do-ai.run",
+      "has_api_key": true,
+      "tested_at": "2025-12-27T23:35:34.389395+00:00",
+      "queries": [
+        {
+          "query": "what does your company do?",
+          "response": "Could you please specify which aspect of our company you are interested in? For example, are you looking for information about our products, services, or industry focus?",
+          "error": null,
+          "duration_ms": 3991.94,
+          "status": "success",
+          "tokens": {
+            "prompt": 378,
+            "completion": 41,
+            "total": 419
+          }
+        },
+        {
+          "query": "tell me what you sell",
+          "response": "I can provide information about our products and services if you specify your area of interest or the industry you are in. \n\nNext steps:\n- Please let me know what specific products or services you would like to learn more about.",
+          "error": null,
+          "duration_ms": 4159.32,
+          "status": "success",
+          "tokens": {
+            "prompt": 377,
+            "completion": 53,
+            "total": 430
+          }
+        },
+        {
+          "query": "what do you sell and what industries have you worked with?",
+          "response": "We offer a range of B2B solutions tailored to meet the needs of various industries. Our primary focus is on enhancing operational efficiency and driving growth through our products and services.\n\nWe have experience working with industries such as:\n\n- Technology\n- Manufacturing\n- Healthcare\n- Retail\n- Finance\n\nIf you would like more specific information about our offerings or a particular industry, please let me know!",
+          "error": null,
+          "duration_ms": 2571.55,
+          "status": "success",
+          "tokens": {
+            "prompt": 390,
+            "completion": 93,
+            "total": 483
+          }
+        },
+        {
+          "query": "do you have any case studies?",
+          "response": "Yes, we do have case studies available. Please let me know which specific area or service you are interested in, and I can provide you with relevant examples. \n\nNext steps:\n- Specify the area or service of interest.\n- I will send you the appropriate case studies.",
+          "error": null,
+          "duration_ms": 3754.52,
+          "status": "success",
+          "tokens": {
+            "prompt": 380,
+            "completion": 70,
+            "total": 450
+          }
+        }
+      ],
+      "summary": {
+        "total_queries": 4,
+        "successful": 4,
+        "errors": 0,
+        "timeouts": 0,
+        "success_rate": 100.0,
+        "avg_duration_ms": 3619.33
+      }
+    },
+    {
+      "agent_name": "inbox-manager-abundantly",
+      "client_slug": "abundantly",
+      "endpoint_url": "https://wbr2ity2pm7rwfaaeuyu33hg.agents.do-ai.run",
+      "has_api_key": true,
+      "tested_at": "2025-12-27T23:35:53.870691+00:00",
+      "queries": [
+        {
+          "query": "what does your company do?",
+          "response": "We specialize in employee recognition solutions, helping organizations create effective recognition programs that engage and motivate their workforce. Our services include personalized recognition strategies, tiered recognition programs, and tools for celebrating both individual and team achievements. We aim to foster a positive workplace culture through tailored recognition initiatives that cater to diverse employee needs.",
+          "error": null,
+          "duration_ms": 4928.37,
+          "status": "success",
+          "tokens": {
+            "prompt": 9191,
+            "completion": 70,
+            "total": 9261
+          }
+        },
+        {
+          "query": "tell me what you sell",
+          "response": "I need more specific information about what you're looking for. Are you interested in details about our services, pricing, or something else?",
+          "error": null,
+          "duration_ms": 2133.4,
+          "status": "success",
+          "tokens": {
+            "prompt": 10403,
+            "completion": 36,
+            "total": 10439
+          }
+        },
+        {
+          "query": "what do you sell and what industries have you worked with?",
+          "response": "I can provide information about our services and the industries we work with if you specify what you're interested in. Could you please clarify your question?",
+          "error": null,
+          "duration_ms": 3991.62,
+          "status": "success",
+          "tokens": {
+            "prompt": 10010,
+            "completion": 45,
+            "total": 10055
+          }
+        },
+        {
+          "query": "do you have any case studies?",
+          "response": "Yes, we have several case studies available. Here are a couple of examples:\n\n1. **Commonwealth Senior Living**:\n   - Focus: Employee engagement and recognition platform implementation.\n   - Results: Improved staff communications, engagement analytics, and real-time recognition rewards.\n\n2. **Transcosmos**:\n   - Focus: Recognition program to boost engagement and retention.\n   - Results: Increased employee appreciation and reduced turnover rates.\n\nIf you would like to see a specific case study or need more details, please let me know!",
+          "error": null,
+          "duration_ms": 3310.57,
+          "status": "success",
+          "tokens": {
+            "prompt": 8364,
+            "completion": 118,
+            "total": 8482
+          }
+        }
+      ],
+      "summary": {
+        "total_queries": 4,
+        "successful": 4,
+        "errors": 0,
+        "timeouts": 0,
+        "success_rate": 100.0,
+        "avg_duration_ms": 3590.99
+      }
+    },
+    {
+      "agent_name": "inbox-manager-american-ethanol",
+      "client_slug": "american-ethanol",
+      "endpoint_url": "https://qs54lr2plwkdawd3fsl77x5w.agents.do-ai.run",
+      "has_api_key": true,
+      "tested_at": "2025-12-27T23:36:13.238831+00:00",
+      "queries": [
+        {
+          "query": "what does your company do?",
+          "response": "American Ethanol is dedicated to providing high-quality fuel and solvents for a variety of applications. We developed the first clean-burning bioethanol fuel specifically formulated for ventless fireplaces and offer high-purity, USP-grade ethanol suitable for cannabis extractions. Our products are sourced from American-grown corn and wheat, supporting domestic agriculture and sustainable practices. We also provide private label options for our ethanol and solvents, allowing businesses to sell under their own brand. Our commitment to customer satisfaction and innovation sets us apart in the industry.",
+          "error": null,
+          "duration_ms": 4839.37,
+          "status": "success",
+          "tokens": {
+            "prompt": 8910,
+            "completion": 111,
+            "total": 9021
+          }
+        },
+        {
+          "query": "tell me what you sell",
+          "response": "I need more specific information about what you're looking for. Are you interested in a particular product or service?",
+          "error": null,
+          "duration_ms": 2807.5,
+          "status": "success",
+          "tokens": {
+            "prompt": 9542,
+            "completion": 30,
+            "total": 9572
+          }
+        },
+        {
+          "query": "what do you sell and what industries have you worked with?",
+          "response": "We sell high-purity alcohols, solvents, and fuels, including:\n\n- **Ethanol Fireplace Fuel**: Clean-burning fuel for ventless fireplaces.\n- **Specialty Alcohols and Solvents**: Suitable for various applications, including cannabis extraction.\n- **Food Grade Ethyl Alcohol**: For distilleries and beverage production.\n\nIndustries we serve include:\n\n- Cannabis Extraction\n- Distilleries\n- General industrial applications requiring high-quality solvents and fuels. \n\nIf you need more specific information about our products or services, feel free to ask!",
+          "error": null,
+          "duration_ms": 5540.14,
+          "status": "success",
+          "tokens": {
+            "prompt": 8329,
+            "completion": 130,
+            "total": 8459
+          }
+        },
+        {
+          "query": "do you have any case studies?",
+          "response": "Could you please specify the type of case studies you are interested in? This will help me provide you with the most relevant information.",
+          "error": null,
+          "duration_ms": 2230.46,
+          "status": "success",
+          "tokens": {
+            "prompt": 7171,
+            "completion": 36,
+            "total": 7207
+          }
+        }
+      ],
+      "summary": {
+        "total_queries": 4,
+        "successful": 4,
+        "errors": 0,
+        "timeouts": 0,
+        "success_rate": 100.0,
+        "avg_duration_ms": 3854.37
+      }
+    },
+    {
+      "agent_name": "inbox-manager-archway-learning-solutions",
+      "client_slug": "archway-learning-solutions",
+      "endpoint_url": "https://w3ujbmoq7cxcwputaqh3obun.agents.do-ai.run",
+      "has_api_key": true,
+      "tested_at": "2025-12-27T23:36:33.660566+00:00",
+      "queries": [
+        {
+          "query": "what does your company do?",
+          "response": "Our company focuses on providing educational resources and solutions tailored for businesses. We aim to enhance learning and development through various programs, materials, and community engagement.\n\n**Next Steps:**\n- If you're interested in specific services or programs, please let me know, and I can provide more details!",
+          "error": null,
+          "duration_ms": 2977.28,
+          "status": "success",
+          "tokens": {
+            "prompt": 3903,
+            "completion": 66,
+            "total": 3969
+          }
+        },
+        {
+          "query": "tell me what you sell",
+          "response": "I can provide information about our products and services if you specify what you're interested in. \n\n- Are you looking for educational resources?\n- Do you need training solutions?\n- Or perhaps support services?\n\nPlease let me know your area of interest, and I can share more details!",
+          "error": null,
+          "duration_ms": 3512.13,
+          "status": "success",
+          "tokens": {
+            "prompt": 3637,
+            "completion": 66,
+            "total": 3703
+          }
+        },
+        {
+          "query": "what do you sell and what industries have you worked with?",
+          "response": "We specialize in customized training solutions and Learning Management Systems (LMS). Our offerings cater to various industries, including:\n\n- Non-profit organizations (e.g., trade associations)\n- Healthcare (e.g., senior living and healthcare providers)\n- Education and professional development sectors\n\nIf you have a specific industry in mind or need more details about our services, please let me know!",
+          "error": null,
+          "duration_ms": 3142.94,
+          "status": "success",
+          "tokens": {
+            "prompt": 3370,
+            "completion": 91,
+            "total": 3461
+          }
+        },
+        {
+          "query": "do you have any case studies?",
+          "response": "I currently do not have access to specific case studies. However, I can help you understand how to create or find relevant case studies based on your needs.\n\n- Identify the specific area or topic you are interested in.\n- Consider reaching out to industry peers or networks for shared experiences.\n- Look for online resources or publications that may feature case studies related to your field.\n\nWould you like assistance in a specific area or topic for case studies?",
+          "error": null,
+          "duration_ms": 3499.89,
+          "status": "success",
+          "tokens": {
+            "prompt": 3470,
+            "completion": 104,
+            "total": 3574
+          }
+        }
+      ],
+      "summary": {
+        "total_queries": 4,
+        "successful": 4,
+        "errors": 0,
+        "timeouts": 0,
+        "success_rate": 100.0,
+        "avg_duration_ms": 3283.06
       }
     }
   ],
   "summary": {
-    "total_agents_tested": 1,
-    "agents_with_results": 1,
-    "total_queries_sent": 4,
-    "successful_queries": 4,
+    "total_agents_tested": 5,
+    "agents_with_results": 5,
+    "total_queries_sent": 20,
+    "successful_queries": 20,
     "overall_success_rate": 100.0,
-    "tested_at": "2025-12-27T23:33:47.342546+00:00"
+    "tested_at": "2025-12-27T23:36:49.796588+00:00"
   }
 }
