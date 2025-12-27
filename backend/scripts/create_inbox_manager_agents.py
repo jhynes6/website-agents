@@ -80,12 +80,32 @@ async def create_inbox_manager_for_client(client_slug: str, kb_uuid: str) -> boo
         agent_uuid = agent.get('uuid')
         logger.info(f"  ✓ Agent created: {agent_uuid}")
         
-        # 2. Wait for agent to be ready for endpoint/API key operations
-        logger.info(f"  2. Waiting for agent to initialize...")
-        await do_client.wait_for_agent_ready(agent_uuid, wait_seconds=10)
+        # 2. Wait for agent deployment to reach STATUS_RUNNING
+        logger.info(f"  2. Waiting for agent deployment...")
+        is_ready = await do_client.wait_for_agent_ready(agent_uuid, max_wait_seconds=120)
+        
+        if not is_ready:
+            logger.error(f"  ✗ Agent deployment failed or timed out")
+            logger.warning(f"  ⚠ Agent created but not ready. Skipping endpoint/key generation.")
+            # Save agent UUID anyway for later retry
+            registry = AgentRegistry()
+            registry.upsert_for(
+                client_slug=client_slug,
+                agent_type='inbox_manager',
+                agent_uuid=agent_uuid,
+                agent_name=agent_name,
+                region=agent.get('region'),
+                model=agent.get('model', {}).get('inference_name'),
+                knowledge_base_uuids=[kb_uuid],
+                retrieval_method=agent.get('retrieval_method'),
+            )
+            return False
+        
+        logger.info(f"  ✓ Agent deployed (STATUS_RUNNING)")
         
         # 3. Get endpoint URL (make public) - with retries
         logger.info(f"  3. Getting public endpoint (with retries)...")
+        endpoint_url = await do_client.get_agent_chat_endpoint(agent_uuid, max_retries=3)
         endpoint_url = await do_client.get_agent_chat_endpoint(agent_uuid, max_retries=3)
         
         if endpoint_url:

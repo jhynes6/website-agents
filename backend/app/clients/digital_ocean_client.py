@@ -172,21 +172,69 @@ class DigitalOceanClient:
     async def wait_for_agent_ready(
         self, 
         agent_uuid: str, 
-        wait_seconds: int = 10
-    ) -> None:
+        max_wait_seconds: int = 120,
+        poll_interval: int = 5
+    ) -> bool:
         """
-        Wait for a newly created agent to be ready for endpoint/API key operations.
+        Wait for a newly created agent's deployment to reach STATUS_RUNNING.
         
-        Since there's no explicit deployment status in the API, we use a simple
-        delay to allow the agent infrastructure to be provisioned.
+        Deployment statuses:
+        - STATUS_UNKNOWN, STATUS_WAITING_FOR_DEPLOYMENT, STATUS_DEPLOYING, STATUS_BUILDING -> Still deploying
+        - STATUS_RUNNING -> Ready!
+        - STATUS_FAILED, STATUS_UNDEPLOYMENT_FAILED, STATUS_DELETED -> Failed states
         
         Args:
             agent_uuid: The agent UUID
-            wait_seconds: Seconds to wait (default 10s)
+            max_wait_seconds: Maximum time to wait (default 120s)
+            poll_interval: Seconds between checks (default 5s)
+            
+        Returns:
+            True if agent is running, False if timeout or failed
         """
-        logger.info(f"[DO] Waiting {wait_seconds}s for agent {agent_uuid} to initialize...")
-        await asyncio.sleep(wait_seconds)
-        logger.info(f"[DO] Agent initialization wait complete")
+        import time
+        start_time = time.time()
+        attempts = 0
+        
+        logger.info(f"[DO] Waiting for agent {agent_uuid} to deploy...")
+        
+        while time.time() - start_time < max_wait_seconds:
+            attempts += 1
+            try:
+                # Get agent details
+                async with httpx.AsyncClient() as client:
+                    response = await client.get(
+                        f"{self.base_url}/agents/{agent_uuid}",
+                        headers=self.headers,
+                    )
+                    
+                    if response.status_code == 200:
+                        agent = response.json().get("agent", {})
+                        deployment = agent.get("deployment", {})
+                        status = deployment.get("status", "STATUS_UNKNOWN")
+                        
+                        # Check if agent is running and ready
+                        if status == "STATUS_RUNNING":
+                            elapsed = time.time() - start_time
+                            logger.info(f"[DO] Agent deployed successfully after {elapsed:.1f}s ({attempts} checks)")
+                            return True
+                        elif status in ["STATUS_FAILED", "STATUS_UNDEPLOYMENT_FAILED", "STATUS_DELETED"]:
+                            logger.error(f"[DO] Agent deployment failed with status: {status}")
+                            return False
+                        else:
+                            logger.debug(f"[DO] Agent deployment status: {status}, waiting...")
+                    else:
+                        logger.warning(f"[DO] Failed to get agent status: {response.status_code}")
+                        
+            except Exception as e:
+                logger.warning(f"[DO] Error checking agent deployment status: {e}")
+            
+            # Wait before next check
+            await asyncio.sleep(poll_interval)
+        
+        # Timeout
+        elapsed = time.time() - start_time
+        logger.warning(f"[DO] Agent deployment timeout after {elapsed:.1f}s")
+        return False
 
     async def create_agent(
         self,
