@@ -5,6 +5,7 @@ import asyncio
 from fastapi import APIRouter, HTTPException
 
 from ..clients.digital_ocean_client import do_client
+from ..clients.do_agent_registry import AgentRegistry
 from ..config import get_settings
 
 router = APIRouter()
@@ -17,7 +18,7 @@ async def list_indexes(
     namespace: Optional[str] = None
 ) -> Dict[str, Any]:
     """
-    List all indexes (DigitalOcean Knowledge Bases) or get a specific one.
+    List all indexes (DigitalOcean Knowledge Bases) that have agents.
     Accepts client_slug (preferred), clientSlug (JS compat), or namespace (deprecated).
     """
     settings = get_settings()
@@ -28,8 +29,47 @@ async def list_indexes(
     if not settings.digitalocean_token:
         return {"indexes": []} if not target_slug else {"error": "Not configured"}
 
+    # Load agent registry to filter by clients with agents
+    agent_registry = AgentRegistry()
+    
+    # Also load from centralized token store for complete agent info
+    token_store = {}
+    try:
+        loop = asyncio.get_event_loop()
+        response = await loop.run_in_executor(
+            None,
+            lambda: agent_registry.s3_client.get_object(
+                Bucket='mintleads-agents-store',
+                Key='agent-api-tokens.json'
+            ) if agent_registry.s3_client else None
+        )
+        if response:
+            token_data = json.loads(response['Body'].read().decode('utf-8'))
+            token_store = token_data.get('tokens', {})
+    except Exception as e:
+        logger.warning(f"Could not load agent tokens: {e}")
+    
+    # Get inbox_manager agents and merge with token store
+    inbox_agents = {}
+    for slug, record in agent_registry._data.items():
+        if 'inbox_manager' in slug and ':' in slug:
+            client_slug = slug.replace('inbox_manager:', '')
+            # Merge with token store data
+            token_key = slug
+            if token_key in token_store:
+                token_data = token_store[token_key]
+                if not record.endpoint_url and token_data.get('endpoint'):
+                    record.endpoint_url = token_data['endpoint']
+                if not record.api_key and token_data.get('api_key'):
+                    record.api_key = token_data['api_key']
+            inbox_agents[client_slug] = record
+    
     # If target_slug is provided, fetch specific KB
     if target_slug:
+        # Check if this client has an agent
+        if target_slug not in inbox_agents:
+            raise HTTPException(status_code=404, detail="No agent found for this client")
+        
         try:
             # We can't efficiently "get by tag" or metadata easily without listing or known UUID.
             # But the client_slug is the name.
@@ -80,13 +120,27 @@ async def list_indexes(
                 except Exception:
                     pass
 
+            # Add agent info
+            agent_record = inbox_agents.get(target_slug)
+            agent_info = None
+            if agent_record:
+                agent_info = {
+                    "agentUuid": agent_record.agent_uuid,
+                    "agentName": agent_record.agent_name,
+                    "endpointUrl": agent_record.endpoint_url,
+                    "hasApiKey": bool(agent_record.api_key),
+                    "region": agent_record.region,
+                    "model": agent_record.model
+                }
+
             index_data = {
                 "url": f"https://{target_slug}.com",
                 "clientSlug": target_slug,
                 "namespace": target_slug, # Keep for compat
                 "pagesCrawled": stats["pagesCrawled"],
                 "createdAt": stats["createdAt"],
-                "metadata": metadata
+                "metadata": metadata,
+                "agent": agent_info
             }
             
             return {"index": index_data}
@@ -97,13 +151,16 @@ async def list_indexes(
             logger.error(f"Failed to fetch KB {target_slug}: {e}")
             raise HTTPException(status_code=500, detail="Failed to fetch index")
 
-    # List all KBs
+    # List all KBs that have agents
     try:
         kbs = await do_client.list_knowledge_bases()
     except Exception as e:
         logger.error(f"Failed to list KBs: {e}")
         raise HTTPException(status_code=500, detail="Failed to list knowledge bases")
 
+    # Filter KBs to only those with agents
+    filtered_kbs = [kb for kb in kbs if kb.get("name") in inbox_agents]
+    
     indexes = []
     
     # Process KBs in parallel to fetch metadata
@@ -155,17 +212,31 @@ async def list_indexes(
             except Exception:
                 pass
 
+        # Add agent info
+        agent_record = inbox_agents.get(slug)
+        agent_info = None
+        if agent_record:
+            agent_info = {
+                "agentUuid": agent_record.agent_uuid,
+                "agentName": agent_record.agent_name,
+                "endpointUrl": agent_record.endpoint_url,
+                "hasApiKey": bool(agent_record.api_key),
+                "region": agent_record.region,
+                "model": agent_record.model
+            }
+
         return {
             "url": f"https://{slug}.com",
             "clientSlug": slug,
             "namespace": slug, # Keep for compat
             "pagesCrawled": stats["pagesCrawled"],
             "createdAt": stats["createdAt"],
-            "metadata": metadata
+            "metadata": metadata,
+            "agent": agent_info
         }
 
-    # Gather all KBs
-    results = await asyncio.gather(*[process_kb(kb) for kb in kbs])
+    # Gather all filtered KBs
+    results = await asyncio.gather(*[process_kb(kb) for kb in filtered_kbs])
     
     # Filter out any None results
     indexes = [r for r in results if r]
