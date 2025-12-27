@@ -69,7 +69,7 @@ class Settings(BaseSettings):
         alias="DIGITAL_OCEAN_AGENT_PROVIDE_CITATIONS",
     )
     digitalocean_agent_k: int = Field(
-        20,
+        10,
         alias="DIGITAL_OCEAN_AGENT_K",
         ge=1,
     )
@@ -82,7 +82,7 @@ class Settings(BaseSettings):
         alias="DIGITAL_OCEAN_AGENT_LOG_INSIGHTS_ENABLED",
     )
     digitalocean_agent_model_uuid: str = Field(
-        "1b07e52b-73c5-11f0-b074-4e013e2ddde4",
+        "9a3644c7-f300-11ef-bf8f-4e013e2ddde4",
         alias="DIGITALOCEAN_AGENT_MODEL_UUID"
     )
     
@@ -106,7 +106,7 @@ class Settings(BaseSettings):
         le=100
     )
     digitalocean_agent_max_tokens: int = Field(
-        1024,
+        4096,
         alias="DIGITALOCEAN_AGENT_MAX_TOKENS",
         ge=1,
         le=4096
