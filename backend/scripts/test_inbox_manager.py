@@ -136,9 +136,11 @@ async def main():
     ]
     
     agent_record = None
+    agent_slug = None
     for slug in possible_slugs:
         if slug in registry._data:
             agent_record = registry._data[slug]
+            agent_slug = slug
             break
     
     if not agent_record:
@@ -152,13 +154,47 @@ async def main():
         print("   The agent may not have been made public yet.")
         return
     
-    if not agent_record.api_key:
-        print(f"⚠️  Warning: No API key found for {args.client}")
-        print("   Attempting to call endpoint without authentication...")
+    # Try to get API key from registry first, then from centralized token store
+    api_key = agent_record.api_key
+    
+    if not api_key:
+        # Try loading from centralized token store
+        print(f"⚠️  No API key in registry, checking centralized token store...")
+        try:
+            from app.config import get_settings
+            import boto3
+            import json
+            
+            settings = get_settings()
+            s3 = boto3.client(
+                's3',
+                region_name=settings.digitalocean_spaces_region,
+                endpoint_url=f'https://{settings.digitalocean_spaces_region}.digitaloceanspaces.com',
+                aws_access_key_id=settings.digitalocean_spaces_key,
+                aws_secret_access_key=settings.digitalocean_spaces_secret
+            )
+            
+            obj = s3.get_object(
+                Bucket='mintleads-agents-store',
+                Key='agent-api-tokens.json'
+            )
+            tokens_data = json.loads(obj['Body'].read().decode('utf-8'))
+            tokens = tokens_data.get('tokens', tokens_data)
+            api_key = tokens.get(agent_slug)
+            
+            if api_key:
+                print(f"✓ Found API key in centralized store")
+        except Exception as e:
+            print(f"⚠️  Could not load from token store: {e}")
+    
+    if not api_key:
+        print(f"❌ No API key found for {args.client}")
+        print("   Generate one with: python scripts/refresh_agent_tokens.py --client", args.client)
+        return
     
     await test_agent(
         endpoint_url=agent_record.endpoint_url,
-        api_key=agent_record.api_key or "",
+        api_key=api_key,
         query=args.query,
     )
 
