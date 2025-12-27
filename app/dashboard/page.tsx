@@ -29,12 +29,23 @@ interface SiteData {
   clientSlug: string
   index?: string
   pagesCrawled: number
+  pages?: number
+  chunks?: number
   metadata: {
     title: string
     description: string
     favicon?: string
     ogImage?: string
     indexName?: string
+  }
+  agent?: {
+    agentUuid: string
+    agentName: string
+    endpointUrl: string
+    hasApiKey: boolean
+    region: string
+    model: string
+    retrievalMethod?: string
   }
   crawlId?: string
   crawlComplete?: boolean
@@ -555,34 +566,34 @@ function DashboardContent() {
 
   const modelName = `firecrawl-${siteData.clientSlug}`
   
-  // Get dynamic API URL based on current location
-  const getApiUrl = () => {
-    if (typeof window === 'undefined') return 'http://localhost:3001/api/v1/chat/completions'
-    const protocol = window.location.protocol
-    const host = window.location.host
-    return `${protocol}//${host}/api/v1/chat/completions`
-  }
-  const apiUrl = getApiUrl()
+  // Get agent endpoint URL if available
+  const agentEndpointUrl = siteData.agent?.endpointUrl || null
+  const agentApiUrl = agentEndpointUrl 
+    ? `${agentEndpointUrl}/api/v1/chat/completions` 
+    : `${typeof window !== 'undefined' ? `${window.location.protocol}//${window.location.host}` : 'http://localhost:3001'}/api/v1/chat/completions`
+  
+  const apiKeyPlaceholder = siteData.agent?.hasApiKey 
+    ? 'YOUR_AGENT_API_KEY' 
+    : 'YOUR_FIRESTARTER_API_KEY'
   
   const curlCommand = `# Standard request
-curl ${apiUrl} \\
+curl ${agentApiUrl} \\
   -H "Content-Type: application/json" \\
-  -H "Authorization: Bearer YOUR_FIRESTARTER_API_KEY" \\
+  -H "Authorization: Bearer ${apiKeyPlaceholder}" \\
   -d '{
-    "model": "${modelName}",
+    "model": "n/a",
     "messages": [
       {"role": "user", "content": "Your question here"}
     ]
   }'
 
-# Streaming request (SSE format)
-curl ${apiUrl} \\
+# Streaming request
+curl ${agentApiUrl} \\
   -H "Content-Type: application/json" \\
-  -H "Authorization: Bearer YOUR_FIRESTARTER_API_KEY" \\
-  -H "Accept: text/event-stream" \\
+  -H "Authorization: Bearer ${apiKeyPlaceholder}" \\
   -N \\
   -d '{
-    "model": "${modelName}",
+    "model": "n/a",
     "messages": [
       {"role": "user", "content": "Your question here"}
     ],
@@ -592,12 +603,12 @@ curl ${apiUrl} \\
   const openaiJsCode = `import OpenAI from 'openai';
 
 const openai = new OpenAI({
-  apiKey: 'YOUR_FIRESTARTER_API_KEY',
-  baseURL: '${apiUrl.replace('/chat/completions', '')}',
+  apiKey: '${apiKeyPlaceholder}',
+  baseURL: '${agentEndpointUrl}/api/v1',
 });
 
 const completion = await openai.chat.completions.create({
-  model: '${modelName}',
+  model: 'n/a', // Model is defined in the agent
   messages: [
     { role: 'user', content: 'Your question here' }
   ],
@@ -607,7 +618,7 @@ console.log(completion.choices[0].message.content);
 
 // Streaming example
 const stream = await openai.chat.completions.create({
-  model: '${modelName}',
+  model: 'n/a',
   messages: [
     { role: 'user', content: 'Your question here' }
   ],
@@ -621,12 +632,12 @@ for await (const chunk of stream) {
   const openaiPythonCode = `from openai import OpenAI
 
 client = OpenAI(
-    api_key="YOUR_FIRESTARTER_API_KEY",
-    base_url="${apiUrl.replace('/chat/completions', '')}"
+    api_key="${apiKeyPlaceholder}",
+    base_url="${agentEndpointUrl}/api/v1"
 )
 
 completion = client.chat.completions.create(
-    model="${modelName}",
+    model="n/a",  # Model is defined in the agent
     messages=[
         {"role": "user", "content": "Your question here"}
     ]
@@ -636,7 +647,7 @@ print(completion.choices[0].message.content)
 
 # Streaming example
 stream = client.chat.completions.create(
-    model="${modelName}",
+    model="n/a",
     messages=[
         {"role": "user", "content": "Your question here"}
     ],
@@ -648,14 +659,14 @@ for chunk in stream:
         print(chunk.choices[0].delta.content, end="")`
   
   const jsCode = `// Using fetch API
-const response = await fetch('${apiUrl}', {
+const response = await fetch('${agentApiUrl}', {
   method: 'POST',
   headers: {
     'Content-Type': 'application/json',
-    'Authorization': 'Bearer YOUR_FIRESTARTER_API_KEY'
+    'Authorization': 'Bearer ${apiKeyPlaceholder}'
   },
   body: JSON.stringify({
-    model: '${modelName}',
+    model: 'n/a',
     messages: [
       { role: 'user', content: 'Your question here' }
     ]
@@ -668,13 +679,13 @@ console.log(data.choices[0].message.content);`
   const pythonCode = `import requests
 
 response = requests.post(
-    '${apiUrl}',
+    '${agentApiUrl}',
     headers={
         'Content-Type': 'application/json',
-        'Authorization': 'Bearer YOUR_FIRESTARTER_API_KEY'
+        'Authorization': 'Bearer ${apiKeyPlaceholder}'
     },
     json={
-        'model': '${modelName}',
+        'model': 'n/a',
         'messages': [
             {'role': 'user', 'content': 'Your question here'}
         ]
@@ -775,7 +786,7 @@ print(data['choices'][0]['message']['content'])`
                       <FileText className="w-4 h-4" />
                       <span className="text-sm font-medium">Pages</span>
                     </div>
-                    <span className="text-lg font-semibold text-[#36322F]">{siteData.pagesCrawled}</span>
+                    <span className="text-lg font-semibold text-[#36322F]">{siteData.pages || siteData.pagesCrawled || 0}</span>
                   </div>
                   
                   <div className="flex items-center justify-between">
@@ -783,18 +794,52 @@ print(data['choices'][0]['message']['content'])`
                       <Database className="w-4 h-4" />
                       <span className="text-sm font-medium">Chunks</span>
                     </div>
-                    <span className="text-lg font-semibold text-[#36322F]">{Math.round(siteData.pagesCrawled * 3)}</span>
+                    <span className="text-lg font-semibold text-[#36322F]">{siteData.chunks || Math.round((siteData.pages || siteData.pagesCrawled || 0) * 3)}</span>
                   </div>
                   
                     <div className="flex items-center justify-between">
                     <div className="flex items-center gap-2 text-gray-700">
                       <Globe className="w-4 h-4" />
-                      <span className="text-sm font-medium">Namespace</span>
+                      <span className="text-sm font-medium">Client</span>
                     </div>
-                    <span className="text-xs font-mono text-gray-800 break-all">{siteData.clientSlug.split('-').slice(0, -1).join('.')}</span>
+                    <span className="text-xs font-mono text-gray-800 break-all">{siteData.clientSlug}</span>
                   </div>
                 </div>
               </div>
+            </div>
+
+            <div className="bg-white rounded-xl p-6 border border-gray-200 flex flex-col flex-1">
+              <h2 className="text-lg font-semibold text-[#36322F] mb-4">Agent</h2>
+              {siteData.agent ? (
+                <div className="space-y-3 flex-1">
+                  <div className="flex items-center justify-between">
+                    <span className="text-sm text-gray-600">Status</span>
+                    <span className="text-sm font-medium text-green-600">Active</span>
+                  </div>
+                  <div className="flex items-center justify-between">
+                    <span className="text-sm text-gray-600">Model</span>
+                    <span className="text-xs font-mono text-gray-800">{siteData.agent.model || 'gpt-4o-mini'}</span>
+                  </div>
+                  <div className="flex items-center justify-between">
+                    <span className="text-sm text-gray-600">Region</span>
+                    <span className="text-xs font-mono text-gray-800">{siteData.agent.region || 'tor1'}</span>
+                  </div>
+                  <div className="flex items-center justify-between">
+                    <span className="text-sm text-gray-600">Retrieval</span>
+                    <span className="text-xs text-gray-800">{siteData.agent.retrievalMethod?.replace('RETRIEVAL_METHOD_', '').toLowerCase() || 'rewrite'}</span>
+                  </div>
+                  <div className="flex items-center justify-between">
+                    <span className="text-sm text-gray-600">API Key</span>
+                    <span className={`text-xs font-medium ${siteData.agent.hasApiKey ? 'text-green-600' : 'text-red-600'}`}>
+                      {siteData.agent.hasApiKey ? '✓ Configured' : '✗ Missing'}
+                    </span>
+                  </div>
+                </div>
+              ) : (
+                <div className="flex-1 flex items-center justify-center">
+                  <p className="text-sm text-gray-500">No agent configured</p>
+                </div>
+              )}
             </div>
 
             <div className="bg-white rounded-xl p-6 border border-gray-200 flex flex-col flex-1">

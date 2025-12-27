@@ -93,30 +93,73 @@ async def list_indexes(
             }
             
             # Fetch metadata.json
+            kb_stats = {
+                "pages": 0,
+                "chunks": 0
+            }
+            
             if do_client.s3_client and settings.digitalocean_spaces_bucket:
                 try:
                     loop = asyncio.get_event_loop()
-                    response = await loop.run_in_executor(
-                        None,
-                        lambda: do_client.s3_client.get_object(
-                            Bucket=settings.digitalocean_spaces_bucket,
-                            Key=f"{target_slug}/metadata.json"
-                        )
-                    )
-                    content = response['Body'].read().decode('utf-8')
-                    stored_meta = json.loads(content)
                     
-                    if "pagesCrawled" in stored_meta:
-                        stats["pagesCrawled"] = stored_meta["pagesCrawled"]
-                    if "createdAt" in stored_meta:
-                        stats["createdAt"] = stored_meta["createdAt"]
-                    if "metadata" in stored_meta:
-                        m = stored_meta["metadata"]
-                        if m.get("title"): metadata["title"] = m["title"]
-                        if m.get("description"): metadata["description"] = m["description"]
-                        if m.get("favicon"): metadata["favicon"] = m["favicon"]
-                        if m.get("ogImage"): metadata["ogImage"] = m["ogImage"]
-                        if m.get("indexName"): metadata["indexName"] = m["indexName"]
+                    # Load from _client_kb_master for comprehensive stats
+                    try:
+                        client_report_response = await loop.run_in_executor(
+                            None,
+                            lambda: do_client.s3_client.get_object(
+                                Bucket=settings.digitalocean_spaces_bucket,
+                                Key=f"_client_kb_master/clients/{target_slug}.json"
+                            )
+                        )
+                        client_report = json.loads(client_report_response['Body'].read().decode('utf-8'))
+                        
+                        # Extract KB stats
+                        kb_info = client_report.get("kb", {})
+                        spaces_info = client_report.get("spaces", {})
+                        
+                        kb_stats["pages"] = spaces_info.get("total_files", 0)
+                        # Chunks would come from KB details if available
+                        
+                        # Update metadata from client report
+                        if client_report.get("ui", {}).get("title"):
+                            metadata["title"] = client_report["ui"]["title"]
+                        if client_report.get("ui", {}).get("favicon"):
+                            metadata["favicon"] = client_report["ui"]["favicon"]
+                            
+                        # Update stats
+                        if "createdAt" in client_report.get("timestamps", {}):
+                            stats["createdAt"] = client_report["timestamps"]["createdAt"]
+                        stats["pagesCrawled"] = spaces_info.get("total_files", 0)
+                        
+                    except Exception as e:
+                        logger.debug(f"Could not load from _client_kb_master: {e}")
+                    
+                    # Fallback to old metadata.json
+                    try:
+                        response = await loop.run_in_executor(
+                            None,
+                            lambda: do_client.s3_client.get_object(
+                                Bucket=settings.digitalocean_spaces_bucket,
+                                Key=f"{target_slug}/metadata.json"
+                            )
+                        )
+                        content = response['Body'].read().decode('utf-8')
+                        stored_meta = json.loads(content)
+                        
+                        if "pagesCrawled" in stored_meta:
+                            stats["pagesCrawled"] = stored_meta["pagesCrawled"]
+                            kb_stats["pages"] = stored_meta["pagesCrawled"]
+                        if "createdAt" in stored_meta:
+                            stats["createdAt"] = stored_meta["createdAt"]
+                        if "metadata" in stored_meta:
+                            m = stored_meta["metadata"]
+                            if m.get("title"): metadata["title"] = m["title"]
+                            if m.get("description"): metadata["description"] = m["description"]
+                            if m.get("favicon"): metadata["favicon"] = m["favicon"]
+                            if m.get("ogImage"): metadata["ogImage"] = m["ogImage"]
+                            if m.get("indexName"): metadata["indexName"] = m["indexName"]
+                    except Exception:
+                        pass
                 except Exception:
                     pass
 
@@ -130,7 +173,8 @@ async def list_indexes(
                     "endpointUrl": agent_record.endpoint_url,
                     "hasApiKey": bool(agent_record.api_key),
                     "region": agent_record.region,
-                    "model": agent_record.model
+                    "model": agent_record.model,
+                    "retrievalMethod": agent_record.retrieval_method
                 }
 
             index_data = {
@@ -138,6 +182,8 @@ async def list_indexes(
                 "clientSlug": target_slug,
                 "namespace": target_slug, # Keep for compat
                 "pagesCrawled": stats["pagesCrawled"],
+                "pages": kb_stats["pages"],
+                "chunks": kb_stats["chunks"],
                 "createdAt": stats["createdAt"],
                 "metadata": metadata,
                 "agent": agent_info
@@ -181,34 +227,76 @@ async def list_indexes(
             "createdAt": kb.get("created_at") or kb.get("updated_at")
         }
         
+        kb_stats = {
+            "pages": 0,
+            "chunks": 0
+        }
+        
         # Try to fetch metadata.json from Spaces
         if do_client.s3_client and settings.digitalocean_spaces_bucket:
             try:
                 loop = asyncio.get_event_loop()
-                response = await loop.run_in_executor(
-                    None,
-                    lambda: do_client.s3_client.get_object(
-                        Bucket=settings.digitalocean_spaces_bucket,
-                        Key=f"{slug}/metadata.json"
-                    )
-                )
-                content = response['Body'].read().decode('utf-8')
-                stored_meta = json.loads(content)
                 
-                # Merge stats
-                if "pagesCrawled" in stored_meta:
-                    stats["pagesCrawled"] = stored_meta["pagesCrawled"]
-                if "createdAt" in stored_meta:
-                    stats["createdAt"] = stored_meta["createdAt"]
+                # Load from _client_kb_master for comprehensive stats
+                try:
+                    client_report_response = await loop.run_in_executor(
+                        None,
+                        lambda: do_client.s3_client.get_object(
+                            Bucket=settings.digitalocean_spaces_bucket,
+                            Key=f"_client_kb_master/clients/{slug}.json"
+                        )
+                    )
+                    client_report = json.loads(client_report_response['Body'].read().decode('utf-8'))
                     
-                # Merge metadata
-                if "metadata" in stored_meta:
-                    m = stored_meta["metadata"]
-                    if m.get("title"): metadata["title"] = m["title"]
-                    if m.get("description"): metadata["description"] = m["description"]
-                    if m.get("favicon"): metadata["favicon"] = m["favicon"]
-                    if m.get("ogImage"): metadata["ogImage"] = m["ogImage"]
+                    # Extract KB stats
+                    kb_info = client_report.get("kb", {})
+                    spaces_info = client_report.get("spaces", {})
+                    
+                    kb_stats["pages"] = spaces_info.get("total_files", 0)
+                    stats["pagesCrawled"] = spaces_info.get("total_files", 0)
+                    
+                    # Update metadata from client report
+                    if client_report.get("ui", {}).get("title"):
+                        metadata["title"] = client_report["ui"]["title"]
+                    if client_report.get("ui", {}).get("favicon"):
+                        metadata["favicon"] = client_report["ui"]["favicon"]
+                        
+                    # Update stats
+                    if "createdAt" in client_report.get("timestamps", {}):
+                        stats["createdAt"] = client_report["timestamps"]["createdAt"]
+                        
+                except Exception:
+                    pass
+                
+                # Fallback to old metadata.json
+                try:
+                    response = await loop.run_in_executor(
+                        None,
+                        lambda: do_client.s3_client.get_object(
+                            Bucket=settings.digitalocean_spaces_bucket,
+                            Key=f"{slug}/metadata.json"
+                        )
+                    )
+                    content = response['Body'].read().decode('utf-8')
+                    stored_meta = json.loads(content)
+                    
+                    # Merge stats
+                    if "pagesCrawled" in stored_meta:
+                        stats["pagesCrawled"] = stored_meta["pagesCrawled"]
+                        kb_stats["pages"] = stored_meta["pagesCrawled"]
+                    if "createdAt" in stored_meta:
+                        stats["createdAt"] = stored_meta["createdAt"]
+                        
+                    # Merge metadata
+                    if "metadata" in stored_meta:
+                        m = stored_meta["metadata"]
+                        if m.get("title"): metadata["title"] = m["title"]
+                        if m.get("description"): metadata["description"] = m["description"]
+                        if m.get("favicon"): metadata["favicon"] = m["favicon"]
+                        if m.get("ogImage"): metadata["ogImage"] = m["ogImage"]
 
+                except Exception:
+                    pass
             except Exception:
                 pass
 
@@ -222,7 +310,8 @@ async def list_indexes(
                 "endpointUrl": agent_record.endpoint_url,
                 "hasApiKey": bool(agent_record.api_key),
                 "region": agent_record.region,
-                "model": agent_record.model
+                "model": agent_record.model,
+                "retrievalMethod": agent_record.retrieval_method
             }
 
         return {
@@ -230,6 +319,8 @@ async def list_indexes(
             "clientSlug": slug,
             "namespace": slug, # Keep for compat
             "pagesCrawled": stats["pagesCrawled"],
+            "pages": kb_stats["pages"],
+            "chunks": kb_stats["chunks"],
             "createdAt": stats["createdAt"],
             "metadata": metadata,
             "agent": agent_info
