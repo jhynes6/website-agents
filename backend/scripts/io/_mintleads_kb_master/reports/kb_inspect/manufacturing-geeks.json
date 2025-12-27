@@ -3,7 +3,7 @@
     "uuid": "fd0590cb-e33d-11f0-b074-4e013e2ddde4",
     "name": "manufacturing-geeks",
     "created_at": "2025-12-27T16:06:22Z",
-    "updated_at": "2025-12-27T16:06:29Z",
+    "updated_at": "2025-12-27T16:13:07Z",
     "tags": [
       "client-docs",
       "manufacturing-geeks"
@@ -16,10 +16,14 @@
       "uuid": "010c239f-e33e-11f0-b074-4e013e2ddde4",
       "knowledge_base_uuid": "fd0590cb-e33d-11f0-b074-4e013e2ddde4",
       "created_at": "2025-12-27T16:06:29Z",
-      "updated_at": "2025-12-27T16:06:29Z",
+      "updated_at": "2025-12-27T16:07:31Z",
       "started_at": "2025-12-27T16:06:29Z",
-      "phase": "BATCH_JOB_PHASE_RUNNING",
-      "status": "INDEX_JOB_STATUS_IN_PROGRESS"
+      "finished_at": "2025-12-27T16:07:15Z",
+      "phase": "BATCH_JOB_PHASE_SUCCEEDED",
+      "tokens": 64375,
+      "total_tokens": "64375",
+      "status": "INDEX_JOB_STATUS_COMPLETED",
+      "is_report_available": true
     }
   },
   "sources": [

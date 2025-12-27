@@ -180,6 +180,43 @@ async def audit_kbs():
         
     return kb_audit
 
+async def upload_directory_to_spaces(directory: Path, bucket: str, prefix: str):
+    """
+    Recursively uploads a directory to DigitalOcean Spaces.
+    """
+    if not do_client.s3_client:
+        logger.error("Spaces client not initialized. Skipping upload.")
+        return
+
+    logger.info(f"Uploading {directory} to Spaces bucket {bucket} with prefix {prefix}...")
+    
+    for path in directory.rglob("*"):
+        if path.is_file():
+            # Calculate relative path for key
+            rel_path = path.relative_to(directory)
+            key = f"{prefix}/{rel_path}".replace("\\", "/") # Ensure forward slashes
+            
+            # Determine content type (basic)
+            content_type = "application/octet-stream"
+            if path.suffix == ".json":
+                content_type = "application/json"
+            elif path.suffix == ".csv":
+                content_type = "text/csv"
+            elif path.suffix == ".md":
+                content_type = "text/markdown"
+            elif path.suffix == ".html":
+                content_type = "text/html"
+            
+            try:
+                with open(path, "rb") as f:
+                    file_content = f.read()
+                    do_client.upload_file_content(file_content, key, content_type)
+                # logger.info(f"Uploaded {rel_path} to {key}") # Verbose
+            except Exception as e:
+                logger.error(f"Failed to upload {path}: {e}")
+                
+    logger.info("Upload complete.")
+
 async def main():
     settings = get_settings()
     
@@ -187,7 +224,7 @@ async def main():
 
     io_dir = Path(__file__).resolve().parent / "io"
     io_dir.mkdir(parents=True, exist_ok=True)
-    kb_master_dir = io_dir / "_client_kb_master"
+    kb_master_dir = io_dir / "_mintleads_kb_master"
     kb_master_clients_dir = kb_master_dir / "clients"
     kb_master_reports_dir = kb_master_dir / "reports"
     kb_master_clients_dir.mkdir(parents=True, exist_ok=True)
@@ -349,6 +386,7 @@ async def main():
             "total": len(agents),
             "by_region": defaultdict(int),
             "with_kb_region_mismatch": 0,
+            "list": [], # Added list of agents
         },
         "top_warnings": [],
         "reports": {
@@ -372,12 +410,28 @@ async def main():
         region = agent.get("region")
         if region:
             summary["agents"]["by_region"][region] += 1
+        
+        # Check KB mismatch
         kb_list = agent.get("knowledge_base_uuids") or agent.get("knowledge_bases") or []
+        has_mismatch = False
         for kb_uuid in kb_list:
             kb_region = kb_region_by_uuid.get(kb_uuid)
             if kb_region and region and kb_region != region:
-                summary["agents"]["with_kb_region_mismatch"] += 1
-                summary["totals"]["region_mismatches"] += 1
+                has_mismatch = True
+        
+        if has_mismatch:
+            summary["agents"]["with_kb_region_mismatch"] += 1
+            summary["totals"]["region_mismatches"] += 1
+
+        # Add agent summary
+        summary["agents"]["list"].append({
+            "name": agent.get("name"),
+            "uuid": agent.get("uuid"),
+            "region": region,
+            "model_uuid": agent.get("model_uuid"),
+            "knowledge_base_uuids": kb_list,
+            "has_region_mismatch": has_mismatch
+        })
 
     # Build per-client JSON
     for client in sorted(list(all_clients)):
@@ -414,6 +468,15 @@ async def main():
         content_types = (stats or {}).get("content_types", {})
         document_sources = (stats or {}).get("document_sources", {})
 
+        # Find agents associated with this client's KB
+        client_agents = []
+        if kb:
+            kb_uuid = kb.get("uuid")
+            for agent in agents:
+                agent_kbs = agent.get("knowledge_base_uuids") or agent.get("knowledge_bases") or []
+                if kb_uuid in agent_kbs:
+                    client_agents.append(agent.get("name"))
+
         client_record = {
             "client_slug": client,
             "drive_folder_url": "",
@@ -445,7 +508,7 @@ async def main():
                 "last_reindex_at": None,
                 "last_drive_sync_at": None,
             },
-            "agents": [],
+            "agents": client_agents,
             "warnings": [w["warning"] for w in summary["top_warnings"] if w["client_slug"] == client],
             "ui": {
                 "title": None,
@@ -473,6 +536,10 @@ async def main():
         print(f"Wrote summary to {summary_path}")
     except Exception as e:
         logger.error(f"Failed to write summary.json: {e}")
+
+    # 6. Upload _mintleads_kb_master to Spaces
+    print("\n=== UPLOADING TO SPACES ===")
+    await upload_directory_to_spaces(kb_master_dir, settings.digitalocean_spaces_bucket, "_mintleads_kb_master")
 
 if __name__ == "__main__":
     asyncio.run(main())
