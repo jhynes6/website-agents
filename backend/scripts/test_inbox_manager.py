@@ -180,10 +180,15 @@ async def main():
             )
             tokens_data = json.loads(obj['Body'].read().decode('utf-8'))
             tokens = tokens_data.get('tokens', tokens_data)
-            api_key = tokens.get(agent_slug)
+            
+            agent_creds = tokens.get(agent_slug, {})
+            api_key = agent_creds.get('api_key')
             
             if api_key:
-                print(f"✓ Found API key in centralized store")
+                print(f"✓ Found credentials in centralized store")
+                # Also use endpoint from token store if available
+                if agent_creds.get('endpoint') and not agent_record.endpoint_url:
+                    agent_record.endpoint_url = agent_creds['endpoint']
         except Exception as e:
             print(f"⚠️  Could not load from token store: {e}")
     

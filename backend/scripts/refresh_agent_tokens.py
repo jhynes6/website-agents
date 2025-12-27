@@ -33,7 +33,7 @@ logging.basicConfig(
 logger = logging.getLogger("refresh_agent_tokens")
 
 
-async def load_tokens_from_spaces() -> Dict[str, str]:
+async def load_tokens_from_spaces() -> Dict[str, Dict[str, str]]:
     """Load existing tokens from Spaces."""
     settings = get_settings()
     
@@ -65,7 +65,7 @@ async def load_tokens_from_spaces() -> Dict[str, str]:
         return {}
 
 
-async def save_tokens_to_spaces(tokens: Dict[str, str]) -> bool:
+async def save_tokens_to_spaces(tokens: Dict[str, Dict[str, str]]) -> bool:
     """Save tokens to Spaces."""
     settings = get_settings()
     
@@ -83,7 +83,7 @@ async def save_tokens_to_spaces(tokens: Dict[str, str]) -> bool:
         payload = {
             "tokens": tokens,
             "updated_at": datetime.now(timezone.utc).isoformat(),
-            "total_tokens": len(tokens)
+            "total_agents": len(tokens)
         }
         
         s3.put_object(
@@ -92,7 +92,7 @@ async def save_tokens_to_spaces(tokens: Dict[str, str]) -> bool:
             Body=json.dumps(payload, indent=2),
             ContentType='application/json'
         )
-        logger.info(f"✓ Saved {len(tokens)} tokens to mintleads-agents-store/agent-api-tokens.json")
+        logger.info(f"✓ Saved {len(tokens)} agent credentials to mintleads-agents-store/agent-api-tokens.json")
         return True
     except Exception as e:
         logger.error(f"Failed to save tokens to Spaces: {e}")
@@ -187,11 +187,11 @@ async def main():
         
         for slug, rec in sorted(inbox_agents.items()):
             client_slug = slug.replace("inbox_manager:", "").replace("inbox_manager", "(default)")
-            has_token = slug in tokens
-            status = "✓ Has token" if has_token else "✗ No token"
+            has_creds = slug in tokens and tokens[slug].get('api_key')
+            status = "✓ Has credentials" if has_creds else "✗ No credentials"
             print(f"  {client_slug:<40} {status}")
         
-        print(f"\nTokens stored: {len(tokens)}/{len(inbox_agents)}")
+        print(f"\nAgents with credentials: {len(tokens)}/{len(inbox_agents)}")
         return
     
     # Determine which agents to refresh
@@ -256,8 +256,13 @@ async def main():
         api_key = await refresh_token_for_agent(slug, rec.agent_uuid, rec.agent_name or slug)
         
         if api_key:
-            # Save to tokens dict
-            all_tokens[slug] = api_key
+            # Save to tokens dict with endpoint
+            all_tokens[slug] = {
+                "endpoint": rec.endpoint_url,
+                "api_key": api_key,
+                "agent_uuid": rec.agent_uuid,
+                "updated_at": datetime.now(timezone.utc).isoformat()
+            }
             
             # Update agent file in Spaces
             await update_agent_file_in_spaces(slug, api_key)
@@ -292,11 +297,11 @@ async def main():
     print(f"Total processed: {len(agents_to_refresh)}")
     print(f"✓ Success: {success_count}")
     print(f"✗ Failed: {fail_count}")
-    print(f"Total tokens stored: {len(all_tokens)}")
+    print(f"Total agents with credentials: {len(all_tokens)}")
     print(f"{'='*60}\n")
     
     if success_count > 0:
-        print("✓ Tokens refreshed and saved to:")
+        print("✓ Agent credentials (endpoints + API keys) saved to:")
         print("  - mintleads-agents-store/agent-api-tokens.json")
         print("  - mintleads-agents-store/agents/{agent}.json")
         print("\nYou can now test agents with:")
