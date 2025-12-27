@@ -87,7 +87,7 @@ class FirecrawlClient:
         payload: Dict[str, Any] = {
             "url": url,
             # Firecrawl v2 expects options at the top level (no scrapeOptions key)
-            "formats": ["markdown", "html"],
+            "formats": ["markdown"],
             "maxAge": self.settings.crawling_cache_max_age_ms,
             "onlyMainContent": True,
             "removeBase64Images": True,
@@ -102,6 +102,7 @@ class FirecrawlClient:
         limit: int,
         include_paths: Optional[List[str]],
         exclude_paths: Optional[List[str]],
+        max_depth: Optional[int] = None,
     ) -> Tuple[List[Dict[str, Any]], Dict[str, Any]]:
         """Start a crawl and poll until completion."""
         payload: Dict[str, Any] = {
@@ -116,10 +117,14 @@ class FirecrawlClient:
             },
             "zeroDataRetention": False,
         }
+        log("firecrawl.crawl.start", {"url": url, "limit": limit, "max_depth": max_depth, "include_paths": bool(include_paths), "exclude_paths": bool(exclude_paths)})
         if include_paths is not None:
             payload["includePaths"] = include_paths
         if exclude_paths is not None:
             payload["excludePaths"] = exclude_paths
+        if max_depth is not None:
+            # Firecrawl expects maxDiscoveryDepth (not maxDepth)
+            payload["maxDiscoveryDepth"] = max_depth
         start_resp = await self._post("/crawl", payload)
         crawl_id = start_resp.get("id")
         if not crawl_id:
@@ -140,7 +145,18 @@ class FirecrawlClient:
                 data = status_resp.get("data") or []
                 return data, status_resp
 
-        raise TimeoutError("Firecrawl crawl did not complete before timeout")
+        # Timeout reached - return partial data instead of raising error
+        log("firecrawl.timeout", {"crawl_id": crawl_id, "elapsed_ms": int(elapsed * 1000)})
+        
+        # Fetch one last time to ensure we have latest data
+        try:
+            status_resp = await self._get(f"/crawl/{crawl_id}")
+            data = status_resp.get("data") or []
+            log("firecrawl.timeout.partial_data", {"count": len(data)})
+            return data, status_resp
+        except Exception as e:
+            log("firecrawl.timeout.error", {"error": str(e)})
+            return [], {"status": "timeout_error"}
 
 
 firecrawl_client = FirecrawlClient()

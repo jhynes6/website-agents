@@ -20,7 +20,7 @@ export const metadata: Metadata = {
     siteName: "MintAgents",
     images: [
       {
-        url: "/firecrawl-logo-with-fire.png",
+        url: "/mintagents-logo.png",
         width: 1200,
         height: 630,
         alt: "MintAgents - Custom AI Chatbots",
@@ -33,7 +33,7 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     title: "MintAgents - Custom AI Chatbots",
     description: "Transform websites into structured data with AI",
-    images: ["/firecrawl-logo-with-fire.png"],
+    images: ["/mintagents-logo.png"],
     creator: "@firecrawl_dev",
   },
   icons: {

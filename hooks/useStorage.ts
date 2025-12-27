@@ -1,9 +1,6 @@
 import { useState, useEffect } from 'react'
 import { IndexMetadata } from '@/lib/storage'
 
-// Check if we should use Redis (server-side storage)
-const useRedis = !!(process.env.NEXT_PUBLIC_UPSTASH_REDIS_REST_URL && process.env.NEXT_PUBLIC_UPSTASH_REDIS_REST_TOKEN)
-
 export function useStorage() {
   const [indexes, setIndexes] = useState<IndexMetadata[]>([])
   const [loading, setLoading] = useState(true)
@@ -14,22 +11,19 @@ export function useStorage() {
     setError(null)
     
     try {
-      if (useRedis) {
-        // Fetch from API endpoint
+      // Always try server API first; fallback to localStorage on failure
         const response = await fetch('/api/indexes')
         if (!response.ok) {
           throw new Error('Failed to fetch indexes')
         }
         const data = await response.json()
         setIndexes(data.indexes || [])
-      } else {
-        // Use localStorage
-        const stored = localStorage.getItem('firestarter_indexes')
-        setIndexes(stored ? JSON.parse(stored) : [])
-      }
+      return
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to fetch indexes')
-      setIndexes([])
+      // Fallback to localStorage
+      const stored = typeof window !== 'undefined' ? localStorage.getItem('firestarter_indexes') : null
+      setIndexes(stored ? JSON.parse(stored) : [])
     } finally {
       setLoading(false)
     }
@@ -37,8 +31,7 @@ export function useStorage() {
 
   const saveIndex = async (index: IndexMetadata) => {
     try {
-      if (useRedis) {
-        // Save via API endpoint
+      // Save via API endpoint; fallback to localStorage if it fails
         const response = await fetch('/api/indexes', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
@@ -49,8 +42,8 @@ export function useStorage() {
         }
         // Refresh indexes
         await fetchIndexes()
-      } else {
-        // Save to localStorage
+    } catch (err) {
+      // Fallback to localStorage
         const currentIndexes = [...indexes]
         const existingIndex = currentIndexes.findIndex(i => i.namespace === index.namespace)
         
@@ -62,18 +55,16 @@ export function useStorage() {
         
         // Keep only the last 50 indexes
         const limitedIndexes = currentIndexes.slice(0, 50)
+      if (typeof window !== 'undefined') {
         localStorage.setItem('firestarter_indexes', JSON.stringify(limitedIndexes))
-        setIndexes(limitedIndexes)
       }
-    } catch (err) {
-      throw err
+      setIndexes(limitedIndexes)
     }
   }
 
   const deleteIndex = async (namespace: string) => {
     try {
-      if (useRedis) {
-        // Delete via API endpoint
+      // Delete via API endpoint; fallback to localStorage if it fails
         const response = await fetch(`/api/indexes?namespace=${namespace}`, {
           method: 'DELETE'
         })
@@ -82,14 +73,13 @@ export function useStorage() {
         }
         // Refresh indexes
         await fetchIndexes()
-      } else {
+    } catch (err) {
         // Delete from localStorage
         const filteredIndexes = indexes.filter(i => i.namespace !== namespace)
+      if (typeof window !== 'undefined') {
         localStorage.setItem('firestarter_indexes', JSON.stringify(filteredIndexes))
-        setIndexes(filteredIndexes)
       }
-    } catch (err) {
-      throw err
+      setIndexes(filteredIndexes)
     }
   }
 
@@ -104,6 +94,6 @@ export function useStorage() {
     saveIndex,
     deleteIndex,
     refresh: fetchIndexes,
-    isUsingRedis: useRedis
+    isUsingRedis: true // We now always attempt server API; flag true to reflect that path
   }
 }

@@ -1,0 +1,16 @@
+---
+description: Standards for using the Digital Ocean API
+globs: **/*.py, **/*.ts, **/*.tsx
+---
+
+# Digital Ocean API Usage
+
+When writing or modifying code that interacts with the Digital Ocean API (including GenAI/Gradient):
+
+1. **Mandatory Documentation Check**: You MUST consult the official API documentation using the `context7` MCP tool before implementing new endpoints or modifying existing ones.
+   - Use `mcp_context7_resolve-library-id` with "DigitalOcean" or "DigitalOcean Gradient" to find the correct library.
+   - Use `mcp_context7_get-library-docs` to retrieve the relevant API specifications.
+
+2. **Verify Endpoints**: Do not guess endpoint paths or parameters. Verify them against the retrieved documentation.
+
+3. **GenAI/Gradient Focus**: Note that GenAI features often fall under the "Gradient" or "GenAI" namespace in documentation.

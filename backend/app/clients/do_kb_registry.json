@@ -1,0 +1,314 @@
+{
+  "a-perfect-promotion": {
+    "created_at": "2025-12-27T15:32:36Z",
+    "data_sources": [],
+    "kb_uuid": "4579e84e-e339-11f0-b074-4e013e2ddde4",
+    "region": "tor1",
+    "slug": "a-perfect-promotion",
+    "tags": [
+      "client-docs",
+      "a-perfect-promotion"
+    ],
+    "updated_at": "2025-12-27T15:32:44.439160+00:00"
+  },
+  "abundantly": {
+    "created_at": "2025-12-27T15:40:31Z",
+    "data_sources": [],
+    "kb_uuid": "60b6d348-e33a-11f0-b074-4e013e2ddde4",
+    "region": "tor1",
+    "slug": "abundantly",
+    "tags": [
+      "client-docs",
+      "abundantly"
+    ],
+    "updated_at": "2025-12-27T15:40:38.464804+00:00"
+  },
+  "american-ethanol": {
+    "created_at": "2025-12-27T15:41:21Z",
+    "data_sources": [],
+    "kb_uuid": "7e6bcd49-e33a-11f0-b074-4e013e2ddde4",
+    "region": "tor1",
+    "slug": "american-ethanol",
+    "tags": [
+      "client-docs",
+      "american-ethanol"
+    ],
+    "updated_at": "2025-12-27T15:41:32.150260+00:00"
+  },
+  "archway-learning-solutions": {
+    "created_at": "2025-12-27T15:38:10Z",
+    "data_sources": [],
+    "kb_uuid": "0c82bfaf-e33a-11f0-b074-4e013e2ddde4",
+    "region": "tor1",
+    "slug": "archway-learning-solutions",
+    "tags": [
+      "client-docs",
+      "archway-learning-solutions"
+    ],
+    "updated_at": "2025-12-27T15:38:17.363936+00:00"
+  },
+  "atrenet": {
+    "created_at": "2025-12-27T15:42:09Z",
+    "data_sources": [],
+    "kb_uuid": "9abb788e-e33a-11f0-b074-4e013e2ddde4",
+    "region": "tor1",
+    "slug": "atrenet",
+    "tags": [
+      "client-docs",
+      "atrenet"
+    ],
+    "updated_at": "2025-12-27T15:42:15.984628+00:00"
+  },
+  "beistle": {
+    "created_at": "2025-12-27T12:47:45Z",
+    "data_sources": [],
+    "kb_uuid": "3e2b357a-e322-11f0-b074-4e013e2ddde4",
+    "region": "tor1",
+    "slug": "beistle",
+    "tags": [
+      "client-docs",
+      "beistle"
+    ],
+    "updated_at": "2025-12-27T15:42:59.358293+00:00"
+  },
+  "bucklandco": {
+    "created_at": "2025-12-27T15:44:01Z",
+    "data_sources": [],
+    "kb_uuid": "ddd6c82a-e33a-11f0-b074-4e013e2ddde4",
+    "region": "tor1",
+    "slug": "bucklandco",
+    "tags": [
+      "client-docs",
+      "bucklandco"
+    ],
+    "updated_at": "2025-12-27T15:44:09.497210+00:00"
+  },
+  "cas-severn": {
+    "created_at": "2025-12-27T15:45:26Z",
+    "data_sources": [],
+    "kb_uuid": "108a996a-e33b-11f0-b074-4e013e2ddde4",
+    "region": "tor1",
+    "slug": "cas-severn",
+    "tags": [
+      "client-docs",
+      "cas-severn"
+    ],
+    "updated_at": "2025-12-27T15:45:33.451900+00:00"
+  },
+  "clarke-consulting": {
+    "created_at": "2025-12-27T15:47:08Z",
+    "data_sources": [],
+    "kb_uuid": "4cfdff79-e33b-11f0-b074-4e013e2ddde4",
+    "region": "tor1",
+    "slug": "clarke-consulting",
+    "tags": [
+      "client-docs",
+      "clarke-consulting"
+    ],
+    "updated_at": "2025-12-27T15:47:11.981401+00:00"
+  },
+  "clearfield-group": {
+    "created_at": "2025-12-27T15:48:05Z",
+    "data_sources": [],
+    "kb_uuid": "6f40d250-e33b-11f0-b074-4e013e2ddde4",
+    "region": "tor1",
+    "slug": "clearfield-group",
+    "tags": [
+      "client-docs",
+      "clearfield-group"
+    ],
+    "updated_at": "2025-12-27T15:48:12.531793+00:00"
+  },
+  "cogent-consulting": {
+    "created_at": "2025-12-27T15:48:45Z",
+    "data_sources": [],
+    "kb_uuid": "870b6e31-e33b-11f0-b074-4e013e2ddde4",
+    "region": "tor1",
+    "slug": "cogent-consulting",
+    "tags": [
+      "client-docs",
+      "cogent-consulting"
+    ],
+    "updated_at": "2025-12-27T15:48:48.920309+00:00"
+  },
+  "conneqt": {
+    "created_at": "2025-12-27T15:46:33Z",
+    "data_sources": [],
+    "kb_uuid": "380edf98-e33b-11f0-b074-4e013e2ddde4",
+    "region": "tor1",
+    "slug": "conneqt",
+    "tags": [
+      "client-docs",
+      "conneqt"
+    ],
+    "updated_at": "2025-12-27T15:46:42.858510+00:00"
+  },
+  "d2-creative": {
+    "created_at": "2025-12-27T15:49:13Z",
+    "data_sources": [],
+    "kb_uuid": "97d569cd-e33b-11f0-b074-4e013e2ddde4",
+    "region": "tor1",
+    "slug": "d2-creative",
+    "tags": [
+      "client-docs",
+      "d2-creative"
+    ],
+    "updated_at": "2025-12-27T15:49:23.567205+00:00"
+  },
+  "dodeka-digital": {
+    "created_at": "2025-12-27T15:49:56Z",
+    "data_sources": [],
+    "kb_uuid": "b11c8f36-e33b-11f0-b074-4e013e2ddde4",
+    "region": "tor1",
+    "slug": "dodeka-digital",
+    "tags": [
+      "client-docs",
+      "dodeka-digital"
+    ],
+    "updated_at": "2025-12-27T15:50:02.966075+00:00"
+  },
+  "evenbound": {
+    "created_at": "2025-12-27T15:52:06Z",
+    "data_sources": [],
+    "kb_uuid": "fea0c23d-e33b-11f0-b074-4e013e2ddde4",
+    "region": "tor1",
+    "slug": "evenbound",
+    "tags": [
+      "client-docs",
+      "evenbound"
+    ],
+    "updated_at": "2025-12-27T15:52:14.916094+00:00"
+  },
+  "f1-cloud-solutions": {
+    "created_at": "2025-12-27T15:53:01Z",
+    "data_sources": [],
+    "kb_uuid": "1f558351-e33c-11f0-b074-4e013e2ddde4",
+    "region": "tor1",
+    "slug": "f1-cloud-solutions",
+    "tags": [
+      "client-docs",
+      "f1-cloud-solutions"
+    ],
+    "updated_at": "2025-12-27T15:53:09.085456+00:00"
+  },
+  "forge-apollo": {
+    "created_at": "2025-12-27T15:54:15Z",
+    "data_sources": [],
+    "kb_uuid": "4bb5cb88-e33c-11f0-b074-4e013e2ddde4",
+    "region": "tor1",
+    "slug": "forge-apollo",
+    "tags": [
+      "client-docs",
+      "forge-apollo"
+    ],
+    "updated_at": "2025-12-27T15:54:22.932523+00:00"
+  },
+  "galactic-fed": {
+    "created_at": "2025-12-27T15:55:53Z",
+    "data_sources": [],
+    "kb_uuid": "85e606ea-e33c-11f0-b074-4e013e2ddde4",
+    "region": "tor1",
+    "slug": "galactic-fed",
+    "tags": [
+      "client-docs",
+      "galactic-fed"
+    ],
+    "updated_at": "2025-12-27T15:55:57.452871+00:00"
+  },
+  "incyte-media": {
+    "created_at": "2025-12-27T15:57:32Z",
+    "data_sources": [],
+    "kb_uuid": "c10bf3c1-e33c-11f0-b074-4e013e2ddde4",
+    "region": "tor1",
+    "slug": "incyte-media",
+    "tags": [
+      "client-docs",
+      "incyte-media"
+    ],
+    "updated_at": "2025-12-27T15:57:40.281005+00:00"
+  },
+  "integrity-professionals": {
+    "created_at": "2025-12-27T15:58:06Z",
+    "data_sources": [],
+    "kb_uuid": "d53783a4-e33c-11f0-b074-4e013e2ddde4",
+    "region": "tor1",
+    "slug": "integrity-professionals",
+    "tags": [
+      "client-docs",
+      "integrity-professionals"
+    ],
+    "updated_at": "2025-12-27T15:58:10.269316+00:00"
+  },
+  "klickrr": {
+    "created_at": "2025-12-27T15:59:18Z",
+    "data_sources": [],
+    "kb_uuid": "0061c1bf-e33d-11f0-b074-4e013e2ddde4",
+    "region": "tor1",
+    "slug": "klickrr",
+    "tags": [
+      "client-docs",
+      "klickrr"
+    ],
+    "updated_at": "2025-12-27T15:59:22.341333+00:00"
+  },
+  "lib-consulting-group": {
+    "created_at": "2025-12-27T15:59:46Z",
+    "data_sources": [],
+    "kb_uuid": "10ececb5-e33d-11f0-b074-4e013e2ddde4",
+    "region": "tor1",
+    "slug": "lib-consulting-group",
+    "tags": [
+      "client-docs",
+      "lib-consulting-group"
+    ],
+    "updated_at": "2025-12-27T15:59:56.770099+00:00"
+  },
+  "lithyem": {
+    "created_at": "2025-12-27T16:00:30Z",
+    "data_sources": [],
+    "kb_uuid": "2b5341cf-e33d-11f0-b074-4e013e2ddde4",
+    "region": "tor1",
+    "slug": "lithyem",
+    "tags": [
+      "client-docs",
+      "lithyem"
+    ],
+    "updated_at": "2025-12-27T16:00:37.366963+00:00"
+  },
+  "makers-garments": {
+    "created_at": "2025-12-27T16:05:15Z",
+    "data_sources": [],
+    "kb_uuid": "d50fd26f-e33d-11f0-b074-4e013e2ddde4",
+    "region": "tor1",
+    "slug": "makers-garments",
+    "tags": [
+      "client-docs",
+      "makers-garments"
+    ],
+    "updated_at": "2025-12-27T16:05:22.986100+00:00"
+  },
+  "manufacturing-geeks": {
+    "created_at": "2025-12-27T16:06:22Z",
+    "data_sources": [],
+    "kb_uuid": "fd0590cb-e33d-11f0-b074-4e013e2ddde4",
+    "region": "tor1",
+    "slug": "manufacturing-geeks",
+    "tags": [
+      "client-docs",
+      "manufacturing-geeks"
+    ],
+    "updated_at": "2025-12-27T16:06:32.736234+00:00"
+  },
+  "mintleads": {
+    "created_at": "2025-12-27T16:07:35Z",
+    "data_sources": [],
+    "kb_uuid": "2830e08b-e33e-11f0-b074-4e013e2ddde4",
+    "region": "tor1",
+    "slug": "mintleads",
+    "tags": [
+      "client-docs",
+      "mintleads"
+    ],
+    "updated_at": "2025-12-27T16:07:38.873197+00:00"
+  }
+}

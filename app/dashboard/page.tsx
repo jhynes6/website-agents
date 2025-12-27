@@ -26,7 +26,7 @@ interface Source {
 
 interface SiteData {
   url: string
-  namespace: string
+  clientSlug: string
   index?: string
   pagesCrawled: number
   metadata: {
@@ -40,6 +40,7 @@ interface SiteData {
   crawlComplete?: boolean
   crawlDate?: string
   createdAt?: string
+  namespace?: string // Keep optional for compat if needed, but primary is clientSlug
 }
 
 // Simple markdown renderer component
@@ -218,6 +219,11 @@ function DashboardContent() {
   const [activeTab, setActiveTab] = useState<'curl' | 'javascript' | 'python' | 'openai-js' | 'openai-python'>('curl')
   const scrollAreaRef = useRef<HTMLDivElement>(null)
   const [autoScroll, setAutoScroll] = useState(true)
+  const [stats, setStats] = useState<{
+    total: number
+    by_content_type: Record<string, number>
+    by_document_source: Record<string, number>
+  } | null>(null)
 
   useEffect(() => {
     const el = scrollAreaRef.current
@@ -252,13 +258,17 @@ function DashboardContent() {
     setIsLoading(true)
     
     try {
+      // Extract index from clientSlug if not provided
+      const indexName = siteData.index || siteData.metadata?.indexName || 
+        (siteData.clientSlug ? siteData.clientSlug.replace(/-\d+$/, '') : undefined)
+      
       const response = await fetch(getBackendUrl('/api/firestarter/query'), {
         method: 'POST',
         headers: buildApiHeaders(),
         body: JSON.stringify({
           messages: [userMessage],
-          namespace: siteData.namespace,
-          index: siteData.index || siteData.metadata.indexName,
+          clientSlug: siteData.clientSlug,
+          index: indexName,
           stream: true
         })
       })
@@ -360,14 +370,14 @@ function DashboardContent() {
   }
 
   useEffect(() => {
-    // Get namespace from URL params
-    const namespaceParam = searchParams.get('namespace')
-    console.log(`[Dashboard] Init with namespace: ${namespaceParam}`)
+    // Get clientSlug from URL params (fallback to namespace for compat)
+    const clientSlugParam = searchParams.get('clientSlug') || searchParams.get('namespace')
+    console.log(`[Dashboard] Init with clientSlug: ${clientSlugParam}`)
     
-    if (namespaceParam) {
+    if (clientSlugParam) {
       // Try to fetch index data from the database via API first
-      console.log(`[Dashboard] Fetching index for: ${namespaceParam}`)
-      fetch(`/api/indexes?namespace=${namespaceParam}`)
+      console.log(`[Dashboard] Fetching index for: ${clientSlugParam}`)
+      fetch(`/api/indexes?clientSlug=${clientSlugParam}`)
         .then(async (res) => {
           if (!res.ok) {
             const text = await res.text()
@@ -380,6 +390,13 @@ function DashboardContent() {
             setSiteData(data.index)
             sessionStorage.setItem('firestarter_current_data', JSON.stringify(data.index))
             setMessages([])
+            
+            // Extract index from clientSlug if not provided
+            const indexName = data.index.index || data.index.metadata?.indexName || 
+              (data.index.clientSlug ? data.index.clientSlug.replace(/-\d+$/, '') : undefined)
+            
+            // Fetch stats for this clientSlug
+            fetchStats(data.index.clientSlug, indexName)
             return
           } else {
             throw new Error('Index not found in API response')
@@ -392,12 +409,20 @@ function DashboardContent() {
           const storedIndexes = localStorage.getItem('firestarter_indexes')
           if (storedIndexes) {
             const indexes = JSON.parse(storedIndexes)
-            const matchingIndex = indexes.find((idx: { namespace: string }) => idx.namespace === namespaceParam)
+            const matchingIndex = indexes.find((idx: { clientSlug: string, namespace?: string }) => 
+                idx.clientSlug === clientSlugParam || idx.namespace === clientSlugParam
+            )
             if (matchingIndex) {
               console.log('[Dashboard] Found in localStorage:', matchingIndex)
               setSiteData(matchingIndex)
               sessionStorage.setItem('firestarter_current_data', JSON.stringify(matchingIndex))
               setMessages([])
+              
+              const indexName = matchingIndex.index || matchingIndex.metadata?.indexName || 
+                (matchingIndex.clientSlug ? matchingIndex.clientSlug.replace(/-\d+$/, '') : undefined)
+              
+              // Fetch stats for this clientSlug
+              fetchStats(matchingIndex.clientSlug || matchingIndex.namespace, indexName)
               return
             }
           }
@@ -406,11 +431,33 @@ function DashboardContent() {
           console.error('[Dashboard] Index not found in API or localStorage, redirecting')
           router.push('/indexes')
         })
-    } else {
-      console.log(`[Dashboard] No namespace param, redirecting`)
-      router.push('/indexes')
-    }
+      } else {
+        console.log(`[Dashboard] No clientSlug param, redirecting`)
+        router.push('/indexes')
+      }
   }, [router, searchParams])
+
+  const fetchStats = async (namespace: string, indexName?: string) => {
+    try {
+      console.log('[Dashboard] Fetching stats for namespace:', namespace, 'index:', indexName)
+      const response = await fetch(getBackendUrl('/api/firestarter/stats'), {
+        method: 'POST',
+        headers: buildApiHeaders(),
+        body: JSON.stringify({ namespace, index: indexName })
+      })
+      
+      if (response.ok) {
+        const data = await response.json()
+        console.log('[Dashboard] Stats received:', data)
+        setStats(data)
+    } else {
+        const errorText = await response.text()
+        console.error('[Dashboard] Stats fetch failed:', response.status, errorText)
+      }
+    } catch (error) {
+      console.error('[Dashboard] Failed to fetch stats:', error)
+    }
+  }
 
   const scrollToBottom = () => {
     if (scrollAreaRef.current && autoScroll) {
@@ -426,7 +473,7 @@ function DashboardContent() {
     const storedIndexes = localStorage.getItem('firestarter_indexes')
     if (storedIndexes && siteData) {
       const indexes = JSON.parse(storedIndexes)
-      const updatedIndexes = indexes.filter((idx: { namespace: string }) => idx.namespace !== siteData.namespace)
+      const updatedIndexes = indexes.filter((idx: { clientSlug: string }) => idx.clientSlug !== siteData.clientSlug)
       localStorage.setItem('firestarter_indexes', JSON.stringify(updatedIndexes))
     }
     
@@ -450,7 +497,7 @@ function DashboardContent() {
   }
   
 
-  const modelName = `firecrawl-${siteData.namespace}`
+  const modelName = `firecrawl-${siteData.clientSlug}`
   
   // Get dynamic API URL based on current location
   const getApiUrl = () => {
@@ -683,12 +730,12 @@ print(data['choices'][0]['message']['content'])`
                     <span className="text-lg font-semibold text-[#36322F]">{Math.round(siteData.pagesCrawled * 3)}</span>
                   </div>
                   
-                  <div className="flex items-center justify-between">
+                    <div className="flex items-center justify-between">
                     <div className="flex items-center gap-2 text-gray-700">
                       <Globe className="w-4 h-4" />
                       <span className="text-sm font-medium">Namespace</span>
                     </div>
-                    <span className="text-xs font-mono text-gray-800 break-all">{siteData.namespace.split('-').slice(0, -1).join('.')}</span>
+                    <span className="text-xs font-mono text-gray-800 break-all">{siteData.clientSlug.split('-').slice(0, -1).join('.')}</span>
                   </div>
                 </div>
               </div>
@@ -762,7 +809,7 @@ print(data['choices'][0]['message']['content'])`
                   <div
                     className={`px-5 py-4 rounded-2xl ${
                       message.role === 'user'
-                        ? 'bg-orange-500 text-white'
+                        ? 'bg-[#0E3D68] text-white'
                         : 'bg-white border border-gray-200 text-gray-800 shadow-sm'
                     }`}
                   >
@@ -922,9 +969,38 @@ print(data['choices'][0]['message']['content'])`
                               <div className="flex items-center justify-between p-3 bg-gradient-to-r from-gray-50 to-gray-100 rounded-lg border border-gray-200">
                                 <span className="text-xs text-gray-600">Namespace</span>
                                 <span className="text-xs font-mono text-gray-800 truncate max-w-[140px] bg-white px-2 py-1 rounded">
-                                  {siteData.namespace.split('-').slice(0, -1).join('.')}
+                                  {siteData.clientSlug.split('-').slice(0, -1).join('.')}
                                 </span>
                               </div>
+                              
+                              {/* Stats Breakdown */}
+                              {stats && stats.total > 0 && (
+                                <>
+                                  <div className="mt-4 pt-4 border-t border-gray-200">
+                                    <h4 className="text-xs font-semibold text-gray-700 mb-2">By Content Type</h4>
+                                    <div className="space-y-1">
+                                      {Object.entries(stats.by_content_type).map(([type, count]) => (
+                                        <div key={type} className="flex items-center justify-between text-xs">
+                                          <span className="text-gray-600 capitalize">{type.replace(/_/g, ' ')}</span>
+                                          <span className="font-medium text-gray-800">{count}</span>
+                                        </div>
+                                      ))}
+                                    </div>
+                                  </div>
+                                  
+                                  <div className="mt-4 pt-4 border-t border-gray-200">
+                                    <h4 className="text-xs font-semibold text-gray-700 mb-2">By Source</h4>
+                                    <div className="space-y-1">
+                                      {Object.entries(stats.by_document_source).map(([source, count]) => (
+                                        <div key={source} className="flex items-center justify-between text-xs">
+                                          <span className="text-gray-600 capitalize">{source}</span>
+                                          <span className="font-medium text-gray-800">{count}</span>
+                                        </div>
+                                      ))}
+                                    </div>
+                                  </div>
+                                </>
+                              )}
                             </div>
                           </div>
                         </div>

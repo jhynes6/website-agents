@@ -1,0 +1,57 @@
+{
+  "client_slug": "iconic-supply-co.",
+  "drive_folder_url": "",
+  "website_url": "",
+  "intake": {
+    "intake_file_id": null,
+    "intake_domain": null,
+    "checked_at": null,
+    "status": "unknown"
+  },
+  "kb": {
+    "kb_uuid": null,
+    "kb_region": null,
+    "kb_tags": [],
+    "kb_sources": [],
+    "kb_status": "missing",
+    "last_audit_at": null,
+    "details_ref": null
+  },
+  "spaces": {
+    "spaces_prefix": "iconic-supply-co./",
+    "total_files": 25,
+    "content_types": {
+      "intake_form": 1,
+      "unknown": 1,
+      "homepage": 2,
+      "about": 1,
+      "other": 7,
+      "services_products": 11,
+      "pricing": 1,
+      "case_studies": 1
+    },
+    "document_sources": {
+      "intake_form": 1,
+      "unknown": 1,
+      "website": 23
+    },
+    "last_audit_at": null
+  },
+  "ingest": {
+    "last_ingest_at": null,
+    "last_reindex_at": null,
+    "last_drive_sync_at": null
+  },
+  "agents": [],
+  "warnings": [
+    "KB missing"
+  ],
+  "ui": {
+    "title": null,
+    "favicon": null
+  },
+  "timestamps": {
+    "created_at": null,
+    "updated_at": null
+  }
+}

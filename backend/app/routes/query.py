@@ -1,29 +1,17 @@
 import json
+import os
 from typing import Any, Dict, List, Optional
+import httpx
+from openai import AsyncOpenAI
 
 from fastapi import APIRouter, HTTPException
 from fastapi.responses import JSONResponse, StreamingResponse
 
-from ..clients.llm import llm_client
-from ..clients.upstash_search import upstash_search_client
+from ..clients.digital_ocean_client import do_client
 from ..config import get_settings
 from ..logging import log
 
 router = APIRouter()
-
-
-def build_context(docs: List[Dict[str, Any]], max_context_len: int) -> str:
-    return (
-        "\n\n---\n\n".join(
-            [
-                doc.get("content", "")[:max_context_len] + "..."
-                for doc in docs
-                if doc.get("content")
-            ]
-        )
-        if docs
-        else ""
-    )
 
 
 @router.post("/query")
@@ -31,11 +19,11 @@ async def query(payload: Dict[str, Any]) -> StreamingResponse:
     settings = get_settings()
 
     query_text: Optional[str] = payload.get("query")
-    namespace: Optional[str] = payload.get("namespace")
+    client_slug: Optional[str] = payload.get("clientSlug") or payload.get("namespace")
     index_name: Optional[str] = payload.get("index")
     stream: bool = bool(payload.get("stream", False))
 
-    # Support chat-style payloads: extract latest user message if query missing
+    # Support chat-style payloads
     if not query_text:
         messages = payload.get("messages")
         if isinstance(messages, list):
@@ -43,113 +31,130 @@ async def query(payload: Dict[str, Any]) -> StreamingResponse:
             if user_messages:
                 query_text = user_messages[-1].get("content")
 
-    # Allow querying by index only; namespace is optional now
-    if not query_text or not (namespace or index_name):
-        raise HTTPException(status_code=400, detail="Query and namespace or index are required")
+    # Use client_slug as the KB name
+    kb_name = client_slug or index_name
+    if not query_text or not kb_name:
+        raise HTTPException(status_code=400, detail="Query and clientSlug/index are required")
 
-    search_query = query_text
-    try:
-        search_results = await upstash_search_client.search(
-            query=search_query,
-            limit=settings.search_max_results,
-            filter_expr=None,  # query on index only
-            reranking=True,
-            index_name=index_name,
-        )
-    except Exception as exc:
-        log("query.search.failed", {"error": str(exc)})
-        raise HTTPException(status_code=500, detail="Search failed") from exc
+    log("query.start", {"client_slug": kb_name, "query_len": len(query_text)})
 
-    if not search_results:
-        answer = "I don't have any indexed content for this website. Please crawl first."
+    # 1. Resolve Knowledge Base
+    kb = await do_client.get_knowledge_base_by_name(kb_name)
+    if not kb:
+        answer = "I don't have any indexed content for this website (Knowledge Base not found)."
         return StreamingResponse(iter([answer]), media_type="text/plain")
+    
+    kb_uuid = kb["uuid"]
+    # Agent Name: inbox-manager-{client_slug}
+    agent_name = f"inbox-manager-{kb_name}"
 
-    transformed_docs = []
-    for result in search_results:
-        # Handle results that are dicts (fallback REST) vs objects (SDK)
-        if isinstance(result, dict):
-            metadata = result.get("metadata", {}) or {}
-            content_obj = result.get("content", {}) or {}
-            score = result.get("score", 0)
+    # 2. Resolve or Create Agent
+    # We check if an agent with this name exists
+    agent = None
+    agents = await do_client.list_agents()
+    for a in agents:
+        if a.get("name") == agent_name:
+            agent = a
+            break
+            
+    if not agent:
+        log("query.agent_create", {"name": agent_name})
+        agent = await do_client.create_agent(agent_name, [kb_uuid])
+        if not agent:
+            raise HTTPException(status_code=500, detail="Failed to create agent for this chatbot")
+
+    agent_uuid = agent["uuid"]
+    
+    # 3. Get Agent Endpoint & Key
+    # Ideally, we should cache these
+    agent_endpoint = await do_client.get_agent_chat_endpoint(agent_uuid)
+    if not agent_endpoint:
+        raise HTTPException(status_code=500, detail="Failed to retrieve agent endpoint")
+        
+    # We need a key to talk to the agent.
+    # We'll create a transient key or reuse one if we had a store.
+    # For now, create one.
+    agent_key = await do_client.create_agent_api_key(agent_uuid)
+    if not agent_key:
+         raise HTTPException(status_code=500, detail="Failed to create agent API key")
+
+    # 4. Chat with Agent
+    try:
+        # The DO Agent endpoint is OpenAI compatible
+        client = AsyncOpenAI(
+            base_url=f"{agent_endpoint}/api/v1",
+            api_key=agent_key
+        )
+        
+        log("query.chat_start", {"agent_uuid": agent_uuid})
+        
+        # We only pass the user query for now, handling history is an improvement for later
+        messages = [{"role": "user", "content": query_text}]
+
+        if stream:
+            async def streamer():
+                # We can't easily get "sources" upfront from DO Agent streaming response usually,
+                # unless we parse the chunks carefully or if they send it at start/end.
+                # DO Agent usually sends citations in the final chunk or metadata.
+                # For now, we'll just stream the text.
+                # To simulate the "sources" format the frontend expects:
+                # yield f"8:{json.dumps({'sources': []})}\n" 
+                
+                # Actually, let's try to get sources if possible.
+                # If not, we send empty sources to satisfy frontend.
+                yield f"8:{json.dumps({'sources': []})}\n"
+                
+                try:
+                    stream_resp = await client.chat.completions.create(
+                        model="n/a", # Model is defined in Agent
+                        messages=messages,
+                        stream=True,
+                        extra_body={"include_retrieval_info": True} 
+                    )
+                    
+                    async for chunk in stream_resp:
+                        if chunk.choices and chunk.choices[0].delta.content:
+                            content = chunk.choices[0].delta.content
+                            yield f"0:{json.dumps(content)}\n"
+                            
+                        # Check for retrieval info in chunks if available (provider specific)
+                        # Usually it's in the final chunk or a specific tool call chunk.
+                        
+                except Exception as e:
+                     log("query.stream.error", {"error": str(e)})
+                     yield '0:"[error generating response]"\n'
+
+            return StreamingResponse(streamer(), media_type="text/plain; charset=utf-8")
+
         else:
-            # It's an SDK DocumentScore object
-            # Access attributes directly first, they might return dicts or None
-            metadata = getattr(result, "metadata", {}) or {}
-            content_obj = getattr(result, "content", {}) or {}
-            score = getattr(result, "score", 0)
+            # Non-streaming
+            resp = await client.chat.completions.create(
+                model="n/a",
+                messages=messages,
+                stream=False,
+                extra_body={"include_retrieval_info": True}
+            )
+            
+            answer = resp.choices[0].message.content
+            
+            # Extract citations if available
+            # DO response usually has a 'retrieval' dict in the raw response dict
+            sources = []
+            try:
+                raw_resp = resp.to_dict()
+                retrieval = raw_resp.get("retrieval", {}).get("retrieved_data", [])
+                for item in retrieval:
+                    sources.append({
+                        "title": item.get("metadata", {}).get("title") or item.get("filename") or "Source",
+                        "url": item.get("metadata", {}).get("url") or item.get("filename") or "",
+                        "snippet": item.get("page_content", "")[:200] + "..."
+                    })
+            except Exception as e:
+                log("query.citations.error", {"error": str(e)})
 
-        title = metadata.get("title") or metadata.get("pageTitle") or "Untitled"
-        description = metadata.get("description") or ""
-        url = metadata.get("url") or metadata.get("sourceURL") or content_obj.get("url") or ""
-        raw_content = metadata.get("fullContent") or content_obj.get("text") or ""
-        structured = f"TITLE: {title}\nDESCRIPTION: {description}\nSOURCE: {url}\n\n{raw_content}"
-        transformed_docs.append(
-            {
-                "content": structured,
-                "url": url,
-                "title": title,
-                "description": description,
-                "score": score,
-            }
-        )
+            payload = {"answer": answer, "sources": sources}
+            return JSONResponse(payload)
 
-    relevant = sorted(transformed_docs, key=lambda d: d.get("score", 0), reverse=True)[
-        : settings.search_max_sources_display
-    ]
-    docs_to_use = relevant if relevant else transformed_docs[:10]
-    context_docs = docs_to_use[: settings.search_max_context_docs]
-
-    context = build_context(context_docs, settings.search_max_context_length)
-    if not context or len(context) < 100:
-        answer = (
-            "I found some relevant pages but couldn't extract enough content to answer. "
-            "Try crawling again with a higher page limit."
-        )
-        sources_min = [
-            {"url": d["url"], "title": d["title"], "snippet": (d["content"] or "")[: settings.search_snippet_length] + "..."}
-            for d in docs_to_use
-        ]
-        return StreamingResponse(iter([answer, "\n\nSources:\n", str(sources_min)]), media_type="text/plain")
-
-    sources = [
-        {
-            "url": d["url"],
-            "title": d["title"],
-            "snippet": (d["content"] or "")[: settings.search_snippet_length] + "...",
-        }
-        for d in docs_to_use
-    ]
-
-    user_prompt = f"Question: {query_text}\n\nRelevant content from the website:\n{context}\n\nProvide a comprehensive answer based on this information."
-
-    async def streamer():
-        # initial sources line as in TS implementation
-        yield f"8:{json.dumps({'sources': sources})}\n"
-        try:
-            async for delta in llm_client.stream_answer(
-                system_prompt=settings.ai_system_prompt,
-                user_prompt=user_prompt,
-                temperature=settings.ai_temperature,
-                max_tokens=settings.ai_max_tokens,
-            ):
-                yield f"0:{json.dumps(delta)}\n"
-        except Exception as exc:  # noqa: BLE001
-            log("query.stream.error", {"error": str(exc)})
-            yield '0:"[error generating response]"\n'
-
-    if stream:
-        return StreamingResponse(streamer(), media_type="text/plain; charset=utf-8")
-
-    # Non-streaming: concatenate content
-    chunks: List[str] = []
-    async for delta in llm_client.stream_answer(
-        system_prompt=settings.ai_system_prompt,
-        user_prompt=user_prompt,
-        temperature=settings.ai_temperature,
-        max_tokens=settings.ai_max_tokens,
-    ):
-        chunks.append(delta)
-
-    answer = "".join(chunks)
-    payload = {"answer": answer, "sources": sources}
-    return JSONResponse(payload)
+    except Exception as exc:
+        log("query.agent.failed", {"error": str(exc)})
+        raise HTTPException(status_code=500, detail=f"Agent interaction failed: {str(exc)}")

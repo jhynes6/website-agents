@@ -40,7 +40,9 @@ export default function FirestarterPage() {
   const urlParam = searchParams.get('url');
   const { saveIndex } = useStorage();
   
-  const [url, setUrl] = useState(urlParam || 'https://docs.firecrawl.dev/');
+  const [url, setUrl] = useState(urlParam || 'https://mintleads.io/');
+  const [clientDriveFolder, setClientDriveFolder] = useState('');
+  const [indexName, setIndexName] = useState<string>('');
   const [hasInteracted, setHasInteracted] = useState(false);
   const [loading, setLoading] = useState(false);
   const [showSettings, setShowSettings] = useState(false);
@@ -60,7 +62,6 @@ export default function FirestarterPage() {
   const [selectedLinks, setSelectedLinks] = useState<Record<string, boolean>>({});
   const [useMapFlow, setUseMapFlow] = useState(false);
   const [isScrapingSelected, setIsScrapingSelected] = useState(false);
-  const [indexName, setIndexName] = useState<string>('');
   const allMappedSelected =
     mapLinks.length > 0 && mapLinks.every((link) => selectedLinks[link.url]);
 
@@ -91,27 +92,44 @@ export default function FirestarterPage() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!url) return;
+    console.log('[Homepage] handleSubmit called', { url, loading, hasFirecrawlKey });
 
-    // Check if we have Firecrawl API key
+    const slug = indexName.trim();
+    if (!slug) {
+      toast.error('Client slug is required');
+      return;
+    }
+
+    const rawUrl = url?.trim() || '';
+    const driveFolder = clientDriveFolder?.trim() || '';
+    const hasUrl = !!rawUrl;
+
+    if (!hasUrl && !driveFolder) {
+      toast.error('Provide a website URL or a Client Drive Folder');
+      return;
+    }
     
-    if (!hasFirecrawlKey && !localStorage.getItem('firecrawl_api_key')) {
+    // Check if we have Firecrawl API key
+    if (hasUrl && !hasFirecrawlKey && !localStorage.getItem('firecrawl_api_key')) {
+      console.log('[Homepage] No Firecrawl API key, showing modal');
       setShowApiKeyModal(true);
       return;
     }
 
-    // Normalize URL
-    let normalizedUrl = url.trim();
-    if (!normalizedUrl.startsWith('http://') && !normalizedUrl.startsWith('https://')) {
-      normalizedUrl = 'https://' + normalizedUrl;
-    }
-    
-    // Validate URL
-    try {
-      new URL(normalizedUrl);
-    } catch {
-      toast.error('Please enter a valid URL');
-      return;
+    let normalizedUrl: string | undefined = undefined;
+    if (hasUrl) {
+      normalizedUrl = rawUrl;
+      if (!normalizedUrl.startsWith('http://') && !normalizedUrl.startsWith('https://')) {
+        normalizedUrl = 'https://' + normalizedUrl;
+      }
+      
+      // Validate URL
+      try {
+        new URL(normalizedUrl);
+      } catch {
+        toast.error('Please enter a valid URL');
+        return;
+      }
     }
 
     setLoading(true);
@@ -126,9 +144,10 @@ export default function FirestarterPage() {
       namespace: string
     index?: string
       crawlId?: string
-      details: {
-        url: string
-        pagesCrawled: number
+      details?: {
+        url?: string
+        pagesCrawled?: number
+        pagesScraped?: number
       }
       data: Array<{
         url?: string
@@ -152,30 +171,136 @@ export default function FirestarterPage() {
     try {
       // Map/scrape fallback flow
       if (useMapFlow) {
+        if (!hasUrl || !normalizedUrl) {
+          toast.error('Website URL is required for Map + Scrape');
+          setLoading(false);
+          setCrawlProgress(null);
+          return;
+        }
+        setCrawlProgress({
+          status: 'Discovering all pages...',
+          pagesFound: 0,
+          pagesScraped: 0
+        });
+        
         const mapResp = await fetch(getBackendUrl('/api/firestarter/map'), {
           method: 'POST',
           headers: buildApiHeaders(),
-          body: JSON.stringify({ url: normalizedUrl, limit: pageLimit * 50, index: indexName || undefined })
+          body: JSON.stringify({ url: normalizedUrl, limit: 5000, index: slug || undefined, clientSlug: slug })
         });
         const mapData = await mapResp.json();
         if (!mapResp.ok || !mapData?.success) {
           throw new Error(mapData?.error || 'Failed to map site');
         }
         const links = mapData.links || [];
-        setMapLinks(links);
-        setSelectedLinks({});
-        toast.success(`Mapped ${links.length} URLs. Select which to scrape.`);
+        
+        if (links.length === 0) {
+          toast.error('No pages discovered');
         setLoading(false);
         setCrawlProgress(null);
         return;
       }
 
+        // Auto-scrape all discovered URLs (up to the page limit)
+        const urlsToScrape = links.slice(0, pageLimit).map((l: any) => l.url || l);
+        
+        toast.success(`Discovered ${links.length} URLs. Scraping ${urlsToScrape.length} pages...`);
+        
+        setCrawlProgress({
+          status: `Scraping ${urlsToScrape.length} discovered pages...`,
+          pagesFound: urlsToScrape.length,
+          pagesScraped: 0
+        });
+        
+        const scrapeResp = await fetch(getBackendUrl('/api/firestarter/scrape'), {
+          method: 'POST',
+          headers: buildApiHeaders(),
+          body: JSON.stringify({ urls: urlsToScrape, index: slug || undefined, clientSlug: slug })
+        });
+        
+        data = await scrapeResp.json();
+        
+        if (!scrapeResp.ok || !data?.success) {
+          const errorMsg = (data as any)?.error || 'Failed to scrape URLs'
+          throw new Error(errorMsg)
+        }
+        
+        setCrawlProgress({
+          status: 'Scraping complete!',
+          pagesFound: data.details?.pagesScraped || urlsToScrape.length,
+          pagesScraped: data.details?.pagesScraped || urlsToScrape.length
+        });
+        
+        // Handle map+scrape success - extract metadata and redirect
+        let homepageMetadata: {
+          title?: string
+          ogTitle?: string
+          description?: string
+          ogDescription?: string
+          favicon?: string
+          ogImage?: string
+          'og:image'?: string
+          'twitter:image'?: string
+        } = {};
+        if (data.data && data.data.length > 0) {
+          const homepage = data.data.find((page: any) => {
+            const pageUrl = page.metadata?.sourceURL || page.url || '';
+            return pageUrl === normalizedUrl || pageUrl === normalizedUrl + '/' || pageUrl === normalizedUrl.replace(/\/$/, '');
+          }) || data.data[0];
+          
+          homepageMetadata = homepage.metadata || {};
+        }
+        
+        const siteInfo = {
+          url: normalizedUrl,
+          namespace: data.namespace,
+          index: data.index,
+          pagesCrawled: data.details?.pagesScraped || data.details?.pagesCrawled || urlsToScrape.length,
+          crawlComplete: true,
+          crawlDate: new Date().toISOString(),
+          metadata: {
+            title: homepageMetadata.ogTitle || homepageMetadata.title || new URL(normalizedUrl).hostname,
+            description: homepageMetadata.ogDescription || homepageMetadata.description || 'Your custom website',
+            favicon: homepageMetadata.favicon,
+            ogImage: homepageMetadata.ogImage || homepageMetadata['og:image'] || homepageMetadata['twitter:image'],
+            indexName: data.index,
+          }
+        };
+        
+        sessionStorage.setItem('firestarter_current_data', JSON.stringify(siteInfo));
+        
+        await saveIndex({
+          url: normalizedUrl,
+          namespace: data.namespace,
+          pagesCrawled: data.details?.pagesScraped || data.details?.pagesCrawled || urlsToScrape.length,
+          createdAt: new Date().toISOString(),
+          metadata: {
+            title: homepageMetadata.ogTitle || homepageMetadata.title || new URL(normalizedUrl).hostname,
+            description: homepageMetadata.ogDescription || homepageMetadata.description || 'Your custom website',
+            favicon: homepageMetadata.favicon,
+            ogImage: homepageMetadata.ogImage || homepageMetadata['og:image'] || homepageMetadata['twitter:image'],
+            indexName: data.index,
+          } as any
+        });
+        
+        setTimeout(() => {
+          router.push(`/dashboard?namespace=${siteInfo.namespace}`);
+        }, 1000);
+        return; // Exit early - don't run regular crawl
+      } else {
+        // Regular crawl flow
       // Simulate progressive updates (crawl flow)
       let currentProgress = 0;
-      const progressInterval = setInterval(() => {
+        let progressInterval: NodeJS.Timeout | null = null;
+        
+        try {
+          progressInterval = setInterval(() => {
         currentProgress += Math.random() * 3;
         if (currentProgress > pageLimit * 0.8) {
+              if (progressInterval) {
           clearInterval(progressInterval);
+                progressInterval = null;
+              }
         }
         
         setCrawlProgress(prev => {
@@ -196,16 +321,26 @@ export default function FirestarterPage() {
       const response = await fetch(getBackendUrl('/api/firestarter/create'), {
         method: 'POST',
         headers: buildApiHeaders(),
-        body: JSON.stringify({ url: normalizedUrl, limit: pageLimit, index: indexName || undefined })
+        body: JSON.stringify({ 
+          url: hasUrl ? normalizedUrl : undefined, 
+          limit: pageLimit, 
+          index: slug || undefined,
+          clientSlug: slug,
+          clientDriveFolder: driveFolder || undefined 
+        })
       });
 
       data = await response.json();
-      
-      if (progressInterval) clearInterval(progressInterval);
+        } finally {
+          if (progressInterval) {
+            clearInterval(progressInterval);
+          }
+        }
+      }
       
       if (data && data.success) {
         setCrawlProgress({
-          status: 'Crawl complete!',
+          status: hasUrl ? 'Crawl complete!' : 'Ingestion complete!',
           pagesFound: data.details?.pagesCrawled || 0,
           pagesScraped: data.details?.pagesCrawled || 0
         });
@@ -220,17 +355,22 @@ export default function FirestarterPage() {
           'og:image'?: string
           'twitter:image'?: string
         } = {};
-        if (data.data && data.data.length > 0) {
+        if (hasUrl && normalizedUrl && data.data && data.data.length > 0) {
           const homepage = data.data.find((page) => {
             const pageUrl = page.metadata?.sourceURL || page.url || '';
             return pageUrl === normalizedUrl || pageUrl === normalizedUrl + '/' || pageUrl === normalizedUrl.replace(/\/$/, '');
           }) || data.data[0];
           
           homepageMetadata = homepage.metadata || {};
+        } else if (data.homepage) {
+          homepageMetadata = data.homepage;
         }
         
+        const effectiveUrl = normalizedUrl || driveFolder || '';
+        const fallbackHost = normalizedUrl ? new URL(normalizedUrl).hostname : slug || 'drive-only';
+
         const siteInfo = {
-          url: normalizedUrl,
+          url: effectiveUrl,
           namespace: data.namespace,
           index: data.index,
           crawlId: data.crawlId,
@@ -238,7 +378,7 @@ export default function FirestarterPage() {
           crawlComplete: true,
           crawlDate: new Date().toISOString(),
           metadata: {
-            title: homepageMetadata.ogTitle || homepageMetadata.title || new URL(normalizedUrl).hostname,
+            title: homepageMetadata.ogTitle || homepageMetadata.title || fallbackHost,
             description: homepageMetadata.ogDescription || homepageMetadata.description || 'Your custom website',
             favicon: homepageMetadata.favicon,
             ogImage: homepageMetadata.ogImage || homepageMetadata['og:image'] || homepageMetadata['twitter:image'],
@@ -249,12 +389,12 @@ export default function FirestarterPage() {
         sessionStorage.setItem('firestarter_current_data', JSON.stringify(siteInfo));
         
         await saveIndex({
-          url: normalizedUrl,
+          url: effectiveUrl,
           namespace: data.namespace,
           pagesCrawled: data.details?.pagesCrawled || 0,
           createdAt: new Date().toISOString(),
           metadata: {
-            title: homepageMetadata.ogTitle || homepageMetadata.title || new URL(normalizedUrl).hostname,
+            title: homepageMetadata.ogTitle || homepageMetadata.title || fallbackHost,
             description: homepageMetadata.ogDescription || homepageMetadata.description || 'Your custom website',
             favicon: homepageMetadata.favicon,
             ogImage: homepageMetadata.ogImage || homepageMetadata['og:image'] || homepageMetadata['twitter:image'],
@@ -273,8 +413,11 @@ export default function FirestarterPage() {
         });
         toast.error((data as { error: string }).error);
       }
-    } catch {
+    } catch (error) {
+      console.error('[Homepage] handleSubmit error:', error);
       toast.error('Failed to start crawling. Please try again.');
+      setLoading(false);
+      setCrawlProgress(null);
     } finally {
       if (!data?.success) {
         setLoading(false);
@@ -496,7 +639,7 @@ export default function FirestarterPage() {
                     setHasInteracted(true);
                   }}
                   onFocus={() => {
-                    if (!hasInteracted && url === 'https://docs.firecrawl.dev/') {
+                    if (!hasInteracted && url === 'https://mintleads.io/') {
                       setUrl('');
                       setHasInteracted(true);
                     }
@@ -534,12 +677,31 @@ export default function FirestarterPage() {
                     type="text"
                     value={indexName}
                     onChange={(e) => setIndexName(e.target.value)}
-                    placeholder="e.g. movies"
+                    placeholder="e.g. mintleads"
                     disabled={loading}
+                    required
                     className="border-[#0E3D68]/20 focus:border-[#00B388] focus:ring-[#00B388]/20"
                   />
                   <p className="text-xs text-muted-foreground mt-1">
                     Optional. If empty, uses backend default (`UPSTASH_SEARCH_INDEX`).
+                  </p>
+                </div>
+              </div>
+              <div className="flex flex-col sm:flex-row sm:items-center gap-3">
+                <div className="flex-1">
+                  <label className="block text-sm font-medium text-[#0E3D68] dark:text-gray-300 mb-1">
+                    Client Drive Folder
+                  </label>
+                  <Input
+                    type="text"
+                    value={clientDriveFolder}
+                    onChange={(e) => setClientDriveFolder(e.target.value)}
+                    placeholder="Google Drive folder link or ID (optional)"
+                    disabled={loading}
+                    className="border-[#0E3D68]/20 focus:border-[#00B388] focus:ring-[#00B388]/20"
+                  />
+                  <p className="text-xs text-muted-foreground mt-1">
+                    Optional. Provide a shared folder URL or ID to ingest Drive files.
                   </p>
                 </div>
               </div>
@@ -552,9 +714,12 @@ export default function FirestarterPage() {
                     onChange={() => setUseMapFlow(!useMapFlow)}
                     disabled={loading}
                   />
-                  <span>Use map + select URLs (fallback when /crawl is down)</span>
+                  <span>Use Map + Scrape for comprehensive coverage (slower but finds all pages)</span>
                 </label>
               </div>
+              <p className="text-xs text-gray-500 mt-1 ml-6">
+                💡 Recommended: Enable this to discover and scrape ALL pages. Regular crawl may miss some pages.
+              </p>
             </form>
 
             {/* Map results and selection */}
@@ -718,7 +883,7 @@ export default function FirestarterPage() {
                         className="flex-1 accent-[#00B388]"
                         disabled={loading}
                       />
-                      <span className="text-[#36322F] font-medium w-12 text-right">{pageLimit}</span>
+                      <span className="text-[#36322F] font-medium w-12 text-right">{pageLimit === 5000 ? 'All' : pageLimit}</span>
                     </div>
                     <p className="mt-2 text-xs text-gray-600">
                       More pages = better coverage but longer crawl time
@@ -728,7 +893,7 @@ export default function FirestarterPage() {
                     </p>
                   </div>
                   
-                  <div className="grid grid-cols-4 gap-2 mt-4">
+                  <div className="grid grid-cols-5 gap-2 mt-4">
                     {config.crawling.limitOptions.map(limit => (
                       <Button
                         key={limit}
@@ -738,7 +903,7 @@ export default function FirestarterPage() {
                         variant={pageLimit === limit ? "orange" : "outline"}
                         size="sm"
                       >
-                        {limit}
+                        {limit === 5000 ? 'All' : limit}
                       </Button>
                     ))}
                   </div>

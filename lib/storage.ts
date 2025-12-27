@@ -3,8 +3,16 @@ import { Redis } from '@upstash/redis'
 export interface IndexMetadata {
   url: string
   namespace: string
+  index?: string
+  clientSlug?: string
   pagesCrawled: number
   createdAt: string
+  documentSourceCounts?: {
+    website_pages: number
+    intake_form: number
+    client_materials: number
+    unknown: number
+  }
   metadata?: {
     title?: string
     description?: string
@@ -84,6 +92,7 @@ class RedisStorageAdapter implements StorageAdapter {
   private redis: Redis
   private readonly INDEXES_KEY = 'firestarter:indexes'
   private readonly INDEX_KEY_PREFIX = 'firestarter:index:'
+  private readonly TIMEOUT_MS = 3000
 
   constructor() {
     if (!process.env.UPSTASH_REDIS_REST_URL || !process.env.UPSTASH_REDIS_REST_TOKEN) {
@@ -102,13 +111,85 @@ class RedisStorageAdapter implements StorageAdapter {
   }
 
   async getIndexes(): Promise<IndexMetadata[]> {
-    try {
-      const indexes = await this.redis.get<IndexMetadata[]>(this.INDEXES_KEY)
-      return indexes || []
-    } catch {
-      console.error('Failed to get indexes from Redis')
-      return []
+    const timeout = new Promise<IndexMetadata[]>((resolve) => {
+      setTimeout(() => {
+        console.error('[Redis] getIndexes timeout')
+        resolve([])
+      }, this.TIMEOUT_MS)
+    })
+
+    const work = (async () => {
+      try {
+        const cached = (await this.redis.get<IndexMetadata[]>(this.INDEXES_KEY)) || []
+        const keys = await this.scanKeys(`${this.INDEX_KEY_PREFIX}*`, 100 /*count*/, 5000 /*maxKeys*/)
+        const scanned = keys.length > 0 ? await this.fetchIndexesFromKeys(keys) : []
+
+        if (scanned.length > 0) {
+          const merged = this.mergeIndexes(cached, scanned)
+          // Best-effort write back to keep the cached list in sync
+          this.redis.set(this.INDEXES_KEY, merged).catch((err) =>
+            console.error('[Redis] Failed to persist reconciled indexes list (non-fatal)', err)
+          )
+          return merged
+        }
+
+        if (cached.length > 0) {
+          return this.sortByCreatedAt(cached)
+        }
+
+        return []
+      } catch (error) {
+        console.error('Failed to get indexes from Redis', error)
+        return []
+      }
+    })()
+
+    return Promise.race([work, timeout])
+  }
+
+  private sortByCreatedAt(items: IndexMetadata[]): IndexMetadata[] {
+    return [...items].sort((a, b) => {
+      const da = a?.createdAt ? Date.parse(a.createdAt) : 0
+      const db = b?.createdAt ? Date.parse(b.createdAt) : 0
+      return db - da
+    })
+  }
+
+  private async scanKeys(pattern: string, count = 200, maxKeys = 10000): Promise<string[]> {
+    let cursor = 0
+    const keys: string[] = []
+
+    do {
+      const res = await this.redis.scan(cursor, { match: pattern, count })
+      const nextCursor = typeof res[0] === 'string' ? parseInt(res[0], 10) : res[0]
+      cursor = Number.isNaN(nextCursor) ? 0 : nextCursor
+      const batchKeys = res[1] || []
+      keys.push(...batchKeys)
+      if (keys.length >= maxKeys) break
+    } while (cursor !== 0)
+
+    return keys
+  }
+
+  private mergeIndexes(existing: IndexMetadata[], fresh: IndexMetadata[]): IndexMetadata[] {
+    const map = new Map<string, IndexMetadata>()
+    ;[...existing, ...fresh].forEach((item) => {
+      if (item?.namespace) {
+        map.set(item.namespace, item)
+      }
+    })
+    return this.sortByCreatedAt(Array.from(map.values()))
+  }
+
+  private async fetchIndexesFromKeys(keys: string[]): Promise<IndexMetadata[]> {
+    const results: IndexMetadata[] = []
+    const batchSize = 100
+    for (let i = 0; i < keys.length; i += batchSize) {
+      const slice = keys.slice(i, i + batchSize)
+      const batch = (await this.redis.mget<IndexMetadata[]>(...slice)).filter(Boolean) as IndexMetadata[]
+      results.push(...batch)
     }
+    return this.sortByCreatedAt(results)
   }
 
   async getIndex(namespace: string): Promise<IndexMetadata | null> {
@@ -137,21 +218,19 @@ class RedisStorageAdapter implements StorageAdapter {
       // Save individual index
       console.log(`[Redis] Saving index for namespace "${index.namespace}" to ${this.INDEX_KEY_PREFIX}${index.namespace}`)
       await this.redis.set(`${this.INDEX_KEY_PREFIX}${index.namespace}`, index)
-      
-      // Update indexes list
-      const indexes = await this.getIndexes()
-      const existingIndex = indexes.findIndex(i => i.namespace === index.namespace)
-      
-      if (existingIndex !== -1) {
-        indexes[existingIndex] = index
-      } else {
-        indexes.unshift(index)
+      // Optional: keep a lightweight list for quick access (append without trimming)
+      try {
+        const list = (await this.redis.get<IndexMetadata[]>(this.INDEXES_KEY)) || []
+        const existingIndex = list.findIndex((i) => i.namespace === index.namespace)
+        if (existingIndex !== -1) {
+          list[existingIndex] = index
+        } else {
+          list.unshift(index)
+        }
+        await this.redis.set(this.INDEXES_KEY, list)
+      } catch (err) {
+        console.error('[Redis] Failed to update cached indexes list (non-fatal)', err)
       }
-      
-      // Keep only the last 50 indexes
-      const limitedIndexes = indexes.slice(0, 50)
-      console.log(`[Redis] Updating indexes list with ${limitedIndexes.length} items`)
-      await this.redis.set(this.INDEXES_KEY, limitedIndexes)
     } catch (error) {
       console.error(`[Redis] Failed to save index for namespace "${index.namespace}"`, error)
       throw error

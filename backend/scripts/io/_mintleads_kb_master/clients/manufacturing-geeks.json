@@ -1,0 +1,46 @@
+{
+  "client_slug": "manufacturing-geeks",
+  "drive_folder_url": "",
+  "website_url": "",
+  "intake": {
+    "intake_file_id": null,
+    "intake_domain": null,
+    "checked_at": null,
+    "status": "unknown"
+  },
+  "kb": {
+    "kb_uuid": "fd0590cb-e33d-11f0-b074-4e013e2ddde4",
+    "kb_region": "tor1",
+    "kb_tags": [],
+    "kb_sources": [
+      "mintleads-clients-kb/manufacturing-geeks/"
+    ],
+    "kb_status": "ok",
+    "last_audit_at": null,
+    "details_ref": null
+  },
+  "spaces": {
+    "spaces_prefix": "manufacturing-geeks/",
+    "total_files": 0,
+    "content_types": {},
+    "document_sources": {},
+    "last_audit_at": null
+  },
+  "ingest": {
+    "last_ingest_at": null,
+    "last_reindex_at": null,
+    "last_drive_sync_at": null
+  },
+  "agents": [],
+  "warnings": [
+    "zero files in Spaces"
+  ],
+  "ui": {
+    "title": null,
+    "favicon": null
+  },
+  "timestamps": {
+    "created_at": null,
+    "updated_at": null
+  }
+}

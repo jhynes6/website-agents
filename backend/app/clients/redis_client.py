@@ -28,34 +28,43 @@ class RedisClient:
             logger.warning("[Redis] Not configured - metadata will not be persisted")
 
     def save_index(self, index_metadata: Dict[str, Any]) -> None:
-        """Save chatbot index metadata to Redis."""
+        """Save chatbot index metadata to Redis using stable client-slug keys."""
         if not self.redis:
             logger.warning("[Redis] Cannot save - Redis not configured")
             return
         
-        namespace = index_metadata.get("namespace")
-        if not namespace:
-            logger.error("[Redis] Cannot save - no namespace in metadata")
+        client_slug = (
+            index_metadata.get("clientSlug")
+            or index_metadata.get("index")
+            or index_metadata.get("namespace")
+        )
+        if not client_slug:
+            logger.error("[Redis] Cannot save - no clientSlug/index/namespace in metadata")
             return
         
+        # Ensure metadata uses the canonical slug for namespace/index
+        index_metadata = {**index_metadata}
+        index_metadata["namespace"] = client_slug
+        index_metadata["index"] = client_slug
+        index_metadata["clientSlug"] = client_slug
+        
         try:
-            # Save individual index with key: firestarter:index:<namespace>
-            key = f"firestarter:index:{namespace}"
-            logger.info(f"[Redis] Saving index for namespace '{namespace}' to key '{key}'")
+            key = f"firestarter:index:{client_slug}"
+            logger.info(f"[Redis] Saving index for client '{client_slug}' to key '{key}'")
             self.redis.set(key, index_metadata)
             
-            # Update the indexes list
             indexes_key = "firestarter:indexes"
             indexes = self.redis.get(indexes_key) or []
-            
-            # Ensure indexes is a list
             if not isinstance(indexes, list):
                 indexes = []
             
-            # Check if this namespace already exists
             existing_idx = None
             for i, idx in enumerate(indexes):
-                if isinstance(idx, dict) and idx.get("namespace") == namespace:
+                if isinstance(idx, dict) and (
+                    idx.get("clientSlug") == client_slug
+                    or idx.get("index") == client_slug
+                    or idx.get("namespace") == client_slug
+                ):
                     existing_idx = i
                     break
             
@@ -63,9 +72,6 @@ class RedisClient:
                 indexes[existing_idx] = index_metadata
             else:
                 indexes.insert(0, index_metadata)
-            
-            # Keep only last 50
-            indexes = indexes[:50]
             
             self.redis.set(indexes_key, indexes)
             logger.info(f"[Redis] Updated indexes list with {len(indexes)} items")

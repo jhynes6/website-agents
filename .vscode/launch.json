@@ -21,6 +21,17 @@
             "justMyCode": false,
             "envFile": "${workspaceFolder}/backend/.env",
             "python": "${workspaceFolder}/backend/venv/bin/python",
+        },
+        {
+            "name": "Python: Current File (backend venv)",
+            "type": "debugpy",
+            "request": "launch",
+            "program": "${file}",
+            "cwd": "${workspaceFolder}/backend",
+            "console": "integratedTerminal",
+            "justMyCode": false,
+            "envFile": "${workspaceFolder}/backend/.env",
+            "python": "${workspaceFolder}/backend/venv/bin/python"
         }
     ]
 }

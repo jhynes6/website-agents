@@ -65,7 +65,13 @@ class UpstashSearchClient:
     async def upsert_documents(self, documents: List[Dict[str, Any]], index_name: Optional[str] = None) -> None:
         index = index_name or self.default_index
         norm_docs = self._normalize_documents(documents)
-        log("upstash.upsert.start", {"index": index, "docs": len(norm_docs), "sample": norm_docs[:1]})
+        # Log start with minimal sample (id/url only) to avoid spamming logs with content
+        sample_meta = []
+        if norm_docs:
+            s = norm_docs[0]
+            sample_meta.append({"id": s.get("id"), "url": s.get("content", {}).get("url")})
+            
+        log("upstash.upsert.start", {"index": index, "docs": len(norm_docs), "sample": sample_meta})
         if not norm_docs:
             log("upstash.upsert.skip", {"index": index, "reason": "no valid documents"})
             return

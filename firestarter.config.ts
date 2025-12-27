@@ -59,7 +59,7 @@ const config = {
   app: {
     name: 'Firestarter',
     url: process.env.NEXT_PUBLIC_URL || 'http://localhost:3000',
-    logoPath: '/firecrawl-logo-with-fire.png',
+    logoPath: '/mintagents-logo.png',
   },
 
   ai: {
@@ -72,9 +72,9 @@ const config = {
 
   crawling: {
     defaultLimit: 10,
-    maxLimit: 100,
+    maxLimit: 5000,
     minLimit: 10,
-    limitOptions: [10, 25, 50, 100],
+    limitOptions: [10, 50, 100, 500, 5000],  // 5000 represents "All"
     scrapeTimeout: 15000,
     cacheMaxAge: 1209600000,
   },

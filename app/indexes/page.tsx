@@ -10,7 +10,7 @@ import { useStorage } from "@/hooks/useStorage"
 
 interface IndexedSite {
   url: string
-  namespace: string
+  clientSlug: string
   pagesCrawled: number
   createdAt: string
   metadata?: {
@@ -18,7 +18,8 @@ interface IndexedSite {
     description?: string
     favicon?: string
     ogImage?: string
-  }
+    indexName?: string
+  } & Record<string, unknown>
 }
 
 export default function IndexesPage() {
@@ -29,7 +30,7 @@ export default function IndexesPage() {
     // Store the site info in session storage for the dashboard
     const siteInfo = {
       url: index.url,
-      namespace: index.namespace,
+      clientSlug: index.clientSlug,
       pagesCrawled: index.pagesCrawled,
       crawlDate: index.createdAt,
       metadata: index.metadata || {},
@@ -39,8 +40,8 @@ export default function IndexesPage() {
     
     sessionStorage.setItem('firestarter_current_data', JSON.stringify(siteInfo))
     
-    // Navigate to the dashboard with namespace parameter
-    router.push(`/dashboard?namespace=${index.namespace}`)
+    // Navigate to the dashboard with clientSlug parameter
+    router.push(`/dashboard?clientSlug=${index.clientSlug}`)
   }
 
   const handleDeleteIndex = async (index: IndexedSite, e: React.MouseEvent) => {
@@ -48,7 +49,7 @@ export default function IndexesPage() {
     
     if (confirm(`Delete chatbot for ${index.metadata?.title || index.url}?`)) {
       try {
-        await deleteIndex(index.namespace)
+        await deleteIndex(index.clientSlug)
         toast.success('Chatbot deleted successfully')
       } catch {
         toast.error('Failed to delete chatbot')
@@ -109,94 +110,71 @@ export default function IndexesPage() {
           </Button>
         </div>
       ) : (
-        <div className="grid grid-cols-1 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-4">
           {indexes.map((index) => (
             <div
-              key={index.namespace}
+              key={index.clientSlug}
               onClick={() => handleSelectIndex(index)}
-              className="bg-white rounded-xl border border-gray-200 hover:shadow-md transition-shadow cursor-pointer group overflow-hidden"
+              className="bg-white rounded-lg border border-gray-200 hover:shadow-md transition-shadow cursor-pointer group p-4"
             >
-              <div className="flex items-stretch">
-                {/* Left side - OG Image */}
-                <div className="relative w-64 flex-shrink-0">
-                  {index.metadata?.ogImage ? (
-                    <>
-                      <Image 
-                        src={index.metadata.ogImage} 
-                        alt={index.metadata?.title || 'Site image'}
-                        fill
-                        className="object-cover bg-gray-50"
-                        onError={(e) => {
-                          e.currentTarget.style.display = 'none';
-                          e.currentTarget.parentElement?.querySelector('.fallback-icon')?.classList.remove('hidden');
-                        }}
-                      />
-                      <div className="absolute inset-0 bg-gradient-to-r from-transparent to-white/50"></div>
-                      <div className="fallback-icon hidden w-full h-full bg-gray-100 flex items-center justify-center absolute inset-0">
-                        <Globe className="w-12 h-12 text-gray-400" />
-                      </div>
-                    </>
-                  ) : (
-                    <div className="w-full h-full bg-gray-100 flex items-center justify-center">
-                      <Globe className="w-12 h-12 text-gray-400" />
-                    </div>
-                  )}
-                  {index.metadata?.favicon && (
-                    <div className="absolute bottom-2 left-2 w-8 h-8 bg-white rounded-lg p-1 shadow-sm">
-                      <Image 
-                        src={index.metadata.favicon} 
+              <div className="flex items-start justify-between gap-3">
+                <div className="flex items-start gap-3 min-w-0">
+                  {index.metadata?.favicon ? (
+                    <div className="w-10 h-10 rounded-lg bg-gray-50 border border-gray-200 overflow-hidden flex-shrink-0">
+                      <Image
+                        src={index.metadata.favicon}
                         alt="favicon"
-                        width={24}
-                        height={24}
+                        width={40}
+                        height={40}
                         className="w-full h-full object-contain"
                         onError={(e) => {
                           e.currentTarget.parentElement!.style.display = 'none';
                         }}
                       />
                     </div>
+                  ) : (
+                    <div className="w-10 h-10 rounded-lg bg-gray-100 border border-gray-200 flex items-center justify-center flex-shrink-0">
+                      <Globe className="w-5 h-5 text-gray-400" />
+                    </div>
                   )}
-                </div>
-                
-                {/* Right side - Content */}
-                <div className="flex items-start justify-between p-6 flex-1">
-                  <div className="flex-1 min-w-0">
-                    <h3 className="text-lg font-semibold text-[#36322F] group-hover:text-orange-600 transition-colors">
-                      {index.metadata?.title || new URL(index.url).hostname}
+                  <div className="min-w-0">
+                    <h3 className="text-base font-semibold text-[#36322F] group-hover:text-orange-600 transition-colors truncate">
+                      {(index.metadata as any)?.indexName || new URL(index.url).hostname}
                     </h3>
-                    <p className="text-sm text-gray-600 mt-1">{index.url}</p>
+                    <p className="text-xs text-gray-600 truncate">{index.url}</p>
                     {index.metadata?.description && (
-                      <p className="text-sm text-gray-500 mt-2 line-clamp-2">
+                      <p className="text-xs text-gray-500 mt-2 line-clamp-2">
                         {index.metadata.description}
                       </p>
                     )}
-                    
-                    <div className="flex items-center gap-6 mt-4 text-sm text-gray-600">
-                      <div className="flex items-center gap-2">
-                        <FileText className="w-4 h-4" />
-                        <span>{index.pagesCrawled} pages</span>
-                      </div>
-                      <div className="flex items-center gap-2">
-                        <Database className="w-4 h-4" />
-                        <span className="font-mono text-xs">{index.namespace.split('-').slice(0, -1).join('.')}</span>
-                      </div>
-                      <div className="flex items-center gap-2">
-                        <Calendar className="w-4 h-4" />
-                        <span>{formatDate(index.createdAt)}</span>
-                      </div>
-                    </div>
                   </div>
-                  
-                  <div className="flex items-center gap-2">
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      onClick={(e) => handleDeleteIndex(index, e)}
-                      className="opacity-0 group-hover:opacity-100 transition-opacity text-red-600 hover:text-red-700 hover:bg-red-50"
-                    >
-                      <Trash2 className="w-4 h-4" />
-                    </Button>
-                    <ExternalLink className="w-5 h-5 text-gray-400 group-hover:text-gray-600 transition-colors" />
-                  </div>
+                </div>
+
+                <div className="flex items-center gap-2">
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={(e) => handleDeleteIndex(index, e)}
+                    className="opacity-0 group-hover:opacity-100 transition-opacity text-red-600 hover:text-red-700 hover:bg-red-50"
+                  >
+                    <Trash2 className="w-4 h-4" />
+                  </Button>
+                  <ExternalLink className="w-5 h-5 text-gray-400 group-hover:text-gray-600 transition-colors" />
+                </div>
+              </div>
+
+              <div className="flex items-center gap-4 mt-4 text-xs text-gray-600">
+                <div className="flex items-center gap-1">
+                  <FileText className="w-4 h-4" />
+                  <span>{index.pagesCrawled} pages</span>
+                </div>
+                <div className="flex items-center gap-1">
+                  <Database className="w-4 h-4" />
+                  <span className="font-mono text-[11px]">{index.clientSlug}</span>
+                </div>
+                <div className="flex items-center gap-1">
+                  <Calendar className="w-4 h-4" />
+                  <span>{formatDate(index.createdAt)}</span>
                 </div>
               </div>
             </div>

@@ -1,0 +1,61 @@
+{
+  "client_slug": "abundantly",
+  "drive_folder_url": "",
+  "website_url": "",
+  "intake": {
+    "intake_file_id": null,
+    "intake_domain": null,
+    "checked_at": null,
+    "status": "unknown"
+  },
+  "kb": {
+    "kb_uuid": "60b6d348-e33a-11f0-b074-4e013e2ddde4",
+    "kb_region": "tor1",
+    "kb_tags": [],
+    "kb_sources": [
+      "mintleads-clients-kb/abundantly/"
+    ],
+    "kb_status": "ok",
+    "last_audit_at": null,
+    "details_ref": null
+  },
+  "spaces": {
+    "spaces_prefix": "abundantly/",
+    "total_files": 108,
+    "content_types": {
+      "case_studies": 4,
+      "brochures_newsletters": 1,
+      "other": 31,
+      "capabilities_overview": 1,
+      "intake_form": 1,
+      "unknown": 1,
+      "blogs_resources": 49,
+      "about": 5,
+      "services_products": 11,
+      "careers": 1,
+      "pricing": 3
+    },
+    "document_sources": {
+      "client_materials": 7,
+      "intake_form": 1,
+      "unknown": 1,
+      "website": 99
+    },
+    "last_audit_at": null
+  },
+  "ingest": {
+    "last_ingest_at": null,
+    "last_reindex_at": null,
+    "last_drive_sync_at": null
+  },
+  "agents": [],
+  "warnings": [],
+  "ui": {
+    "title": null,
+    "favicon": null
+  },
+  "timestamps": {
+    "created_at": null,
+    "updated_at": null
+  }
+}
