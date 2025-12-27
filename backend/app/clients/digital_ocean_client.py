@@ -142,21 +142,41 @@ class DigitalOceanClient:
                 return None
 
     async def list_agents(self) -> List[Dict[str, Any]]:
-        """List all agents."""
+        """List all agents (handling pagination)."""
         if not self.settings.digitalocean_token:
             return []
             
         async with httpx.AsyncClient() as client:
-            try:
-                # Agents endpoint might paginate too, but let's start simple
-                response = await client.get(f"{self.base_url}/agents", headers=self.headers)
-                response.raise_for_status()
-                return response.json().get("agents", [])
-            except Exception as e:
-                logger.error(f"[DO] Failed to list agents: {e}")
-                return []
+            all_agents: List[Dict[str, Any]] = []
+            next_url = f"{self.base_url}/agents"
+            while next_url:
+                try:
+                    response = await client.get(next_url, headers=self.headers)
+                    response.raise_for_status()
+                    data = response.json()
+                    agents = data.get("agents", [])
+                    all_agents.extend(agents)
 
-    async def create_agent(self, name: str, knowledge_base_uuids: List[str]) -> Optional[Dict[str, Any]]:
+                    links = data.get("links", {})
+                    next_url = links.get("pages", {}).get("next")
+
+                    # Safety check
+                    if not agents and next_url:
+                        logger.warning("[DO] Pagination returned no agents but has next link. Breaking loop.")
+                        break
+                except Exception as e:
+                    logger.error(f"[DO] Failed to list agents: {e}")
+                    return all_agents if all_agents else []
+            return all_agents
+
+    async def create_agent(
+        self,
+        name: str,
+        knowledge_base_uuids: List[str],
+        instruction: Optional[str] = None,
+        project_id: Optional[str] = None,
+        region: Optional[str] = None,
+    ) -> Optional[Dict[str, Any]]:
         """Create a new Agent. Retrieval defaults are applied via update after creation."""
         if not self.settings.digitalocean_token:
             return None
@@ -182,56 +202,24 @@ class DigitalOceanClient:
             logger.error("[DO] No valid KB UUIDs available for agent creation; aborting.")
             return None
             
-        # 1. Get a model (required)
-        # We'll pick the first available one or a default
-        model_uuid = "1b07e52b-73c5-11f0-b074-4e013e2ddde4" # Default Mistral Large from docs?
-        # Better: fetch models
-        async with httpx.AsyncClient() as client:
-            try:
-                resp = await client.get(f"{self.base_url}/models", headers=self.headers)
-                if resp.status_code == 200:
-                    models = resp.json().get("models", [])
-                    
-                    # 1. Try to find Llama 3* 70B
-                    candidates = [
-                        m for m in models 
-                        if "llama" in m.get("name", "").lower() and "70b" in m.get("name", "").lower()
-                    ]
-                    
-                    if candidates:
-                        # Prioritize 3.3 > 3.1 > 3.0
-                        candidates.sort(key=lambda x: x.get("name", ""), reverse=True)
-                        model_uuid = candidates[0]["uuid"]
-                        logger.info(f"[DO] Selected model: {candidates[0].get('name')} ({model_uuid})")
-                    else:
-                        # 2. Fallback to GPT-5 or other known working models
-                        # Check for "OpenAI GPT-5"
-                        gpt5_models = [m for m in models if "gpt-5" in m.get("name", "").lower()]
-                        if gpt5_models:
-                             model_uuid = gpt5_models[0]["uuid"]
-                             logger.info(f"[DO] Fallback model: {gpt5_models[0].get('name')} ({model_uuid})")
-                        elif models:
-                             # 3. Last resort: first available chat model
-                             chat_models = [
-                                 m for m in models 
-                                 if not m.get("is_embedding")
-                                 and "embedding" not in m.get("name", "").lower()
-                                 and "image" not in m.get("name", "").lower()
-                             ]
-                             if chat_models:
-                                 model_uuid = chat_models[0]["uuid"]
-                                 logger.info(f"[DO] Last resort model: {chat_models[0].get('name')} ({model_uuid})")
-            except:
-                pass
+        # Get model UUID from settings
+        model_uuid = self.settings.digitalocean_agent_model_uuid
 
         payload = {
             "name": name,
             "model_uuid": model_uuid,
-            "instruction": self.settings.ai_system_prompt,
-            "region": self.settings.digitalocean_genai_region,
-            "project_id": self.settings.digitalocean_project_id or await self.get_default_project_id(),
-            "knowledge_base_uuids": validated_kb_uuids,
+            "instruction": instruction or self.settings.ai_system_prompt,
+            "region": region or self.settings.digitalocean_genai_region,
+            "project_id": project_id or self.settings.digitalocean_project_id or await self.get_default_project_id(),
+            # DO API expects knowledge_base_uuid (array) per docs; keep field name aligned.
+            "knowledge_base_uuid": validated_kb_uuids,
         }
+
+        # Optional workspace/provider key wiring (some setups require these to create agents)
+        if self.settings.digitalocean_workspace_uuid:
+            payload["workspace_uuid"] = self.settings.digitalocean_workspace_uuid
+        if self.settings.digitalocean_openai_key_uuid:
+            payload["open_ai_key_uuid"] = self.settings.digitalocean_openai_key_uuid
         
         # Add optional fields only if they have values and let API default if possible
         if self.settings.digitalocean_project_id:
@@ -290,6 +278,9 @@ class DigitalOceanClient:
                 return agent
             except httpx.HTTPStatusError as e:
                 logger.error(f"[DO] HTTP Error creating agent: {e.response.status_code} - {e.response.text}")
+                if e.response.status_code == 403:
+                    # Bubble up a clear error so callers can surface it to the UI
+                    raise PermissionError(f"DigitalOcean denied agent creation: {e.response.text}")
                 return None
             except Exception as e:
                 logger.error(f"[DO] Failed to create agent: {e}")
@@ -355,9 +346,43 @@ class DigitalOceanClient:
                     json=payload
                 )
                 response.raise_for_status()
-                return response.json().get("url")
+                data = response.json() or {}
+                # Observed DO response shape: {"agent": {"deployment": {"url": "..."} } }
+                url = data.get("url")
+                if not url and isinstance(data.get("agent"), dict):
+                    url = (data.get("agent", {}).get("deployment") or {}).get("url")
+                return url
             except Exception as e:
                 logger.error(f"[DO] Failed to get agent endpoint: {e}")
+                return None
+
+    async def get_agent(self, agent_uuid: str) -> Optional[Dict[str, Any]]:
+        """Retrieve a single agent by UUID."""
+        if not agent_uuid or not self.settings.digitalocean_token:
+            return None
+        async with httpx.AsyncClient() as client:
+            try:
+                response = await client.get(
+                    f"{self.base_url}/agents/{agent_uuid}",
+                    headers=self.headers,
+                )
+                response.raise_for_status()
+                return response.json().get("agent") or response.json().get("agent_info") or response.json()
+            except httpx.HTTPStatusError as e:
+                # Some DO responses may not expose a direct GET-by-UUID in all contexts;
+                # fallback to list + match so callers can still validate UUID existence.
+                if e.response is not None and e.response.status_code == 404:
+                    try:
+                        agents = await self.list_agents()
+                        for a in agents:
+                            if a.get("uuid") == agent_uuid:
+                                return a
+                    except Exception:
+                        pass
+                logger.error(f"[DO] Failed to get agent {agent_uuid}: {e}")
+                return None
+            except Exception as e:
+                logger.error(f"[DO] Failed to get agent {agent_uuid}: {e}")
                 return None
 
     async def create_agent_api_key(self, agent_uuid: str) -> Optional[str]:
@@ -371,10 +396,14 @@ class DigitalOceanClient:
                     json=payload
                 )
                 response.raise_for_status()
-                # Assuming the response contains the key. Docs don't explicitly show the response field for key, 
-                # but usually it's access_key or key.
-                # Let's guess 'access_key' based on usage.
-                return response.json().get("access_key") or response.json().get("key")
+                data = response.json() or {}
+                # Observed DO response shape: {"api_key_info": {"secret_key": "..."}}
+                api_key_info = data.get("api_key_info") if isinstance(data.get("api_key_info"), dict) else {}
+                return (
+                    api_key_info.get("secret_key")
+                    or data.get("access_key")
+                    or data.get("key")
+                )
             except Exception as e:
                 logger.error(f"[DO] Failed to create agent API key: {e}")
                 return None
