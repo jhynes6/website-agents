@@ -4,6 +4,7 @@ import sys
 import re
 import csv
 import json
+import argparse
 from collections import defaultdict
 from datetime import datetime, timezone
 from pathlib import Path
@@ -64,7 +65,7 @@ async def get_s3_file_content(bucket: str, key: str, s3_client) -> Optional[str]
         logger.warning(f"Failed to read {key}: {e}")
         return None
 
-async def audit_spaces(settings) -> Dict[str, Any]:
+async def audit_spaces(settings, client_slug: Optional[str] = None) -> Dict[str, Any]:
     """
      audits the Spaces bucket.
      Returns client_stats dict with expanded metadata.
@@ -87,7 +88,9 @@ async def audit_spaces(settings) -> Dict[str, Any]:
     })
     
     paginator = s3.get_paginator('list_objects_v2')
-    page_iterator = paginator.paginate(Bucket=bucket)
+    
+    prefix = f"{client_slug}/" if client_slug else ""
+    page_iterator = paginator.paginate(Bucket=bucket, Prefix=prefix)
 
     file_count = 0
     for page in page_iterator:
@@ -107,7 +110,16 @@ async def audit_spaces(settings) -> Dict[str, Any]:
             if len(parts) < 2:
                 continue
                 
-            client_slug = parts[0]
+            current_client_slug = parts[0]
+            
+            # Skip non-client folders like _client_kb_master
+            if current_client_slug.startswith("_"):
+                continue
+
+            # If specific client requested, enforce it (Prefix does most work but double check)
+            if client_slug and current_client_slug != client_slug:
+                continue
+
             filename = parts[-1]
             
             # Check for metadata.json
@@ -115,7 +127,7 @@ async def audit_spaces(settings) -> Dict[str, Any]:
                 content = await get_s3_file_content(bucket, key, s3)
                 if content:
                     try:
-                        client_stats[client_slug]["metadata_json"] = json.loads(content)
+                        client_stats[current_client_slug]["metadata_json"] = json.loads(content)
                     except json.JSONDecodeError:
                         logger.warning(f"Invalid JSON in {key}")
                 continue
@@ -137,15 +149,15 @@ async def audit_spaces(settings) -> Dict[str, Any]:
             if d_source == "intake_form":
                 url_in_header = meta.get('url')
                 if url_in_header:
-                     client_stats[client_slug]["intake_form_url"] = url_in_header
+                     client_stats[current_client_slug]["intake_form_url"] = url_in_header
 
-            client_stats[client_slug]["total_files"] += 1
-            client_stats[client_slug]["content_types"][c_type] += 1
-            client_stats[client_slug]["document_sources"][d_source] += 1
+            client_stats[current_client_slug]["total_files"] += 1
+            client_stats[current_client_slug]["content_types"][c_type] += 1
+            client_stats[current_client_slug]["document_sources"][d_source] += 1
             
     return client_stats
 
-async def audit_kbs():
+async def audit_kbs(client_slug: Optional[str] = None):
     """
     Audits Knowledge Bases, fetching full details for each.
     """
@@ -159,6 +171,12 @@ async def audit_kbs():
         if (idx + 1) % 5 == 0:
             logger.info(f"Processed {idx + 1}/{len(kbs_summary)} Knowledge Bases...")
         
+        # Optional: Filter by client name if provided and possible
+        # KB name usually matches client slug
+        name_check = kb_sum.get('name')
+        if client_slug and name_check != client_slug:
+            continue
+
         uuid = kb_sum.get('uuid')
         
         # Fetch full details to get tags, last_indexing_job, created_at
@@ -241,9 +259,15 @@ async def upload_directory_to_spaces(directory: Path, bucket: str, prefix: str):
     logger.info("Upload complete.")
 
 async def main():
+    parser = argparse.ArgumentParser(description="Audit DigitalOcean Spaces and Knowledge Bases")
+    parser.add_argument("--client", help="Audit a specific client slug only", type=str)
+    args = parser.parse_args()
+
     settings = get_settings()
     
     print("\n=== STARTING AUDIT ===\n")
+    if args.client:
+        print(f"Targeting specific client: {args.client}")
 
     io_dir = Path(__file__).resolve().parent / "io"
     io_dir.mkdir(parents=True, exist_ok=True)
@@ -264,12 +288,12 @@ async def main():
     
     # 2. Audit Spaces (fetches metadata.json and intake urls)
     print("--- 1. Analyzing Client Folders in Spaces ---")
-    client_stats = await audit_spaces(settings)
+    client_stats = await audit_spaces(settings, client_slug=args.client)
     print(f"\nFound {len(client_stats)} client folders.")
 
     # 3. Audit KBs (fetches detailed info)
     print("\n\n--- 2. Analyzing Knowledge Bases ---")
-    kb_audit = await audit_kbs()
+    kb_audit = await audit_kbs(client_slug=args.client)
     print(f"\nFound {len(kb_audit)} Knowledge Bases.")
     
     misconfigured_kbs = []
@@ -285,7 +309,11 @@ async def main():
     print(f"Found {len(agents)} Agents.")
 
     # 5. Build Summary & Global Stats
-    all_clients = set(client_stats.keys()) | {kb['name'] for kb in kb_audit}
+    # Exclude _client_kb_master and other system folders explicitly from clients set
+    all_clients = {
+        c for c in (set(client_stats.keys()) | {kb['name'] for kb in kb_audit})
+        if not c.startswith("_")
+    }
     
     summary = {
         "generated_at": datetime.now(timezone.utc).isoformat(),
