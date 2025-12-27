@@ -1,12 +1,12 @@
 {
   "client_slug": "peachtree-va",
-  "drive_folder_url": "",
-  "website_url": "",
+  "drive_folder_url": "https://drive.google.com/drive/folders/1UQUx5IkQ28BSz9i0SamRGeuPf-utzp_8",
+  "website_url": "darleen.priday",
   "intake": {
     "intake_file_id": null,
-    "intake_domain": null,
+    "intake_domain": "darleen.priday",
     "checked_at": null,
-    "status": "unknown"
+    "status": null
   },
   "kb": {
     "kb_uuid": "a4b2a275-e33e-11f0-b074-4e013e2ddde4",

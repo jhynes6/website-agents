@@ -1,12 +1,12 @@
 {
   "client_slug": "dodeka-digital",
-  "drive_folder_url": "",
-  "website_url": "",
+  "drive_folder_url": "https://drive.google.com/drive/folders/15UXWbmuhFWpQBIp4lY6QHkPNHY_1eFJi",
+  "website_url": "dodekadigital.com",
   "intake": {
     "intake_file_id": null,
-    "intake_domain": null,
+    "intake_domain": "dodekadigital.com",
     "checked_at": null,
-    "status": "unknown"
+    "status": null
   },
   "kb": {
     "kb_uuid": "b11c8f36-e33b-11f0-b074-4e013e2ddde4",

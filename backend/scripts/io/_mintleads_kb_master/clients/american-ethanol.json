@@ -1,12 +1,12 @@
 {
   "client_slug": "american-ethanol",
-  "drive_folder_url": "",
-  "website_url": "",
+  "drive_folder_url": "https://drive.google.com/drive/folders/1pJ8quD1VPS2WmjwI5rulYkgmGGaDomwi",
+  "website_url": "american-ethanol.com",
   "intake": {
     "intake_file_id": null,
-    "intake_domain": null,
+    "intake_domain": "american-ethanol.com",
     "checked_at": null,
-    "status": "unknown"
+    "status": null
   },
   "kb": {
     "kb_uuid": "7e6bcd49-e33a-11f0-b074-4e013e2ddde4",

@@ -1,12 +1,12 @@
 {
   "client_slug": "nga-healthcare",
-  "drive_folder_url": "",
-  "website_url": "",
+  "drive_folder_url": "https://drive.google.com/drive/folders/1yAbFFlIqt6dY2yFfRCE0T3nsNzso9pML",
+  "website_url": "ngahealthcare.com",
   "intake": {
     "intake_file_id": null,
-    "intake_domain": null,
+    "intake_domain": "ngahealthcare.com",
     "checked_at": null,
-    "status": "unknown"
+    "status": null
   },
   "kb": {
     "kb_uuid": "3a5e908d-e33e-11f0-b074-4e013e2ddde4",

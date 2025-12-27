@@ -1,12 +1,12 @@
 {
   "client_slug": "galactic-fed",
-  "drive_folder_url": "",
-  "website_url": "",
+  "drive_folder_url": "https://drive.google.com/drive/folders/1C0lsL3SPl_wH4Yl4e-46xpNMPbf2Lwfg",
+  "website_url": "galacticfed.com",
   "intake": {
     "intake_file_id": null,
-    "intake_domain": null,
+    "intake_domain": "galacticfed.com",
     "checked_at": null,
-    "status": "unknown"
+    "status": null
   },
   "kb": {
     "kb_uuid": "85e606ea-e33c-11f0-b074-4e013e2ddde4",

@@ -1,12 +1,12 @@
 {
   "client_slug": "lib-consulting-group",
-  "drive_folder_url": "",
-  "website_url": "",
+  "drive_folder_url": "https://drive.google.com/drive/folders/1r6RVh8AJOqkyOHY7lH-ZUNU-bvEbd2zu",
+  "website_url": "libconsultinggroup.com",
   "intake": {
     "intake_file_id": null,
-    "intake_domain": null,
+    "intake_domain": "libconsultinggroup.com",
     "checked_at": null,
-    "status": "unknown"
+    "status": null
   },
   "kb": {
     "kb_uuid": "10ececb5-e33d-11f0-b074-4e013e2ddde4",

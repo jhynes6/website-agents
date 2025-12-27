@@ -1,12 +1,12 @@
 {
   "client_slug": "incyte-media",
-  "drive_folder_url": "",
-  "website_url": "",
+  "drive_folder_url": "https://drive.google.com/drive/folders/1oAjv07kb8pOpdHdeLoOh9sfiZl4vsRHN",
+  "website_url": "incytemedia.com",
   "intake": {
     "intake_file_id": null,
-    "intake_domain": null,
+    "intake_domain": "incytemedia.com",
     "checked_at": null,
-    "status": "unknown"
+    "status": null
   },
   "kb": {
     "kb_uuid": "c10bf3c1-e33c-11f0-b074-4e013e2ddde4",

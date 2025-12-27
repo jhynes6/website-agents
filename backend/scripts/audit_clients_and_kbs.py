@@ -217,6 +217,52 @@ async def upload_directory_to_spaces(directory: Path, bucket: str, prefix: str):
                 
     logger.info("Upload complete.")
 
+def load_client_metadata(io_dir: Path) -> Dict[str, Dict[str, Any]]:
+    """
+    Loads client metadata from CSV files in the io directory.
+    Returns a dict mapping client_slug -> metadata dict.
+    """
+    metadata = defaultdict(dict)
+    
+    # 1. Load from bulk_onboarding_run_file.csv (Original source)
+    onboarding_file = io_dir / "bulk_onboarding_run_file.csv"
+    if onboarding_file.exists():
+        try:
+            with open(onboarding_file, 'r', encoding='utf-8-sig') as f:
+                reader = csv.DictReader(f)
+                for row in reader:
+                    slug = row.get("client-slug")
+                    if slug:
+                        metadata[slug]["drive_folder"] = row.get("drive-folder")
+                        metadata[slug]["website"] = row.get("client-website")
+        except Exception as e:
+            logger.error(f"Error reading {onboarding_file}: {e}")
+            
+    # 2. Load from intake_domains.csv (Intake processing results)
+    intake_file = io_dir / "intake_domains.csv"
+    if intake_file.exists():
+        try:
+            with open(intake_file, 'r', encoding='utf-8') as f:
+                reader = csv.DictReader(f)
+                for row in reader:
+                    slug = row.get("client-slug")
+                    if slug:
+                        # Update/Override with potentially processed data
+                        if row.get("drive-folder"):
+                            metadata[slug]["drive_folder"] = row.get("drive-folder")
+                        
+                        metadata[slug]["intake_domain"] = row.get("intake-domain")
+                        metadata[slug]["intake_status"] = row.get("status")
+                        
+                        # Sometimes original-client-website is in this CSV too
+                        if row.get("original-client-website"):
+                            metadata[slug]["website"] = row.get("original-client-website")
+                            
+        except Exception as e:
+            logger.error(f"Error reading {intake_file}: {e}")
+            
+    return metadata
+
 async def main():
     settings = get_settings()
     
@@ -232,6 +278,10 @@ async def main():
     kb_inspect_dir = kb_master_reports_dir / "kb_inspect"
     kb_inspect_dir.mkdir(parents=True, exist_ok=True)
     
+    # Load metadata from CSVs
+    client_metadata = load_client_metadata(io_dir)
+    logger.info(f"Loaded metadata for {len(client_metadata)} clients.")
+
     # 1. Audit Spaces
     print("--- 1. Analyzing Client Folders in Spaces ---")
     client_stats = await audit_spaces(settings)
@@ -386,7 +436,7 @@ async def main():
             "total": len(agents),
             "by_region": defaultdict(int),
             "with_kb_region_mismatch": 0,
-            "list": [], # Added list of agents
+            "list": [], 
         },
         "top_warnings": [],
         "reports": {
@@ -437,6 +487,9 @@ async def main():
     for client in sorted(list(all_clients)):
         stats = client_stats.get(client, None)
         kb = kb_map.get(client, None)
+        
+        # Get metadata for this client
+        meta = client_metadata.get(client, {})
 
         kb_status = "missing"
         if kb:
@@ -457,6 +510,11 @@ async def main():
         if total_files == 0:
             summary["totals"]["clients_zero_files"] += 1
             add_warning(client, "zero files in Spaces")
+            
+        # Intake missing warning
+        if not meta.get("intake_domain") and not meta.get("website"):
+             summary["totals"]["clients_missing_intake"] += 1
+             # Optional: add warning, but might be noisy if many are missing
 
         if kb_status == "misconfigured":
             add_warning(client, "KB misconfigured (prefix mismatch)")
@@ -479,13 +537,13 @@ async def main():
 
         client_record = {
             "client_slug": client,
-            "drive_folder_url": "",
-            "website_url": "",
+            "drive_folder_url": meta.get("drive_folder", ""),
+            "website_url": meta.get("website", ""),
             "intake": {
-                "intake_file_id": None,
-                "intake_domain": None,
+                "intake_file_id": None, # Not strictly in CSVs, skipped for now
+                "intake_domain": meta.get("intake_domain"),
                 "checked_at": None,
-                "status": "unknown",
+                "status": meta.get("intake_status", "unknown"),
             },
             "kb": {
                 "kb_uuid": kb.get("uuid") if kb else None,

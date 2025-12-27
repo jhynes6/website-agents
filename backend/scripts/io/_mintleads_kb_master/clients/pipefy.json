@@ -1,12 +1,12 @@
 {
   "client_slug": "pipefy",
-  "drive_folder_url": "",
-  "website_url": "",
+  "drive_folder_url": "https://drive.google.com/drive/folders/1HAVlTuoBxDWfeYwXkrM402f9_fEJCPaN",
+  "website_url": "pipefy.com",
   "intake": {
     "intake_file_id": null,
-    "intake_domain": null,
+    "intake_domain": "pipefy.com",
     "checked_at": null,
-    "status": "unknown"
+    "status": null
   },
   "kb": {
     "kb_uuid": "cc56baa7-e33e-11f0-b074-4e013e2ddde4",

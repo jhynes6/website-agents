@@ -1,12 +1,12 @@
 {
   "client_slug": "push-analytics",
-  "drive_folder_url": "",
-  "website_url": "",
+  "drive_folder_url": "https://drive.google.com/drive/folders/1yrJop5fYvIXOK-_lfzwAanoI3dzA_Hs9",
+  "website_url": "pushanalytics.com",
   "intake": {
     "intake_file_id": null,
-    "intake_domain": null,
+    "intake_domain": "pushanalytics.com",
     "checked_at": null,
-    "status": "unknown"
+    "status": null
   },
   "kb": {
     "kb_uuid": "ee17f8c5-e33e-11f0-b074-4e013e2ddde4",

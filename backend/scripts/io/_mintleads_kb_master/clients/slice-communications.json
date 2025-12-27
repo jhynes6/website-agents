@@ -1,0 +1,61 @@
+{
+  "client_slug": "slice-communications",
+  "drive_folder_url": "https://drive.google.com/drive/folders/191aog58jGQDC6nzvQErM4cq5urqwB1F0",
+  "website_url": "slicecommunications.com",
+  "intake": {
+    "intake_file_id": null,
+    "intake_domain": "slicecommunications.com",
+    "checked_at": null,
+    "status": null
+  },
+  "kb": {
+    "kb_uuid": "3690e9b9-e340-11f0-b074-4e013e2ddde4",
+    "kb_region": "tor1",
+    "kb_tags": [],
+    "kb_sources": [
+      "mintleads-clients-kb/slice-communications/"
+    ],
+    "kb_status": "ok",
+    "last_audit_at": null,
+    "details_ref": null
+  },
+  "spaces": {
+    "spaces_prefix": "slice-communications/",
+    "total_files": 156,
+    "content_types": {
+      "case_studies": 19,
+      "brochures_newsletters": 1,
+      "other": 24,
+      "intake_form": 1,
+      "unknown": 1,
+      "homepage": 1,
+      "about": 28,
+      "careers": 1,
+      "blogs_resources": 68,
+      "services_products": 5,
+      "industry_markets": 7
+    },
+    "document_sources": {
+      "client_materials": 4,
+      "intake_form": 1,
+      "unknown": 1,
+      "website": 150
+    },
+    "last_audit_at": null
+  },
+  "ingest": {
+    "last_ingest_at": null,
+    "last_reindex_at": null,
+    "last_drive_sync_at": null
+  },
+  "agents": [],
+  "warnings": [],
+  "ui": {
+    "title": null,
+    "favicon": null
+  },
+  "timestamps": {
+    "created_at": null,
+    "updated_at": null
+  }
+}

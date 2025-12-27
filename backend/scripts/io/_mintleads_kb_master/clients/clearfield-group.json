@@ -1,12 +1,12 @@
 {
   "client_slug": "clearfield-group",
-  "drive_folder_url": "",
-  "website_url": "",
+  "drive_folder_url": "https://drive.google.com/drive/folders/15zqdUiWKNI4R2s8hKTaAsFqgl3oCbpJS",
+  "website_url": "clearfieldleadership.com",
   "intake": {
     "intake_file_id": null,
-    "intake_domain": null,
+    "intake_domain": "clearfieldleadership.com",
     "checked_at": null,
-    "status": "unknown"
+    "status": null
   },
   "kb": {
     "kb_uuid": "6f40d250-e33b-11f0-b074-4e013e2ddde4",

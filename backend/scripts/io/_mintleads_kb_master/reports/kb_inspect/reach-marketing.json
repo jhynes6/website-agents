@@ -1,0 +1,36 @@
+{
+  "knowledge_base": {
+    "uuid": "58a6cb68-e33f-11f0-b074-4e013e2ddde4",
+    "name": "reach-marketing",
+    "created_at": "2025-12-27T16:16:05Z",
+    "updated_at": "2025-12-27T16:23:45Z",
+    "tags": [
+      "client-docs",
+      "reach-marketing"
+    ],
+    "region": "tor1",
+    "embedding_model_uuid": "22653204-79ed-11ef-bf8f-4e013e2ddde4",
+    "project_id": "cb4a32d2-7e9f-44d8-86c7-63b3304c077b",
+    "database_id": "e27f23bd-d953-48c5-8923-f827868ba230",
+    "last_indexing_job": {
+      "uuid": "59147abe-e33f-11f0-b074-4e013e2ddde4",
+      "knowledge_base_uuid": "58a6cb68-e33f-11f0-b074-4e013e2ddde4",
+      "created_at": "2025-12-27T16:16:06Z",
+      "updated_at": "2025-12-27T16:17:44Z",
+      "started_at": "2025-12-27T16:16:06Z",
+      "finished_at": "2025-12-27T16:17:44Z",
+      "phase": "BATCH_JOB_PHASE_SUCCEEDED",
+      "tokens": 626844,
+      "total_tokens": "626844",
+      "status": "INDEX_JOB_STATUS_COMPLETED",
+      "is_report_available": true
+    }
+  },
+  "sources": [
+    "mintleads-clients-kb/reach-marketing/"
+  ],
+  "status": {
+    "is_correctly_configured": true,
+    "pointing_to_root": false
+  }
+}

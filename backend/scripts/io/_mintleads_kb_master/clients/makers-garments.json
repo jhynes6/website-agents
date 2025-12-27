@@ -1,12 +1,12 @@
 {
   "client_slug": "makers-garments",
-  "drive_folder_url": "",
-  "website_url": "",
+  "drive_folder_url": "https://drive.google.com/drive/folders/1aUaEozMMNCK8OgP7npXbzvVu1eetGNh7",
+  "website_url": "makersgarments.com",
   "intake": {
     "intake_file_id": null,
-    "intake_domain": null,
+    "intake_domain": "makersgarments.com",
     "checked_at": null,
-    "status": "unknown"
+    "status": null
   },
   "kb": {
     "kb_uuid": "d50fd26f-e33d-11f0-b074-4e013e2ddde4",

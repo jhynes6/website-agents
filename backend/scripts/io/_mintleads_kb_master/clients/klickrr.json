@@ -1,12 +1,12 @@
 {
   "client_slug": "klickrr",
-  "drive_folder_url": "",
-  "website_url": "",
+  "drive_folder_url": "https://drive.google.com/drive/folders/1wnfZVhScZbHoCM7dyFxum7TB_DTywxoc",
+  "website_url": "klickrr.com",
   "intake": {
     "intake_file_id": null,
-    "intake_domain": null,
+    "intake_domain": "klickrr.com",
     "checked_at": null,
-    "status": "unknown"
+    "status": null
   },
   "kb": {
     "kb_uuid": "0061c1bf-e33d-11f0-b074-4e013e2ddde4",

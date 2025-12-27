@@ -1,12 +1,12 @@
 {
   "client_slug": "iconic-supply-co.",
-  "drive_folder_url": "",
-  "website_url": "",
+  "drive_folder_url": "https://drive.google.com/drive/folders/15P-yz7XyYAFP4C1iedw6otq-aznPTy6r",
+  "website_url": "iconicsupply.co",
   "intake": {
     "intake_file_id": null,
-    "intake_domain": null,
+    "intake_domain": "iconicsupply.co",
     "checked_at": null,
-    "status": "unknown"
+    "status": null
   },
   "kb": {
     "kb_uuid": null,

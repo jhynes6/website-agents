@@ -1,12 +1,12 @@
 {
   "client_slug": "integrity-professionals",
-  "drive_folder_url": "",
-  "website_url": "",
+  "drive_folder_url": "https://drive.google.com/drive/folders/1_2n8JI5bmR_RK_sCrq6UBOBZ6j_9b78K",
+  "website_url": "integrityprofessionals.com",
   "intake": {
     "intake_file_id": null,
-    "intake_domain": null,
+    "intake_domain": "integrityprofessionals.com",
     "checked_at": null,
-    "status": "unknown"
+    "status": null
   },
   "kb": {
     "kb_uuid": "d53783a4-e33c-11f0-b074-4e013e2ddde4",

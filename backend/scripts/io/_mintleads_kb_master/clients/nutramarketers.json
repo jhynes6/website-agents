@@ -1,12 +1,12 @@
 {
   "client_slug": "nutramarketers",
-  "drive_folder_url": "",
-  "website_url": "",
+  "drive_folder_url": "https://drive.google.com/drive/folders/17f61Ky458t4ohDm0FvMppG_nBPJBHoNz",
+  "website_url": "nutramarketers.com",
   "intake": {
     "intake_file_id": null,
-    "intake_domain": null,
+    "intake_domain": "nutramarketers.com",
     "checked_at": null,
-    "status": "unknown"
+    "status": null
   },
   "kb": {
     "kb_uuid": "6d522636-e33e-11f0-b074-4e013e2ddde4",

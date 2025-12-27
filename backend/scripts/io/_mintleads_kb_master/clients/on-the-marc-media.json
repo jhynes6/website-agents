@@ -1,12 +1,12 @@
 {
   "client_slug": "on-the-marc-media",
-  "drive_folder_url": "",
-  "website_url": "",
+  "drive_folder_url": "https://drive.google.com/drive/folders/1M81_h7a4tm5He4bxrZaPGXyoqvm60NG9",
+  "website_url": "onthemarcmedia.co",
   "intake": {
     "intake_file_id": null,
-    "intake_domain": null,
+    "intake_domain": "onthemarcmedia.co",
     "checked_at": null,
-    "status": "unknown"
+    "status": null
   },
   "kb": {
     "kb_uuid": "92f10193-e33e-11f0-b074-4e013e2ddde4",

@@ -1,12 +1,12 @@
 {
   "client_slug": "clarke-consulting",
-  "drive_folder_url": "",
-  "website_url": "",
+  "drive_folder_url": "https://drive.google.com/drive/folders/1GmwFewsJ-8hGTp0SNvmJG_ZMXUVYveR4",
+  "website_url": "clarkeconsulting.com",
   "intake": {
     "intake_file_id": null,
-    "intake_domain": null,
+    "intake_domain": "clarkeconsulting.com",
     "checked_at": null,
-    "status": "unknown"
+    "status": null
   },
   "kb": {
     "kb_uuid": "4cfdff79-e33b-11f0-b074-4e013e2ddde4",

@@ -1,12 +1,12 @@
 {
   "client_slug": "mintleads",
-  "drive_folder_url": "",
-  "website_url": "",
+  "drive_folder_url": "https://drive.google.com/drive/folders/1gaOLC7F0cEQmW69Z1cLEL2tfZp07NLcm",
+  "website_url": "mintleads.io",
   "intake": {
     "intake_file_id": null,
-    "intake_domain": null,
+    "intake_domain": "mintleads.io",
     "checked_at": null,
-    "status": "unknown"
+    "status": null
   },
   "kb": {
     "kb_uuid": "2830e08b-e33e-11f0-b074-4e013e2ddde4",

@@ -1,12 +1,12 @@
 {
   "client_slug": "kilter.la",
-  "drive_folder_url": "",
-  "website_url": "",
+  "drive_folder_url": "https://drive.google.com/drive/folders/1pE-P8imohCGApyfUsSrhnhq0YJXowBk_",
+  "website_url": "kilter.la",
   "intake": {
     "intake_file_id": null,
-    "intake_domain": null,
+    "intake_domain": "kilter.la",
     "checked_at": null,
-    "status": "unknown"
+    "status": null
   },
   "kb": {
     "kb_uuid": null,

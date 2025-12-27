@@ -1,12 +1,12 @@
 {
   "client_slug": "conneqt",
-  "drive_folder_url": "",
-  "website_url": "",
+  "drive_folder_url": "https://drive.google.com/drive/folders/1mxo_56caS1BtrsyALrNtwvCz5mppwJQv",
+  "website_url": "conneqt.care",
   "intake": {
     "intake_file_id": null,
-    "intake_domain": null,
+    "intake_domain": "conneqt.care",
     "checked_at": null,
-    "status": "unknown"
+    "status": null
   },
   "kb": {
     "kb_uuid": "380edf98-e33b-11f0-b074-4e013e2ddde4",

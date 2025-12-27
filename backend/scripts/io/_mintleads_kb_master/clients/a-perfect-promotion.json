@@ -1,12 +1,12 @@
 {
   "client_slug": "a-perfect-promotion",
-  "drive_folder_url": "",
-  "website_url": "",
+  "drive_folder_url": "https://drive.google.com/drive/folders/1vKv7hXOxc2-Z9lOhQrqhNKCRqzPNrEED",
+  "website_url": "aperfectpromotion.com",
   "intake": {
     "intake_file_id": null,
-    "intake_domain": null,
+    "intake_domain": "aperfectpromotion.com",
     "checked_at": null,
-    "status": "unknown"
+    "status": null
   },
   "kb": {
     "kb_uuid": "4579e84e-e339-11f0-b074-4e013e2ddde4",

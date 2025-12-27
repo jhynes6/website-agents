@@ -1,12 +1,12 @@
 {
   "client_slug": "manufacturing-geeks",
-  "drive_folder_url": "",
-  "website_url": "",
+  "drive_folder_url": "https://drive.google.com/drive/folders/1Vjc_5eiisgOdeOmmH2ht1NG36T0dh_5y",
+  "website_url": "manufacturing-geeks.webflow.io",
   "intake": {
     "intake_file_id": null,
-    "intake_domain": null,
+    "intake_domain": "manufacturing-geeks.webflow.io",
     "checked_at": null,
-    "status": "unknown"
+    "status": null
   },
   "kb": {
     "kb_uuid": "fd0590cb-e33d-11f0-b074-4e013e2ddde4",

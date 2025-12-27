@@ -1,12 +1,12 @@
 {
   "client_slug": "forge-apollo",
-  "drive_folder_url": "",
-  "website_url": "",
+  "drive_folder_url": "https://drive.google.com/drive/folders/1NT4gs6ejiiNw3_10_i9-qcYKni_J-XRu",
+  "website_url": "forgeapollo.com",
   "intake": {
     "intake_file_id": null,
-    "intake_domain": null,
+    "intake_domain": "forgeapollo.com",
     "checked_at": null,
-    "status": "unknown"
+    "status": null
   },
   "kb": {
     "kb_uuid": "4bb5cb88-e33c-11f0-b074-4e013e2ddde4",

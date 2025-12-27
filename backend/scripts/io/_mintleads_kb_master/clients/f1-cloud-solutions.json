@@ -1,12 +1,12 @@
 {
   "client_slug": "f1-cloud-solutions",
-  "drive_folder_url": "",
-  "website_url": "",
+  "drive_folder_url": "https://drive.google.com/drive/folders/1AqLTL1fnYHs0iRuQQujKi8JdDdIDz5Lg",
+  "website_url": "f1cloud.com",
   "intake": {
     "intake_file_id": null,
-    "intake_domain": null,
+    "intake_domain": "f1cloud.com",
     "checked_at": null,
-    "status": "unknown"
+    "status": null
   },
   "kb": {
     "kb_uuid": "1f558351-e33c-11f0-b074-4e013e2ddde4",

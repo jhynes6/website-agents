@@ -1,12 +1,12 @@
 {
   "client_slug": "cas-severn",
-  "drive_folder_url": "",
-  "website_url": "",
+  "drive_folder_url": "https://drive.google.com/drive/folders/1GW5S_HOzld8UBpa_wGzA6REF9i9kl70k",
+  "website_url": "cassevern.com",
   "intake": {
     "intake_file_id": null,
-    "intake_domain": null,
+    "intake_domain": "cassevern.com",
     "checked_at": null,
-    "status": "unknown"
+    "status": null
   },
   "kb": {
     "kb_uuid": "108a996a-e33b-11f0-b074-4e013e2ddde4",

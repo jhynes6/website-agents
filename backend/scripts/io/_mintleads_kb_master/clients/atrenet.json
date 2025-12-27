@@ -1,12 +1,12 @@
 {
   "client_slug": "atrenet",
-  "drive_folder_url": "",
-  "website_url": "",
+  "drive_folder_url": "https://drive.google.com/drive/folders/1fDrNHnhaoDm9lFgEAR1LxnT6arykvx8n",
+  "website_url": "atre.net",
   "intake": {
     "intake_file_id": null,
-    "intake_domain": null,
+    "intake_domain": "atre.net",
     "checked_at": null,
-    "status": "unknown"
+    "status": null
   },
   "kb": {
     "kb_uuid": "9abb788e-e33a-11f0-b074-4e013e2ddde4",

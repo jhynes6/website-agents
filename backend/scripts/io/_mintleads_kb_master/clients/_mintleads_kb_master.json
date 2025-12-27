@@ -1,0 +1,50 @@
+{
+  "client_slug": "_mintleads_kb_master",
+  "drive_folder_url": "",
+  "website_url": "",
+  "intake": {
+    "intake_file_id": null,
+    "intake_domain": null,
+    "checked_at": null,
+    "status": "unknown"
+  },
+  "kb": {
+    "kb_uuid": null,
+    "kb_region": null,
+    "kb_tags": [],
+    "kb_sources": [],
+    "kb_status": "missing",
+    "last_audit_at": null,
+    "details_ref": null
+  },
+  "spaces": {
+    "spaces_prefix": "_mintleads_kb_master/",
+    "total_files": 70,
+    "content_types": {
+      "unknown": 70
+    },
+    "document_sources": {
+      "clients": 35,
+      "reports": 34,
+      "unknown": 1
+    },
+    "last_audit_at": null
+  },
+  "ingest": {
+    "last_ingest_at": null,
+    "last_reindex_at": null,
+    "last_drive_sync_at": null
+  },
+  "agents": [],
+  "warnings": [
+    "KB missing"
+  ],
+  "ui": {
+    "title": null,
+    "favicon": null
+  },
+  "timestamps": {
+    "created_at": null,
+    "updated_at": null
+  }
+}

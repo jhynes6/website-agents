@@ -1,12 +1,12 @@
 {
   "client_slug": "bucklandco",
-  "drive_folder_url": "",
-  "website_url": "",
+  "drive_folder_url": "https://drive.google.com/drive/folders/1JjSsQnPVcZySy_c-nbwtfiF2zTSLAXxx",
+  "website_url": "bucklandco.com",
   "intake": {
     "intake_file_id": null,
-    "intake_domain": null,
+    "intake_domain": "bucklandco.com",
     "checked_at": null,
-    "status": "unknown"
+    "status": null
   },
   "kb": {
     "kb_uuid": "ddd6c82a-e33a-11f0-b074-4e013e2ddde4",

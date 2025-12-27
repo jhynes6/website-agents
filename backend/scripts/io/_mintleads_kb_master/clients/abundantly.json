@@ -1,12 +1,12 @@
 {
   "client_slug": "abundantly",
-  "drive_folder_url": "",
-  "website_url": "",
+  "drive_folder_url": "https://drive.google.com/drive/folders/1yHNyICnNt2oP2Bn3cWo9dDZS77soRbvq",
+  "website_url": "abundantly.com",
   "intake": {
     "intake_file_id": null,
-    "intake_domain": null,
+    "intake_domain": "abundantly.com",
     "checked_at": null,
-    "status": "unknown"
+    "status": null
   },
   "kb": {
     "kb_uuid": "60b6d348-e33a-11f0-b074-4e013e2ddde4",

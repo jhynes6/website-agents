@@ -1,12 +1,12 @@
 {
   "client_slug": "cogent-consulting",
-  "drive_folder_url": "",
-  "website_url": "",
+  "drive_folder_url": "https://drive.google.com/drive/folders/1JjPS0MeTfDGM2j0ovcmscN29B_E9OLjK",
+  "website_url": "cogent-llc.com",
   "intake": {
     "intake_file_id": null,
-    "intake_domain": null,
+    "intake_domain": "cogent-llc.com",
     "checked_at": null,
-    "status": "unknown"
+    "status": null
   },
   "kb": {
     "kb_uuid": "870b6e31-e33b-11f0-b074-4e013e2ddde4",
