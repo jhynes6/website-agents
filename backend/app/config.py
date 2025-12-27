@@ -69,7 +69,7 @@ class Settings(BaseSettings):
         alias="DIGITAL_OCEAN_AGENT_PROVIDE_CITATIONS",
     )
     digitalocean_agent_k: int = Field(
-        8,
+        5,
         alias="DIGITAL_OCEAN_AGENT_K",
         ge=1,
     )
