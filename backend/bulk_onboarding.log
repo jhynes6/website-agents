@@ -9231,3 +9231,88 @@ For more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/St
 2025-12-27 11:07:48,919 - firestarter - INFO - firecrawl.poll {'status': 'scraping', 'elapsed_ms': 1000}
 2025-12-27 11:07:51,177 - httpx - INFO - HTTP Request: GET https://api.firecrawl.dev/v2/crawl/019b6090-e65a-77e5-884f-94d2a2af0b85 "HTTP/1.1 200 OK"
 2025-12-27 11:07:51,360 - firestarter - INFO - firecrawl.poll {'status': 'scraping', 'elapsed_ms': 2000}
+2025-12-27 11:07:52,644 - httpx - INFO - HTTP Request: GET https://api.firecrawl.dev/v2/crawl/019b6090-e65a-77e5-884f-94d2a2af0b85 "HTTP/1.1 200 OK"
+2025-12-27 11:07:52,827 - firestarter - INFO - firecrawl.poll {'status': 'scraping', 'elapsed_ms': 3000}
+2025-12-27 11:07:54,145 - httpx - INFO - HTTP Request: GET https://api.firecrawl.dev/v2/crawl/019b6090-e65a-77e5-884f-94d2a2af0b85 "HTTP/1.1 200 OK"
+2025-12-27 11:07:54,333 - firestarter - INFO - firecrawl.poll {'status': 'scraping', 'elapsed_ms': 4000}
+2025-12-27 11:07:55,651 - httpx - INFO - HTTP Request: GET https://api.firecrawl.dev/v2/crawl/019b6090-e65a-77e5-884f-94d2a2af0b85 "HTTP/1.1 200 OK"
+2025-12-27 11:07:55,845 - firestarter - INFO - firecrawl.poll {'status': 'scraping', 'elapsed_ms': 5000}
+2025-12-27 11:07:57,136 - httpx - INFO - HTTP Request: GET https://api.firecrawl.dev/v2/crawl/019b6090-e65a-77e5-884f-94d2a2af0b85 "HTTP/1.1 200 OK"
+2025-12-27 11:07:57,328 - firestarter - INFO - firecrawl.poll {'status': 'completed', 'elapsed_ms': 6000}
+2025-12-27 11:07:57,331 - firestarter - INFO - create.categorize.start {'count': 62}
+2025-12-27 11:07:58,333 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-12-27 11:07:58,339 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-12-27 11:07:58,344 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-12-27 11:07:58,349 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-12-27 11:07:58,354 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-12-27 11:07:58,365 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-12-27 11:07:58,366 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-12-27 11:07:58,369 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-12-27 11:07:58,380 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-12-27 11:07:58,384 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-12-27 11:07:58,385 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-12-27 11:07:58,396 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-12-27 11:07:58,397 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-12-27 11:07:58,398 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-12-27 11:07:58,399 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-12-27 11:07:58,406 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-12-27 11:07:58,407 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-12-27 11:07:58,419 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-12-27 11:07:58,423 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-12-27 11:07:58,463 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-12-27 11:07:58,496 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-12-27 11:07:58,499 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-12-27 11:07:58,505 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-12-27 11:07:58,511 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-12-27 11:07:58,516 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-12-27 11:07:58,517 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-12-27 11:07:58,518 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-12-27 11:07:58,520 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-12-27 11:07:58,540 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-12-27 11:07:58,541 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-12-27 11:07:58,552 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-12-27 11:07:58,553 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-12-27 11:07:58,558 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-12-27 11:07:58,560 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-12-27 11:07:58,565 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-12-27 11:07:58,571 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-12-27 11:07:58,583 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-12-27 11:07:58,584 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-12-27 11:07:58,601 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-12-27 11:07:58,602 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-12-27 11:07:58,618 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-12-27 11:07:58,619 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-12-27 11:07:58,715 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-12-27 11:07:58,742 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-12-27 11:07:58,753 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-12-27 11:07:58,766 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-12-27 11:07:58,779 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-12-27 11:07:58,780 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-12-27 11:07:58,782 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-12-27 11:07:58,802 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-12-27 11:07:58,803 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-12-27 11:07:58,811 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-12-27 11:07:58,828 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-12-27 11:07:58,830 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-12-27 11:07:58,874 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-12-27 11:07:58,883 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-12-27 11:07:58,884 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-12-27 11:07:58,899 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-12-27 11:07:59,124 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-12-27 11:07:59,239 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-12-27 11:07:59,263 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-12-27 11:07:59,306 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-12-27 11:07:59,324 - firestarter - INFO - create.categorize.done {'count': 62}
+2025-12-27 11:07:59,324 - firestarter - INFO - create.crawl.preview {'preview': [{'url': 'https://ngahealthcare.com', 'title': 'Healthcare Contract Negotiation and Credentialing | NGA Healthcare', 'category': 'homepage'}, {'url': 'https://www.ngahealthcare.com/pricing', 'title': 'Insurance Negotiation Services  Pricing | NGA Healthcare', 'category': 'pricing'}, {'url': 'https://www.ngahealthcare.com/credentialing-services', 'title': 'Provider Credentialing Services | NGA Healthcare', 'category': 'services_products'}, {'url': 'https://www.ngahealthcare.com/negotiation-services', 'title': 'Insurance Contract Negotiation Services | NGA Healthcare', 'category': 'services_products'}, {'url': 'https://www.ngahealthcare.com/thank-you', 'title': 'Thank You', 'category': 'other'}], 'count': 62}
+2025-12-27 11:07:59,324 - firestarter - INFO - create.drive.start {'folder_id': '1yAbFFlIqt6dY2yFfRCE0T3nsNzso9pML'}
+2025-12-27 11:07:59,375 - googleapiclient.discovery_cache - INFO - file_cache is only supported with oauth2client<4.0.0
+2025-12-27 11:08:01,347 - firestarter - INFO - create.drive.fetched {'count': 2, 'summary': {'requestedFolder': '1yAbFFlIqt6dY2yFfRCE0T3nsNzso9pML', 'filesFound': 2, 'intakeForms': 1, 'documentsCreated': 2}}
+2025-12-27 11:08:02,593 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-12-27 11:08:02,606 - firestarter - INFO - create.drive.categorized {'count': 2}
+2025-12-27 11:08:02,617 - firestarter - INFO - create.drive.skip_client_brief {'id': 'drive_1Ii2g84qz2r273xVXsPRDNrDQimEGmnKB', 'name': ['', '', '', 'nga-healthcare_client_brief_20251005_014458.md', '']}
+2025-12-27 11:08:02,617 - firestarter - INFO - create.prepare.summary {'total_docs': 63}
+2025-12-27 11:08:02,969 - firestarter - INFO - create.do.folders_created {'client': 'nga-healthcare'}
+2025-12-27 11:08:03,918 - httpx - INFO - HTTP Request: GET https://api.digitalocean.com/v2/gen-ai/knowledge_bases "HTTP/1.1 200 OK"
+2025-12-27 11:08:04,663 - httpx - INFO - HTTP Request: GET https://api.digitalocean.com/v2/gen-ai/models?usecases=USECASE_EMBEDDING "HTTP/1.1 400 Bad Request"
+2025-12-27 11:08:04,664 - app.clients.digital_ocean_client - WARNING - [DO] 400 with params, retrying without params
+2025-12-27 11:08:04,917 - httpx - INFO - HTTP Request: GET https://api.digitalocean.com/v2/gen-ai/models "HTTP/1.1 200 OK"
