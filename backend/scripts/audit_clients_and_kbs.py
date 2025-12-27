@@ -500,8 +500,8 @@ async def main():
             # "agents": removed as requested
             "warnings": [w["warning"] for w in summary["top_warnings"] if w["client_slug"] == client],
             "ui": {
-                "title": meta_json.get("title"),
-                "favicon": meta_json.get("favicon"),
+                "title": meta_json.get("metadata", {}).get("title"),
+                "favicon": meta_json.get("metadata", {}).get("favicon"),
             },
             "timestamps": {
                 "created_at": kb_created_at, # Using KB creation as proxy for client "created_at" in system
