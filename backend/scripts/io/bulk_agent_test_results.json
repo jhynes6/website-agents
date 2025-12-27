@@ -11,25 +11,25 @@
       "client_slug": "inbox_manager",
       "endpoint_url": "https://baztvwnwvpesr3xnhzuyldyu.agents.do-ai.run",
       "has_api_key": true,
-      "tested_at": "2025-12-27T23:35:21.593322+00:00",
+      "tested_at": "2025-12-27T23:41:36.774552+00:00",
       "queries": [
         {
           "query": "what does your company do?",
-          "response": "I'm sorry, but I don't have information about what our company does. If you have any specific questions about our services or products, feel free to ask!",
+          "response": "I'm sorry, but I don't have information about what our company does.",
           "error": null,
-          "duration_ms": 2793.15,
+          "duration_ms": 1337.28,
           "status": "success",
           "tokens": {
             "prompt": 270,
-            "completion": 31,
-            "total": 301
+            "completion": 14,
+            "total": 284
           }
         },
         {
           "query": "tell me what you sell",
           "response": "I'm sorry, but I don't have information about the services or products we sell.",
           "error": null,
-          "duration_ms": 1786.57,
+          "duration_ms": 2133.12,
           "status": "success",
           "tokens": {
             "prompt": 269,
@@ -39,26 +39,26 @@
         },
         {
           "query": "what do you sell and what industries have you worked with?",
-          "response": "I'm sorry, but I don't have information about the services or products we sell or the industries we have worked with.",
+          "response": "I'm sorry, but I don't have information about the services or products we sell or the industries we've worked with.",
           "error": null,
-          "duration_ms": 1964.41,
+          "duration_ms": 1303.63,
           "status": "success",
           "tokens": {
             "prompt": 276,
-            "completion": 23,
-            "total": 299
+            "completion": 22,
+            "total": 298
           }
         },
         {
           "query": "do you have any case studies?",
-          "response": "I'm sorry, but I don't have information about case studies available at the moment. If you have any other questions about our services or products, feel free to ask!",
+          "response": "I'm sorry, but I don't have information about case studies available.",
           "error": null,
-          "duration_ms": 1245.94,
+          "duration_ms": 1174.76,
           "status": "success",
           "tokens": {
             "prompt": 271,
-            "completion": 33,
-            "total": 304
+            "completion": 13,
+            "total": 284
           }
         }
       ],
@@ -68,7 +68,7 @@
         "errors": 0,
         "timeouts": 0,
         "success_rate": 100.0,
-        "avg_duration_ms": 1947.52
+        "avg_duration_ms": 1487.2
       }
     },
     {
@@ -76,54 +76,54 @@
       "client_slug": "a-perfect-promotion",
       "endpoint_url": "https://nwxvolduakitg5drqxik7o6w.agents.do-ai.run",
       "has_api_key": true,
-      "tested_at": "2025-12-27T23:35:34.389395+00:00",
+      "tested_at": "2025-12-27T23:41:47.727926+00:00",
       "queries": [
         {
           "query": "what does your company do?",
-          "response": "Could you please specify which aspect of our company you are interested in? For example, are you looking for information about our products, services, or industry focus?",
+          "response": "Could you please specify which aspect of our company you're interested in? For example, are you looking for information about our products, services, or industry focus? This will help me provide a more accurate response.",
           "error": null,
-          "duration_ms": 3991.94,
+          "duration_ms": 3436.71,
           "status": "success",
           "tokens": {
             "prompt": 378,
-            "completion": 41,
-            "total": 419
+            "completion": 50,
+            "total": 428
           }
         },
         {
           "query": "tell me what you sell",
-          "response": "I can provide information about our products and services if you specify your area of interest or the industry you are in. \n\nNext steps:\n- Please let me know what specific products or services you would like to learn more about.",
+          "response": "I can provide information about our products and services if you have specific questions or areas of interest. Please let me know what you're looking for, and I'll be happy to assist you!",
           "error": null,
-          "duration_ms": 4159.32,
+          "duration_ms": 3436.74,
           "status": "success",
           "tokens": {
             "prompt": 377,
-            "completion": 53,
-            "total": 430
+            "completion": 44,
+            "total": 421
           }
         },
         {
           "query": "what do you sell and what industries have you worked with?",
-          "response": "We offer a range of B2B solutions tailored to meet the needs of various industries. Our primary focus is on enhancing operational efficiency and driving growth through our products and services.\n\nWe have experience working with industries such as:\n\n- Technology\n- Manufacturing\n- Healthcare\n- Retail\n- Finance\n\nIf you would like more specific information about our offerings or a particular industry, please let me know!",
+          "response": "We offer a range of B2B solutions tailored to various industries. Our primary focus is on enhancing operational efficiency and driving growth for businesses. \n\nWe have experience working with industries such as:\n\n- Technology\n- Manufacturing\n- Retail\n- Healthcare\n- Finance\n\nIf you have a specific industry in mind or need more details about our offerings, please let me know!",
           "error": null,
-          "duration_ms": 2571.55,
+          "duration_ms": 2871.86,
           "status": "success",
           "tokens": {
             "prompt": 390,
-            "completion": 93,
-            "total": 483
+            "completion": 91,
+            "total": 481
           }
         },
         {
           "query": "do you have any case studies?",
-          "response": "Yes, we do have case studies available. Please let me know which specific area or service you are interested in, and I can provide you with relevant examples. \n\nNext steps:\n- Specify the area or service of interest.\n- I will send you the appropriate case studies.",
+          "response": "Yes, we do have case studies available. Please let me know what specific area or product you are interested in, and I can provide you with relevant case studies. \n\nNext steps:\n- Specify the area or product of interest.",
           "error": null,
-          "duration_ms": 3754.52,
+          "duration_ms": 2141.65,
           "status": "success",
           "tokens": {
             "prompt": 380,
-            "completion": 70,
-            "total": 450
+            "completion": 60,
+            "total": 440
           }
         }
       ],
@@ -133,7 +133,7 @@
         "errors": 0,
         "timeouts": 0,
         "success_rate": 100.0,
-        "avg_duration_ms": 3619.33
+        "avg_duration_ms": 2971.74
       }
     },
     {
@@ -141,54 +141,54 @@
       "client_slug": "abundantly",
       "endpoint_url": "https://wbr2ity2pm7rwfaaeuyu33hg.agents.do-ai.run",
       "has_api_key": true,
-      "tested_at": "2025-12-27T23:35:53.870691+00:00",
+      "tested_at": "2025-12-27T23:42:04.618225+00:00",
       "queries": [
         {
           "query": "what does your company do?",
-          "response": "We specialize in employee recognition solutions, helping organizations create effective recognition programs that engage and motivate their workforce. Our services include personalized recognition strategies, tiered recognition programs, and tools for celebrating both individual and team achievements. We aim to foster a positive workplace culture through tailored recognition initiatives that cater to diverse employee needs.",
+          "response": "Abundantly specializes in employee recognition solutions. We provide a platform that helps organizations recognize, reward, and engage their employees effectively. Our services include personalized recognition programs, tiered recognition systems, and analytics tools to track performance and engagement. We aim to create a positive workplace culture by acknowledging employee contributions and fostering a sense of appreciation within teams.",
           "error": null,
-          "duration_ms": 4928.37,
+          "duration_ms": 2716.83,
           "status": "success",
           "tokens": {
             "prompt": 9191,
-            "completion": 70,
-            "total": 9261
+            "completion": 77,
+            "total": 9268
           }
         },
         {
           "query": "tell me what you sell",
-          "response": "I need more specific information about what you're looking for. Are you interested in details about our services, pricing, or something else?",
+          "response": "I can provide information about our services and products. Could you please specify what type of information you are looking for? For example, are you interested in employee recognition programs, rewards systems, or something else?",
           "error": null,
-          "duration_ms": 2133.4,
+          "duration_ms": 3141.99,
           "status": "success",
           "tokens": {
-            "prompt": 10403,
-            "completion": 36,
-            "total": 10439
+            "prompt": 10153,
+            "completion": 47,
+            "total": 10200
           }
         },
         {
           "query": "what do you sell and what industries have you worked with?",
-          "response": "I can provide information about our services and the industries we work with if you specify what you're interested in. Could you please clarify your question?",
+          "response": "I can provide information about our services and the industries we work with. However, I need clarification on what specific details you're looking for. Are you interested in a general overview of our services, or do you want to know about specific industries we've collaborated with?",
           "error": null,
-          "duration_ms": 3991.62,
+          "duration_ms": 3286.09,
           "status": "success",
           "tokens": {
             "prompt": 10010,
-            "completion": 45,
-            "total": 10055
+            "completion": 68,
+            "total": 10078
           }
         },
         {
           "query": "do you have any case studies?",
-          "response": "Yes, we have several case studies available. Here are a couple of examples:\n\n1. **Commonwealth Senior Living**:\n   - Focus: Employee engagement and recognition platform implementation.\n   - Results: Improved staff communications, engagement analytics, and real-time recognition rewards.\n\n2. **Transcosmos**:\n   - Focus: Recognition program to boost engagement and retention.\n   - Results: Increased employee appreciation and reduced turnover rates.\n\nIf you would like to see a specific case study or need more details, please let me know!",
+          "response": "Yes, we have several case studies available. Here are a couple of examples:\n\n1. **Commonwealth Senior Living**:\n   - Focus: Employee engagement and recognition platform implementation.\n   - Results: Improved staff communications and engagement analytics.\n\n2. **Transcosmos**:\n   - Focus: Designed a recognition program to boost employee engagement and retention.\n   - Results: Significant improvement in employee appreciation and reduced turnover.\n\nIf you would like to see a specific case study, please let me know!",
           "error": null,
-          "duration_ms": 3310.57,
+          "duration_ms": 3417.19,
           "status": "success",
           "tokens": {
             "prompt": 8364,
-            "completion": 118,
-            "total": 8482
+            "completion": 113,
+            "total": 8477
           }
         }
       ],
@@ -198,7 +198,7 @@
         "errors": 0,
         "timeouts": 0,
         "success_rate": 100.0,
-        "avg_duration_ms": 3590.99
+        "avg_duration_ms": 3140.53
       }
     },
     {
@@ -206,54 +206,54 @@
       "client_slug": "american-ethanol",
       "endpoint_url": "https://qs54lr2plwkdawd3fsl77x5w.agents.do-ai.run",
       "has_api_key": true,
-      "tested_at": "2025-12-27T23:36:13.238831+00:00",
+      "tested_at": "2025-12-27T23:42:22.184727+00:00",
       "queries": [
         {
           "query": "what does your company do?",
-          "response": "American Ethanol is dedicated to providing high-quality fuel and solvents for a variety of applications. We developed the first clean-burning bioethanol fuel specifically formulated for ventless fireplaces and offer high-purity, USP-grade ethanol suitable for cannabis extractions. Our products are sourced from American-grown corn and wheat, supporting domestic agriculture and sustainable practices. We also provide private label options for our ethanol and solvents, allowing businesses to sell under their own brand. Our commitment to customer satisfaction and innovation sets us apart in the industry.",
+          "response": "American Ethanol is dedicated to providing high-quality fuel and solvents for various applications. We developed the first clean-burning bioethanol fuel specifically for ventless fireplaces and supply high-purity, USP-grade ethanol for cannabis extractions. Our products include premium specialty alcohols and solvents that meet stringent industry standards. We prioritize sourcing raw materials from American-grown corn and wheat, supporting domestic agriculture and sustainable practices. Additionally, we offer private label services for our ethanol fireplace fuel and extraction solvents, allowing businesses to sell our products under their own brand.",
           "error": null,
-          "duration_ms": 4839.37,
+          "duration_ms": 5051.53,
           "status": "success",
           "tokens": {
             "prompt": 8910,
-            "completion": 111,
-            "total": 9021
+            "completion": 115,
+            "total": 9025
           }
         },
         {
           "query": "tell me what you sell",
-          "response": "I need more specific information about what you're looking for. Are you interested in a particular product or service?",
+          "response": "We offer food-grade ethyl alcohol and other premium specialty alcohol products suitable for distillery needs. If you have specific questions about our products or services, feel free to ask!",
           "error": null,
-          "duration_ms": 2807.5,
+          "duration_ms": 3861.29,
           "status": "success",
           "tokens": {
-            "prompt": 9542,
-            "completion": 30,
-            "total": 9572
+            "prompt": 9470,
+            "completion": 41,
+            "total": 9511
           }
         },
         {
           "query": "what do you sell and what industries have you worked with?",
-          "response": "We sell high-purity alcohols, solvents, and fuels, including:\n\n- **Ethanol Fireplace Fuel**: Clean-burning fuel for ventless fireplaces.\n- **Specialty Alcohols and Solvents**: Suitable for various applications, including cannabis extraction.\n- **Food Grade Ethyl Alcohol**: For distilleries and beverage production.\n\nIndustries we serve include:\n\n- Cannabis Extraction\n- Distilleries\n- General industrial applications requiring high-quality solvents and fuels. \n\nIf you need more specific information about our products or services, feel free to ask!",
+          "response": "We sell high-purity ethanol, specialty alcohols, and solvents suitable for various applications. Our primary industries include:\n\n- **Cannabis Extraction**: Providing ultra-high purity solvents and hydrocarbons for extraction processes.\n- **Fireplace Fuels**: Offering clean-burning ethanol fireplace fuels, where we have been an industry leader for over 15 years.\n- **Distilleries**: Supplying food-grade ethyl alcohol and other premium beverage products for distillation needs.\n\nIf you need more specific information about our products or services, feel free to ask!",
           "error": null,
-          "duration_ms": 5540.14,
+          "duration_ms": 4211.61,
           "status": "success",
           "tokens": {
             "prompt": 8329,
-            "completion": 130,
-            "total": 8459
+            "completion": 128,
+            "total": 8457
           }
         },
         {
           "query": "do you have any case studies?",
           "response": "Could you please specify the type of case studies you are interested in? This will help me provide you with the most relevant information.",
           "error": null,
-          "duration_ms": 2230.46,
+          "duration_ms": 2369.15,
           "status": "success",
           "tokens": {
-            "prompt": 7171,
-            "completion": 36,
-            "total": 7207
+            "prompt": 9854,
+            "completion": 38,
+            "total": 9892
           }
         }
       ],
@@ -263,7 +263,7 @@
         "errors": 0,
         "timeouts": 0,
         "success_rate": 100.0,
-        "avg_duration_ms": 3854.37
+        "avg_duration_ms": 3873.39
       }
     },
     {
@@ -271,54 +271,54 @@
       "client_slug": "archway-learning-solutions",
       "endpoint_url": "https://w3ujbmoq7cxcwputaqh3obun.agents.do-ai.run",
       "has_api_key": true,
-      "tested_at": "2025-12-27T23:36:33.660566+00:00",
+      "tested_at": "2025-12-27T23:42:42.683163+00:00",
       "queries": [
         {
           "query": "what does your company do?",
-          "response": "Our company focuses on providing educational resources and solutions tailored for businesses. We aim to enhance learning and development through various programs, materials, and community engagement.\n\n**Next Steps:**\n- If you're interested in specific services or programs, please let me know, and I can provide more details!",
+          "response": "Our company focuses on providing educational resources and solutions aimed at enhancing learning experiences. We offer a variety of products and services designed to support businesses and individuals in their educational pursuits.\n\n**Next Steps:**\n- If you have specific needs or interests, please let me know so I can provide more tailored information.",
           "error": null,
-          "duration_ms": 2977.28,
+          "duration_ms": 2798.93,
           "status": "success",
           "tokens": {
             "prompt": 3903,
-            "completion": 66,
-            "total": 3969
+            "completion": 69,
+            "total": 3972
           }
         },
         {
           "query": "tell me what you sell",
-          "response": "I can provide information about our products and services if you specify what you're interested in. \n\n- Are you looking for educational resources?\n- Do you need training solutions?\n- Or perhaps support services?\n\nPlease let me know your area of interest, and I can share more details!",
+          "response": "I can\u2019t provide specific details about our products or services. Could you please specify what type of solutions or offerings you are interested in? This will help me assist you better. \n\nNext steps:\n- Let me know your area of interest.\n- I can provide relevant information based on that.",
           "error": null,
-          "duration_ms": 3512.13,
+          "duration_ms": 2925.9,
           "status": "success",
           "tokens": {
-            "prompt": 3637,
-            "completion": 66,
-            "total": 3703
+            "prompt": 3635,
+            "completion": 64,
+            "total": 3699
           }
         },
         {
           "query": "what do you sell and what industries have you worked with?",
-          "response": "We specialize in customized training solutions and Learning Management Systems (LMS). Our offerings cater to various industries, including:\n\n- Non-profit organizations (e.g., trade associations)\n- Healthcare (e.g., senior living and healthcare providers)\n- Education and professional development sectors\n\nIf you have a specific industry in mind or need more details about our services, please let me know!",
+          "response": "We specialize in customized training solutions and Learning Management Systems (LMS) tailored to meet the specific needs of various organizations. \n\n**Industries we have worked with include:**\n- Non-profit organizations (e.g., Electrocoat Association)\n- Healthcare (e.g., Judson Senior Living, Certus Healthcare)\n\nIf you're interested in learning more about our offerings or how we can assist your organization, please let me know!",
           "error": null,
-          "duration_ms": 3142.94,
+          "duration_ms": 3328.41,
           "status": "success",
           "tokens": {
             "prompt": 3370,
-            "completion": 91,
-            "total": 3461
+            "completion": 101,
+            "total": 3471
           }
         },
         {
           "query": "do you have any case studies?",
-          "response": "I currently do not have access to specific case studies. However, I can help you understand how to create or find relevant case studies based on your needs.\n\n- Identify the specific area or topic you are interested in.\n- Consider reaching out to industry peers or networks for shared experiences.\n- Look for online resources or publications that may feature case studies related to your field.\n\nWould you like assistance in a specific area or topic for case studies?",
+          "response": "Yes, we have case studies that illustrate the effectiveness of our customized training solutions. Here are two examples:\n\n- **Judson**: Focused on integrating new hires into the company culture. We created an interactive book featuring personalized videos from leadership and staff to enhance engagement.\n\n- **Certus**: Aimed at providing onboarding materials to help employees understand company policies and culture. We developed tailored content directly from senior leadership to ensure clarity and alignment.\n\nIf you're interested in more detailed case studies or specific outcomes, please let me know!",
           "error": null,
-          "duration_ms": 3499.89,
+          "duration_ms": 3701.98,
           "status": "success",
           "tokens": {
-            "prompt": 3470,
-            "completion": 104,
-            "total": 3574
+            "prompt": 3543,
+            "completion": 121,
+            "total": 3664
           }
         }
       ],
@@ -328,7 +328,7 @@
         "errors": 0,
         "timeouts": 0,
         "success_rate": 100.0,
-        "avg_duration_ms": 3283.06
+        "avg_duration_ms": 3188.8
       }
     }
   ],
@@ -338,6 +338,6 @@
     "total_queries_sent": 20,
     "successful_queries": 20,
     "overall_success_rate": 100.0,
-    "tested_at": "2025-12-27T23:36:49.796588+00:00"
+    "tested_at": "2025-12-27T23:42:58.442044+00:00"
   }
 }

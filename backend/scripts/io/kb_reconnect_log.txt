@@ -1,0 +1,225 @@
+2025-12-27 18:53:00,053 - INFO - Loaded 50 knowledge bases from registry
+2025-12-27 18:53:00,053 - INFO - Fetching all agents...
+2025-12-27 18:53:00,500 - INFO - HTTP Request: GET https://api.digitalocean.com/v2/gen-ai/agents "HTTP/1.1 200 OK"
+2025-12-27 18:53:00,579 - INFO - Found 50 inbox-manager agents
+2025-12-27 18:53:00,580 - INFO - Found 50 agents with NO knowledge bases attached
+2025-12-27 18:53:00,580 - INFO - [1/50] Processing: inbox-manager-zoomgrants
+2025-12-27 18:53:00,580 - INFO -   Found KB: zoomgrants (2389fcce-e343-11f0-b074-4e013e2ddde4)
+2025-12-27 18:53:01,013 - INFO - HTTP Request: POST https://api.digitalocean.com/v2/gen-ai/agents/30f9d009-e377-11f0-b074-4e013e2ddde4/knowledge_bases "HTTP/1.1 200 OK"
+2025-12-27 18:53:01,014 - INFO -   ✓ Attached KB 'zoomgrants' to 'inbox-manager-zoomgrants'
+2025-12-27 18:53:02,016 - INFO - [2/50] Processing: inbox-manager-white-label-digital
+2025-12-27 18:53:02,016 - INFO -   Found KB: white-label-digital (4967c2a1-e341-11f0-b074-4e013e2ddde4)
+2025-12-27 18:53:02,512 - INFO - HTTP Request: POST https://api.digitalocean.com/v2/gen-ai/agents/2caab7df-e377-11f0-b074-4e013e2ddde4/knowledge_bases "HTTP/1.1 200 OK"
+2025-12-27 18:53:02,512 - INFO -   ✓ Attached KB 'white-label-digital' to 'inbox-manager-white-label-digital'
+2025-12-27 18:53:03,513 - INFO - [3/50] Processing: inbox-manager-wendt-partners
+2025-12-27 18:53:03,513 - INFO -   Found KB: wendt-partners (0d970d8f-e341-11f0-b074-4e013e2ddde4)
+2025-12-27 18:53:03,958 - INFO - HTTP Request: POST https://api.digitalocean.com/v2/gen-ai/agents/27f0cc94-e377-11f0-b074-4e013e2ddde4/knowledge_bases "HTTP/1.1 200 OK"
+2025-12-27 18:53:03,958 - INFO -   ✓ Attached KB 'wendt-partners' to 'inbox-manager-wendt-partners'
+2025-12-27 18:53:04,960 - INFO - [4/50] Processing: inbox-manager-vew-media
+2025-12-27 18:53:04,960 - INFO -   Found KB: vew-media (ee965ba9-e340-11f0-b074-4e013e2ddde4)
+2025-12-27 18:53:05,448 - INFO - HTTP Request: POST https://api.digitalocean.com/v2/gen-ai/agents/23093bd5-e377-11f0-b074-4e013e2ddde4/knowledge_bases "HTTP/1.1 200 OK"
+2025-12-27 18:53:05,452 - INFO -   ✓ Attached KB 'vew-media' to 'inbox-manager-vew-media'
+2025-12-27 18:53:06,453 - INFO - [5/50] Processing: inbox-manager-ubiq-education
+2025-12-27 18:53:06,453 - INFO -   Found KB: ubiq-education (d87777c6-e340-11f0-b074-4e013e2ddde4)
+2025-12-27 18:53:06,836 - INFO - HTTP Request: POST https://api.digitalocean.com/v2/gen-ai/agents/1ecf43be-e377-11f0-b074-4e013e2ddde4/knowledge_bases "HTTP/1.1 200 OK"
+2025-12-27 18:53:06,836 - INFO -   ✓ Attached KB 'ubiq-education' to 'inbox-manager-ubiq-education'
+2025-12-27 18:53:07,837 - INFO - [6/50] Processing: inbox-manager-terra-collective
+2025-12-27 18:53:07,837 - INFO -   Found KB: terra-collective (b6d69708-e340-11f0-b074-4e013e2ddde4)
+2025-12-27 18:53:08,204 - INFO - HTTP Request: POST https://api.digitalocean.com/v2/gen-ai/agents/1a71d1d6-e377-11f0-b074-4e013e2ddde4/knowledge_bases "HTTP/1.1 200 OK"
+2025-12-27 18:53:08,206 - INFO -   ✓ Attached KB 'terra-collective' to 'inbox-manager-terra-collective'
+2025-12-27 18:53:09,207 - INFO - [7/50] Processing: inbox-manager-sock-fancy
+2025-12-27 18:53:09,207 - INFO -   Found KB: sock-fancy (a89af903-e340-11f0-b074-4e013e2ddde4)
+2025-12-27 18:53:09,639 - INFO - HTTP Request: POST https://api.digitalocean.com/v2/gen-ai/agents/15a46854-e377-11f0-b074-4e013e2ddde4/knowledge_bases "HTTP/1.1 200 OK"
+2025-12-27 18:53:09,639 - INFO -   ✓ Attached KB 'sock-fancy' to 'inbox-manager-sock-fancy'
+2025-12-27 18:53:10,640 - INFO - [8/50] Processing: inbox-manager-slingshot
+2025-12-27 18:53:10,640 - INFO -   Found KB: slingshot (6a7f50df-e340-11f0-b074-4e013e2ddde4)
+2025-12-27 18:53:11,079 - INFO - HTTP Request: POST https://api.digitalocean.com/v2/gen-ai/agents/0f9799a0-e377-11f0-b074-4e013e2ddde4/knowledge_bases "HTTP/1.1 200 OK"
+2025-12-27 18:53:11,079 - INFO -   ✓ Attached KB 'slingshot' to 'inbox-manager-slingshot'
+2025-12-27 18:53:12,081 - INFO - [9/50] Processing: inbox-manager-slice-communications
+2025-12-27 18:53:12,081 - INFO -   Found KB: slice-communications (3690e9b9-e340-11f0-b074-4e013e2ddde4)
+2025-12-27 18:53:12,772 - INFO - HTTP Request: POST https://api.digitalocean.com/v2/gen-ai/agents/0948b12c-e377-11f0-b074-4e013e2ddde4/knowledge_bases "HTTP/1.1 200 OK"
+2025-12-27 18:53:12,772 - INFO -   ✓ Attached KB 'slice-communications' to 'inbox-manager-slice-communications'
+2025-12-27 18:53:13,773 - INFO - [10/50] Processing: inbox-manager-skayle-360
+2025-12-27 18:53:13,773 - INFO -   Found KB: skayle-360 (1a767590-e340-11f0-b074-4e013e2ddde4)
+2025-12-27 18:53:14,444 - INFO - HTTP Request: POST https://api.digitalocean.com/v2/gen-ai/agents/04c753fe-e377-11f0-b074-4e013e2ddde4/knowledge_bases "HTTP/1.1 200 OK"
+2025-12-27 18:53:14,445 - INFO -   ✓ Attached KB 'skayle-360' to 'inbox-manager-skayle-360'
+2025-12-27 18:53:15,446 - INFO - [11/50] Processing: inbox-manager-simple-machines
+2025-12-27 18:53:15,446 - INFO -   Found KB: simple-machines (eeb34136-e33f-11f0-b074-4e013e2ddde4)
+2025-12-27 18:53:15,782 - INFO - HTTP Request: POST https://api.digitalocean.com/v2/gen-ai/agents/fe787c92-e376-11f0-b074-4e013e2ddde4/knowledge_bases "HTTP/1.1 200 OK"
+2025-12-27 18:53:15,783 - INFO -   ✓ Attached KB 'simple-machines' to 'inbox-manager-simple-machines'
+2025-12-27 18:53:16,784 - INFO - [12/50] Processing: inbox-manager-revolttek
+2025-12-27 18:53:16,784 - INFO -   Found KB: revolttek (ab367101-e33f-11f0-b074-4e013e2ddde4)
+2025-12-27 18:53:17,153 - INFO - HTTP Request: POST https://api.digitalocean.com/v2/gen-ai/agents/f7fdb307-e376-11f0-b074-4e013e2ddde4/knowledge_bases "HTTP/1.1 200 OK"
+2025-12-27 18:53:17,156 - INFO -   ✓ Attached KB 'revolttek' to 'inbox-manager-revolttek'
+2025-12-27 18:53:18,158 - INFO - [13/50] Processing: inbox-manager-revdrive
+2025-12-27 18:53:18,158 - INFO -   Found KB: revdrive (84418f99-e33f-11f0-b074-4e013e2ddde4)
+2025-12-27 18:53:18,736 - INFO - HTTP Request: POST https://api.digitalocean.com/v2/gen-ai/agents/f39e9c0d-e376-11f0-b074-4e013e2ddde4/knowledge_bases "HTTP/1.1 200 OK"
+2025-12-27 18:53:18,738 - INFO -   ✓ Attached KB 'revdrive' to 'inbox-manager-revdrive'
+2025-12-27 18:53:19,740 - INFO - [14/50] Processing: inbox-manager-reach-marketing
+2025-12-27 18:53:19,740 - INFO -   Found KB: reach-marketing (58a6cb68-e33f-11f0-b074-4e013e2ddde4)
+2025-12-27 18:53:20,109 - INFO - HTTP Request: POST https://api.digitalocean.com/v2/gen-ai/agents/ed12576b-e376-11f0-b074-4e013e2ddde4/knowledge_bases "HTTP/1.1 200 OK"
+2025-12-27 18:53:20,111 - INFO -   ✓ Attached KB 'reach-marketing' to 'inbox-manager-reach-marketing'
+2025-12-27 18:53:21,112 - INFO - [15/50] Processing: inbox-manager-push-analytics
+2025-12-27 18:53:21,112 - INFO -   Found KB: push-analytics (ee17f8c5-e33e-11f0-b074-4e013e2ddde4)
+2025-12-27 18:53:21,945 - INFO - HTTP Request: POST https://api.digitalocean.com/v2/gen-ai/agents/e3edd639-e376-11f0-b074-4e013e2ddde4/knowledge_bases "HTTP/1.1 200 OK"
+2025-12-27 18:53:21,947 - INFO -   ✓ Attached KB 'push-analytics' to 'inbox-manager-push-analytics'
+2025-12-27 18:53:22,948 - INFO - [16/50] Processing: inbox-manager-pipefy
+2025-12-27 18:53:22,948 - INFO -   Found KB: pipefy (cc56baa7-e33e-11f0-b074-4e013e2ddde4)
+2025-12-27 18:53:23,384 - INFO - HTTP Request: POST https://api.digitalocean.com/v2/gen-ai/agents/dff01fe4-e374-11f0-b074-4e013e2ddde4/knowledge_bases "HTTP/1.1 200 OK"
+2025-12-27 18:53:23,386 - INFO -   ✓ Attached KB 'pipefy' to 'inbox-manager-pipefy'
+2025-12-27 18:53:24,387 - INFO - [17/50] Processing: inbox-manager-pi-lit
+2025-12-27 18:53:24,387 - INFO -   Found KB: pi-lit (7130339a-e343-11f0-b074-4e013e2ddde4)
+2025-12-27 18:53:24,885 - INFO - HTTP Request: POST https://api.digitalocean.com/v2/gen-ai/agents/d977476c-e374-11f0-b074-4e013e2ddde4/knowledge_bases "HTTP/1.1 200 OK"
+2025-12-27 18:53:24,886 - INFO -   ✓ Attached KB 'pi-lit' to 'inbox-manager-pi-lit'
+2025-12-27 18:53:25,888 - INFO - [18/50] Processing: inbox-manager-peachtree-va
+2025-12-27 18:53:25,888 - INFO -   Found KB: peachtree-va (a4b2a275-e33e-11f0-b074-4e013e2ddde4)
+2025-12-27 18:53:26,300 - INFO - HTTP Request: POST https://api.digitalocean.com/v2/gen-ai/agents/d4fb4a31-e374-11f0-b074-4e013e2ddde4/knowledge_bases "HTTP/1.1 200 OK"
+2025-12-27 18:53:26,300 - INFO -   ✓ Attached KB 'peachtree-va' to 'inbox-manager-peachtree-va'
+2025-12-27 18:53:27,302 - INFO - [19/50] Processing: inbox-manager-on-the-marc-media
+2025-12-27 18:53:27,302 - INFO -   Found KB: on-the-marc-media (92f10193-e33e-11f0-b074-4e013e2ddde4)
+2025-12-27 18:53:27,750 - INFO - HTTP Request: POST https://api.digitalocean.com/v2/gen-ai/agents/d0602cd5-e374-11f0-b074-4e013e2ddde4/knowledge_bases "HTTP/1.1 200 OK"
+2025-12-27 18:53:27,750 - INFO -   ✓ Attached KB 'on-the-marc-media' to 'inbox-manager-on-the-marc-media'
+2025-12-27 18:53:28,752 - INFO - [20/50] Processing: inbox-manager-nutramarketers
+2025-12-27 18:53:28,752 - INFO -   Found KB: nutramarketers (6d522636-e33e-11f0-b074-4e013e2ddde4)
+2025-12-27 18:53:29,177 - INFO - HTTP Request: POST https://api.digitalocean.com/v2/gen-ai/agents/c9eac5d9-e374-11f0-b074-4e013e2ddde4/knowledge_bases "HTTP/1.1 200 OK"
+2025-12-27 18:53:29,177 - INFO -   ✓ Attached KB 'nutramarketers' to 'inbox-manager-nutramarketers'
+2025-12-27 18:53:30,179 - INFO - [21/50] Processing: inbox-manager-nga-healthcare
+2025-12-27 18:53:30,179 - INFO -   Found KB: nga-healthcare (3a5e908d-e33e-11f0-b074-4e013e2ddde4)
+2025-12-27 18:53:30,577 - INFO - HTTP Request: POST https://api.digitalocean.com/v2/gen-ai/agents/c53b6da7-e374-11f0-b074-4e013e2ddde4/knowledge_bases "HTTP/1.1 200 OK"
+2025-12-27 18:53:30,579 - INFO -   ✓ Attached KB 'nga-healthcare' to 'inbox-manager-nga-healthcare'
+2025-12-27 18:53:31,580 - INFO - [22/50] Processing: inbox-manager-nextlevel-thinking
+2025-12-27 18:53:31,580 - INFO -   Found KB: nextlevel-thinking (57259466-e33e-11f0-b074-4e013e2ddde4)
+2025-12-27 18:53:31,947 - INFO - HTTP Request: POST https://api.digitalocean.com/v2/gen-ai/agents/bedb402c-e374-11f0-b074-4e013e2ddde4/knowledge_bases "HTTP/1.1 200 OK"
+2025-12-27 18:53:31,949 - INFO -   ✓ Attached KB 'nextlevel-thinking' to 'inbox-manager-nextlevel-thinking'
+2025-12-27 18:53:32,950 - INFO - [23/50] Processing: inbox-manager-mintleads
+2025-12-27 18:53:32,950 - INFO -   Found KB: mintleads (2830e08b-e33e-11f0-b074-4e013e2ddde4)
+2025-12-27 18:53:33,382 - INFO - HTTP Request: POST https://api.digitalocean.com/v2/gen-ai/agents/ba01b17c-e374-11f0-b074-4e013e2ddde4/knowledge_bases "HTTP/1.1 200 OK"
+2025-12-27 18:53:33,403 - INFO -   ✓ Attached KB 'mintleads' to 'inbox-manager-mintleads'
+2025-12-27 18:53:34,404 - INFO - [24/50] Processing: inbox-manager-manufacturing-geeks
+2025-12-27 18:53:34,405 - INFO -   Found KB: manufacturing-geeks (fd0590cb-e33d-11f0-b074-4e013e2ddde4)
+2025-12-27 18:53:34,799 - INFO - HTTP Request: POST https://api.digitalocean.com/v2/gen-ai/agents/b3ca92bb-e374-11f0-b074-4e013e2ddde4/knowledge_bases "HTTP/1.1 200 OK"
+2025-12-27 18:53:34,799 - INFO -   ✓ Attached KB 'manufacturing-geeks' to 'inbox-manager-manufacturing-geeks'
+2025-12-27 18:53:35,800 - INFO - [25/50] Processing: inbox-manager-makers-garments
+2025-12-27 18:53:35,800 - INFO -   Found KB: makers-garments (d50fd26f-e33d-11f0-b074-4e013e2ddde4)
+2025-12-27 18:53:36,526 - INFO - HTTP Request: POST https://api.digitalocean.com/v2/gen-ai/agents/af54413b-e374-11f0-b074-4e013e2ddde4/knowledge_bases "HTTP/1.1 200 OK"
+2025-12-27 18:53:36,528 - INFO -   ✓ Attached KB 'makers-garments' to 'inbox-manager-makers-garments'
+2025-12-27 18:53:37,529 - INFO - [26/50] Processing: inbox-manager-lithyem
+2025-12-27 18:53:37,529 - INFO -   Found KB: lithyem (2b5341cf-e33d-11f0-b074-4e013e2ddde4)
+2025-12-27 18:53:37,975 - INFO - HTTP Request: POST https://api.digitalocean.com/v2/gen-ai/agents/480beea0-e374-11f0-b074-4e013e2ddde4/knowledge_bases "HTTP/1.1 200 OK"
+2025-12-27 18:53:37,976 - INFO -   ✓ Attached KB 'lithyem' to 'inbox-manager-lithyem'
+2025-12-27 18:53:38,978 - INFO - [27/50] Processing: inbox-manager-lib-consulting-group
+2025-12-27 18:53:38,978 - INFO -   Found KB: lib-consulting-group (10ececb5-e33d-11f0-b074-4e013e2ddde4)
+2025-12-27 18:53:39,453 - INFO - HTTP Request: POST https://api.digitalocean.com/v2/gen-ai/agents/41a59752-e374-11f0-b074-4e013e2ddde4/knowledge_bases "HTTP/1.1 200 OK"
+2025-12-27 18:53:39,454 - INFO -   ✓ Attached KB 'lib-consulting-group' to 'inbox-manager-lib-consulting-group'
+2025-12-27 18:53:40,454 - INFO - [28/50] Processing: inbox-manager-klickrr
+2025-12-27 18:53:40,454 - INFO -   Found KB: klickrr (0061c1bf-e33d-11f0-b074-4e013e2ddde4)
+2025-12-27 18:53:40,801 - INFO - HTTP Request: POST https://api.digitalocean.com/v2/gen-ai/agents/3d3bf80e-e374-11f0-b074-4e013e2ddde4/knowledge_bases "HTTP/1.1 200 OK"
+2025-12-27 18:53:40,801 - INFO -   ✓ Attached KB 'klickrr' to 'inbox-manager-klickrr'
+2025-12-27 18:53:41,803 - INFO - [29/50] Processing: inbox-manager-integrity-professionals
+2025-12-27 18:53:41,803 - INFO -   Found KB: integrity-professionals (d53783a4-e33c-11f0-b074-4e013e2ddde4)
+2025-12-27 18:53:42,273 - INFO - HTTP Request: POST https://api.digitalocean.com/v2/gen-ai/agents/387f25e9-e374-11f0-b074-4e013e2ddde4/knowledge_bases "HTTP/1.1 200 OK"
+2025-12-27 18:53:42,275 - INFO -   ✓ Attached KB 'integrity-professionals' to 'inbox-manager-integrity-professionals'
+2025-12-27 18:53:43,276 - INFO - [30/50] Processing: inbox-manager-incyte-media
+2025-12-27 18:53:43,276 - INFO -   Found KB: incyte-media (c10bf3c1-e33c-11f0-b074-4e013e2ddde4)
+2025-12-27 18:53:43,611 - INFO - HTTP Request: POST https://api.digitalocean.com/v2/gen-ai/agents/338437b3-e374-11f0-b074-4e013e2ddde4/knowledge_bases "HTTP/1.1 200 OK"
+2025-12-27 18:53:43,611 - INFO -   ✓ Attached KB 'incyte-media' to 'inbox-manager-incyte-media'
+2025-12-27 18:53:44,613 - INFO - [31/50] Processing: inbox-manager-galactic-fed
+2025-12-27 18:53:44,613 - INFO -   Found KB: galactic-fed (85e606ea-e33c-11f0-b074-4e013e2ddde4)
+2025-12-27 18:53:45,167 - INFO - HTTP Request: POST https://api.digitalocean.com/v2/gen-ai/agents/2f2639cf-e374-11f0-b074-4e013e2ddde4/knowledge_bases "HTTP/1.1 200 OK"
+2025-12-27 18:53:45,169 - INFO -   ✓ Attached KB 'galactic-fed' to 'inbox-manager-galactic-fed'
+2025-12-27 18:53:46,170 - INFO - [32/50] Processing: inbox-manager-forge-apollo
+2025-12-27 18:53:46,170 - INFO -   Found KB: forge-apollo (4bb5cb88-e33c-11f0-b074-4e013e2ddde4)
+2025-12-27 18:53:46,577 - INFO - HTTP Request: POST https://api.digitalocean.com/v2/gen-ai/agents/2ad92201-e374-11f0-b074-4e013e2ddde4/knowledge_bases "HTTP/1.1 200 OK"
+2025-12-27 18:53:46,578 - INFO -   ✓ Attached KB 'forge-apollo' to 'inbox-manager-forge-apollo'
+2025-12-27 18:53:47,579 - INFO - [33/50] Processing: inbox-manager-f1-cloud-solutions
+2025-12-27 18:53:47,579 - INFO -   Found KB: f1-cloud-solutions (1f558351-e33c-11f0-b074-4e013e2ddde4)
+2025-12-27 18:53:48,468 - INFO - HTTP Request: POST https://api.digitalocean.com/v2/gen-ai/agents/246870f8-e374-11f0-b074-4e013e2ddde4/knowledge_bases "HTTP/1.1 200 OK"
+2025-12-27 18:53:48,469 - INFO -   ✓ Attached KB 'f1-cloud-solutions' to 'inbox-manager-f1-cloud-solutions'
+2025-12-27 18:53:49,471 - INFO - [34/50] Processing: inbox-manager-evenbound
+2025-12-27 18:53:49,471 - INFO -   Found KB: evenbound (fea0c23d-e33b-11f0-b074-4e013e2ddde4)
+2025-12-27 18:53:49,881 - INFO - HTTP Request: POST https://api.digitalocean.com/v2/gen-ai/agents/1fd849a9-e374-11f0-b074-4e013e2ddde4/knowledge_bases "HTTP/1.1 200 OK"
+2025-12-27 18:53:49,882 - INFO -   ✓ Attached KB 'evenbound' to 'inbox-manager-evenbound'
+2025-12-27 18:53:50,883 - INFO - [35/50] Processing: inbox-manager-dodeka-digital
+2025-12-27 18:53:50,883 - INFO -   Found KB: dodeka-digital (b11c8f36-e33b-11f0-b074-4e013e2ddde4)
+2025-12-27 18:53:51,467 - INFO - HTTP Request: POST https://api.digitalocean.com/v2/gen-ai/agents/19484aa0-e374-11f0-b074-4e013e2ddde4/knowledge_bases "HTTP/1.1 200 OK"
+2025-12-27 18:53:51,468 - INFO -   ✓ Attached KB 'dodeka-digital' to 'inbox-manager-dodeka-digital'
+2025-12-27 18:53:52,469 - INFO - [36/50] Processing: inbox-manager-d2-creative
+2025-12-27 18:53:52,469 - INFO -   Found KB: d2-creative (97d569cd-e33b-11f0-b074-4e013e2ddde4)
+2025-12-27 18:53:53,477 - INFO - HTTP Request: POST https://api.digitalocean.com/v2/gen-ai/agents/125f0aa2-e373-11f0-b074-4e013e2ddde4/knowledge_bases "HTTP/1.1 200 OK"
+2025-12-27 18:53:53,478 - INFO -   ✓ Attached KB 'd2-creative' to 'inbox-manager-d2-creative'
+2025-12-27 18:53:54,479 - INFO - [37/50] Processing: inbox-manager-conneqt
+2025-12-27 18:53:54,479 - INFO -   Found KB: conneqt (380edf98-e33b-11f0-b074-4e013e2ddde4)
+2025-12-27 18:53:54,833 - INFO - HTTP Request: POST https://api.digitalocean.com/v2/gen-ai/agents/0daa5796-e373-11f0-b074-4e013e2ddde4/knowledge_bases "HTTP/1.1 200 OK"
+2025-12-27 18:53:54,834 - INFO -   ✓ Attached KB 'conneqt' to 'inbox-manager-conneqt'
+2025-12-27 18:53:55,835 - INFO - [38/50] Processing: inbox-manager-cogent-consulting
+2025-12-27 18:53:55,835 - INFO -   Found KB: cogent-consulting (870b6e31-e33b-11f0-b074-4e013e2ddde4)
+2025-12-27 18:53:56,179 - INFO - HTTP Request: POST https://api.digitalocean.com/v2/gen-ai/agents/086332a4-e373-11f0-b074-4e013e2ddde4/knowledge_bases "HTTP/1.1 200 OK"
+2025-12-27 18:53:56,180 - INFO -   ✓ Attached KB 'cogent-consulting' to 'inbox-manager-cogent-consulting'
+2025-12-27 18:53:57,182 - INFO - [39/50] Processing: inbox-manager-clearfield-group
+2025-12-27 18:53:57,182 - INFO -   Found KB: clearfield-group (6f40d250-e33b-11f0-b074-4e013e2ddde4)
+2025-12-27 18:53:57,791 - INFO - HTTP Request: POST https://api.digitalocean.com/v2/gen-ai/agents/01a128aa-e373-11f0-b074-4e013e2ddde4/knowledge_bases "HTTP/1.1 200 OK"
+2025-12-27 18:53:57,791 - INFO -   ✓ Attached KB 'clearfield-group' to 'inbox-manager-clearfield-group'
+2025-12-27 18:53:58,792 - INFO - [40/50] Processing: inbox-manager-clarke-consulting
+2025-12-27 18:53:58,792 - INFO -   Found KB: clarke-consulting (4cfdff79-e33b-11f0-b074-4e013e2ddde4)
+2025-12-27 18:53:59,260 - INFO - HTTP Request: POST https://api.digitalocean.com/v2/gen-ai/agents/fc7a1330-e372-11f0-b074-4e013e2ddde4/knowledge_bases "HTTP/1.1 200 OK"
+2025-12-27 18:53:59,261 - INFO -   ✓ Attached KB 'clarke-consulting' to 'inbox-manager-clarke-consulting'
+2025-12-27 18:54:00,262 - INFO - [41/50] Processing: inbox-manager-cas-severn
+2025-12-27 18:54:00,262 - INFO -   Found KB: cas-severn (108a996a-e33b-11f0-b074-4e013e2ddde4)
+2025-12-27 18:54:00,653 - INFO - HTTP Request: POST https://api.digitalocean.com/v2/gen-ai/agents/c7c65020-e371-11f0-b074-4e013e2ddde4/knowledge_bases "HTTP/1.1 200 OK"
+2025-12-27 18:54:00,654 - INFO -   ✓ Attached KB 'cas-severn' to 'inbox-manager-cas-severn'
+2025-12-27 18:54:01,654 - INFO - [42/50] Processing: inbox-manager-bucklandco
+2025-12-27 18:54:01,654 - INFO -   Found KB: bucklandco (ddd6c82a-e33a-11f0-b074-4e013e2ddde4)
+2025-12-27 18:54:01,957 - INFO - HTTP Request: POST https://api.digitalocean.com/v2/gen-ai/agents/c1cc3d43-e371-11f0-b074-4e013e2ddde4/knowledge_bases "HTTP/1.1 200 OK"
+2025-12-27 18:54:01,958 - INFO -   ✓ Attached KB 'bucklandco' to 'inbox-manager-bucklandco'
+2025-12-27 18:54:02,960 - INFO - [43/50] Processing: inbox-manager-beistle
+2025-12-27 18:54:02,960 - INFO -   Found KB: beistle (3e2b357a-e322-11f0-b074-4e013e2ddde4)
+2025-12-27 18:54:03,313 - INFO - HTTP Request: POST https://api.digitalocean.com/v2/gen-ai/agents/bcff6f19-e371-11f0-b074-4e013e2ddde4/knowledge_bases "HTTP/1.1 200 OK"
+2025-12-27 18:54:03,313 - INFO -   ✓ Attached KB 'beistle' to 'inbox-manager-beistle'
+2025-12-27 18:54:04,314 - INFO - [44/50] Processing: inbox-manager-atrenet
+2025-12-27 18:54:04,314 - INFO -   Found KB: atrenet (9abb788e-e33a-11f0-b074-4e013e2ddde4)
+2025-12-27 18:54:04,952 - INFO - HTTP Request: POST https://api.digitalocean.com/v2/gen-ai/agents/b6317ad5-e371-11f0-b074-4e013e2ddde4/knowledge_bases "HTTP/1.1 200 OK"
+2025-12-27 18:54:04,952 - INFO -   ✓ Attached KB 'atrenet' to 'inbox-manager-atrenet'
+2025-12-27 18:54:05,953 - INFO - [45/50] Processing: inbox-manager-a-perfect-promotion
+2025-12-27 18:54:05,953 - INFO -   Found KB: a-perfect-promotion (4579e84e-e339-11f0-b074-4e013e2ddde4)
+2025-12-27 18:54:06,421 - INFO - HTTP Request: POST https://api.digitalocean.com/v2/gen-ai/agents/afadf9bf-e371-11f0-b074-4e013e2ddde4/knowledge_bases "HTTP/1.1 200 OK"
+2025-12-27 18:54:06,422 - INFO -   ✓ Attached KB 'a-perfect-promotion' to 'inbox-manager-a-perfect-promotion'
+2025-12-27 18:54:07,423 - INFO - [46/50] Processing: inbox-manager-archway-learning-solutions
+2025-12-27 18:54:07,423 - INFO -   Found KB: archway-learning-solutions (0c82bfaf-e33a-11f0-b074-4e013e2ddde4)
+2025-12-27 18:54:07,761 - INFO - HTTP Request: POST https://api.digitalocean.com/v2/gen-ai/agents/d131a10b-e368-11f0-b074-4e013e2ddde4/knowledge_bases "HTTP/1.1 200 OK"
+2025-12-27 18:54:07,762 - INFO -   ✓ Attached KB 'archway-learning-solutions' to 'inbox-manager-archway-learning-solutions'
+2025-12-27 18:54:08,764 - INFO - [47/50] Processing: inbox-manager-american-ethanol
+2025-12-27 18:54:08,764 - INFO -   Found KB: american-ethanol (7e6bcd49-e33a-11f0-b074-4e013e2ddde4)
+2025-12-27 18:54:09,284 - INFO - HTTP Request: POST https://api.digitalocean.com/v2/gen-ai/agents/cafb8a2b-e368-11f0-b074-4e013e2ddde4/knowledge_bases "HTTP/1.1 200 OK"
+2025-12-27 18:54:09,285 - INFO -   ✓ Attached KB 'american-ethanol' to 'inbox-manager-american-ethanol'
+2025-12-27 18:54:10,286 - INFO - [48/50] Processing: inbox-manager-abundantly
+2025-12-27 18:54:10,286 - INFO -   Found KB: abundantly (60b6d348-e33a-11f0-b074-4e013e2ddde4)
+2025-12-27 18:54:10,731 - INFO - HTTP Request: POST https://api.digitalocean.com/v2/gen-ai/agents/c46c6557-e368-11f0-b074-4e013e2ddde4/knowledge_bases "HTTP/1.1 200 OK"
+2025-12-27 18:54:10,732 - INFO -   ✓ Attached KB 'abundantly' to 'inbox-manager-abundantly'
+2025-12-27 18:54:11,732 - INFO - [49/50] Processing: inbox-manager-x-agency
+2025-12-27 18:54:11,732 - INFO -   Found KB: x-agency (1b5875a9-e342-11f0-b074-4e013e2ddde4)
+2025-12-27 18:54:12,235 - INFO - HTTP Request: POST https://api.digitalocean.com/v2/gen-ai/agents/1582641c-e362-11f0-b074-4e013e2ddde4/knowledge_bases "HTTP/1.1 200 OK"
+2025-12-27 18:54:12,236 - INFO -   ✓ Attached KB 'x-agency' to 'inbox-manager-x-agency'
+2025-12-27 18:54:13,237 - INFO - [50/50] Processing: inbox-manager
+2025-12-27 18:54:13,237 - WARNING -   ⚠ No KB found for client: inbox-manager
+
+================================================================================
+RECONNECTING AGENTS TO KNOWLEDGE BASES
+================================================================================
+
+
+--------------------------------------------------------------------------------
+Agents to process: 50
+--------------------------------------------------------------------------------
+
+
+================================================================================
+SUMMARY
+================================================================================
+Total processed: 50
+✓ Success: 49
+✗ Failed: 0
+⚠ Skipped (no KB): 1
+================================================================================
+
+✓ Agents are reconnected and redeploying!
+  Wait ~30-60 seconds for redeployment to complete.
