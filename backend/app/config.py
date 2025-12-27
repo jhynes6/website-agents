@@ -100,13 +100,13 @@ class Settings(BaseSettings):
         le=1.0
     )
     digitalocean_agent_top_k: int = Field(
-        10,
+        5,
         alias="DIGITALOCEAN_AGENT_TOP_K",
         ge=1,
         le=100
     )
     digitalocean_agent_max_tokens: int = Field(
-        2048,
+        4096,
         alias="DIGITALOCEAN_AGENT_MAX_TOKENS",
         ge=1,
         le=4096
