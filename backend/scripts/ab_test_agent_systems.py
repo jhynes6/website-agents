@@ -86,7 +86,7 @@ class ABTestRunner:
     async def get_agent_details(self, agent_type: str) -> Optional[Dict]:
         """Get agent UUID and endpoint for testing"""
         slug = f"{agent_type}:{self.client_slug}"
-        agent = self.registry.find_by_slug(slug)
+        agent = self.registry.get(slug)
         
         if not agent:
             logger.warning(f"Agent not found: {slug}")

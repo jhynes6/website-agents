@@ -1,0 +1,351 @@
+{
+  "client_slug": "pi-lit",
+  "test_date": "2025-12-28T01:42:58.094813+00:00",
+  "total_queries": 8,
+  "results": [
+    {
+      "query": "What does your company do?",
+      "expected_intent": "MORE_INFO",
+      "expected_tags": [
+        "about",
+        "services_products"
+      ],
+      "single_agent": {
+        "success": true,
+        "latency": 6.24955415725708,
+        "response": "Our company specializes in providing innovative B2B solutions that help businesses streamline their operations and enhance productivity. We offer a range of services, including:\n\n- Customized software solutions\n- Data analytics and reporting tools\n- Process automation services\n- Customer relationship management systems\n\nThese services are designed to meet the unique needs of our clients and drive their success. Would you be available for a call in the next week or so to discuss how we can support your business?",
+        "usage": {
+          "prompt_tokens": 455,
+          "completion_tokens": 100,
+          "total_tokens": 555
+        },
+        "model": "single-agent"
+      },
+      "hybrid_system": {
+        "success": true,
+        "latency": 3.8546953201293945,
+        "triage_latency": 2.09808349609375e-05,
+        "response_latency": 3.8546743392944336,
+        "response": "Our company specializes in providing innovative solutions designed to enhance business efficiency and drive growth. Here are some key areas we focus on:\n\n- **Product Development**: We help businesses create and launch new products that meet market demands.\n- **Consulting Services**: Our team offers expert advice to optimize operations and improve performance.\n- **Technology Solutions**: We provide cutting-edge technology tools to streamline processes and enhance productivity.\n\nWould you be available for a call in the next week or so to discuss how our services can benefit your business?",
+        "usage": {
+          "prompt_tokens": 511,
+          "completion_tokens": 114,
+          "total_tokens": 625
+        },
+        "triage_result": {
+          "intent": "MORE_INFO",
+          "urgency": "medium",
+          "kb_tags": [
+            "about",
+            "services_products"
+          ],
+          "confidence": 0.7
+        },
+        "model": "hybrid-2-agent"
+      },
+      "timestamp": "2025-12-28T01:41:30.245842+00:00"
+    },
+    {
+      "query": "Do you have any case studies or success stories?",
+      "expected_intent": "CASE_STUDY_REQUEST",
+      "expected_tags": [
+        "case_studies",
+        "testimonials"
+      ],
+      "single_agent": {
+        "success": true,
+        "latency": 5.540718078613281,
+        "response": "Yes, we have several case studies and success stories that highlight how our solutions have positively impacted our clients. Here are a few examples:\n\n- **Increased Efficiency**: One client saw a 30% increase in operational efficiency after implementing our solution.\n- **Cost Reduction**: Another company reduced their costs by 25% within the first year of using our services.\n- **Revenue Growth**: A client reported a 40% increase in revenue after integrating our platform into their workflow.\n\nI would be happy to share more detailed case studies during a call. Are you free in the next week or so to discuss this further?",
+        "usage": {
+          "prompt_tokens": 463,
+          "completion_tokens": 143,
+          "total_tokens": 606
+        },
+        "model": "single-agent"
+      },
+      "hybrid_system": {
+        "success": true,
+        "latency": 4.171328067779541,
+        "triage_latency": 1.1920928955078125e-05,
+        "response_latency": 4.171316146850586,
+        "response": "Yes, we have several case studies and success stories that highlight how our solutions have benefited our clients. Here are a few examples:\n\n- **Increased Efficiency**: A client in the manufacturing sector improved their production efficiency by 30% after implementing our solution.\n- **Cost Savings**: Another client in retail saved over $100,000 annually by streamlining their operations with our services.\n- **Enhanced Customer Satisfaction**: A service provider saw a 25% increase in customer satisfaction scores after utilizing our platform.\n\nI would be happy to share more detailed case studies during a call. Are you free in the next week or so to discuss this further?",
+        "usage": {
+          "prompt_tokens": 527,
+          "completion_tokens": 149,
+          "total_tokens": 676
+        },
+        "triage_result": {
+          "intent": "CASE_STUDY_REQUEST",
+          "urgency": "medium",
+          "kb_tags": [
+            "case_studies",
+            "testimonials"
+          ],
+          "confidence": 0.8
+        },
+        "model": "hybrid-2-agent"
+      },
+      "timestamp": "2025-12-28T01:41:42.960614+00:00"
+    },
+    {
+      "query": "How much does this cost?",
+      "expected_intent": "PRICING",
+      "expected_tags": [
+        "pricing",
+        "services_products"
+      ],
+      "single_agent": {
+        "success": true,
+        "latency": 3.1286232471466064,
+        "response": "Thank you for your interest! Pricing can vary based on the specific solutions and services you are looking for. \n\n- We offer different packages tailored to various business needs.\n- Custom solutions may also be available depending on your requirements.\n\nI would love to discuss this in more detail and provide you with a quote. Are you free for a call in the next week or so?",
+        "usage": {
+          "prompt_tokens": 455,
+          "completion_tokens": 83,
+          "total_tokens": 538
+        },
+        "model": "single-agent"
+      },
+      "hybrid_system": {
+        "success": true,
+        "latency": 2.805419921875,
+        "triage_latency": 1.7881393432617188e-05,
+        "response_latency": 2.8054020404815674,
+        "response": "Thank you for your interest in our services! Our pricing can vary based on the specific solutions you are looking for and the scale of your needs. \n\n- We offer a range of packages tailored to different business sizes and requirements.\n- Additional services may also affect the overall cost.\n\nI would love to discuss your specific needs and provide you with a detailed quote. Are you available for a call in the next week or so?",
+        "usage": {
+          "prompt_tokens": 513,
+          "completion_tokens": 99,
+          "total_tokens": 612
+        },
+        "triage_result": {
+          "intent": "PRICING",
+          "urgency": "high",
+          "kb_tags": [
+            "pricing",
+            "services_products"
+          ],
+          "confidence": 0.9
+        },
+        "model": "hybrid-2-agent"
+      },
+      "timestamp": "2025-12-28T01:41:51.896531+00:00"
+    },
+    {
+      "query": "Can we schedule a call to discuss this?",
+      "expected_intent": "BOOKING_REQUEST",
+      "expected_tags": [
+        "about",
+        "contact"
+      ],
+      "single_agent": {
+        "success": true,
+        "latency": 3.0963010787963867,
+        "response": "I would be happy to schedule a call to discuss further. Are you available in the next week or so?",
+        "usage": {
+          "prompt_tokens": 461,
+          "completion_tokens": 34,
+          "total_tokens": 495
+        },
+        "model": "single-agent"
+      },
+      "hybrid_system": {
+        "success": true,
+        "latency": 4.897524833679199,
+        "triage_latency": 1.4066696166992188e-05,
+        "response_latency": 4.897510766983032,
+        "response": "Absolutely! I would be happy to schedule a call to discuss further. \n\nAre you available in the next week or so? Please let me know your preferred times, and we can set it up.",
+        "usage": {
+          "prompt_tokens": 517,
+          "completion_tokens": 57,
+          "total_tokens": 574
+        },
+        "triage_result": {
+          "intent": "BOOKING_REQUEST",
+          "urgency": "high",
+          "kb_tags": [
+            "about",
+            "contact"
+          ],
+          "confidence": 0.95
+        },
+        "model": "hybrid-2-agent"
+      },
+      "timestamp": "2025-12-28T01:42:02.893207+00:00"
+    },
+    {
+      "query": "What industries have you worked with?",
+      "expected_intent": "MORE_INFO",
+      "expected_tags": [
+        "industry_markets",
+        "case_studies"
+      ],
+      "single_agent": {
+        "success": true,
+        "latency": 4.602702856063843,
+        "response": "We have experience working with a variety of industries, including:\n\n- Technology\n- Healthcare\n- Finance\n- Manufacturing\n- Retail\n\nOur solutions are tailored to meet the specific needs of each sector. Would you be available for a call in the next week or so to discuss how we can assist your industry?",
+        "usage": {
+          "prompt_tokens": 457,
+          "completion_tokens": 74,
+          "total_tokens": 531
+        },
+        "model": "single-agent"
+      },
+      "hybrid_system": {
+        "success": true,
+        "latency": 3.491833448410034,
+        "triage_latency": 7.152557373046875e-06,
+        "response_latency": 3.491826295852661,
+        "response": "We have worked with a variety of industries, including:\n\n- Technology\n- Healthcare\n- Finance\n- Manufacturing\n- Retail\n\nIf you're interested, I can share specific case studies or testimonials from these sectors. Are you free in the next week or so for a call to discuss this further?",
+        "usage": {
+          "prompt_tokens": 521,
+          "completion_tokens": 72,
+          "total_tokens": 593
+        },
+        "triage_result": {
+          "intent": "CASE_STUDY_REQUEST",
+          "urgency": "medium",
+          "kb_tags": [
+            "case_studies",
+            "testimonials"
+          ],
+          "confidence": 0.8
+        },
+        "model": "hybrid-2-agent"
+      },
+      "timestamp": "2025-12-28T01:42:13.990596+00:00"
+    },
+    {
+      "query": "Can you follow up with me in 2 months?",
+      "expected_intent": "LONG_FOLLOW_UP",
+      "expected_tags": [],
+      "single_agent": {
+        "success": true,
+        "latency": 2.9033761024475098,
+        "response": "I appreciate your interest! While I can't schedule a follow-up for you, I would love to connect sooner to discuss how our solutions can benefit your business. \n\nAre you available for a call in the next week or so?",
+        "usage": {
+          "prompt_tokens": 465,
+          "completion_tokens": 60,
+          "total_tokens": 525
+        },
+        "model": "single-agent"
+      },
+      "hybrid_system": {
+        "success": true,
+        "latency": 3.82645583152771,
+        "triage_latency": 1.7881393432617188e-05,
+        "response_latency": 3.8264379501342773,
+        "response": "I appreciate your interest! I can certainly follow up with you in two months. In the meantime, if you have any questions or need information about our services, feel free to reach out. \n\nWould you be open to a brief call in the next week or so to discuss how we can assist you?",
+        "usage": {
+          "prompt_tokens": 517,
+          "completion_tokens": 72,
+          "total_tokens": 589
+        },
+        "triage_result": {
+          "intent": "LONG_FOLLOW_UP",
+          "urgency": "low",
+          "kb_tags": [],
+          "confidence": 0.85
+        },
+        "model": "hybrid-2-agent"
+      },
+      "timestamp": "2025-12-28T01:42:23.723413+00:00"
+    },
+    {
+      "query": "Tell me about your services and what makes you different",
+      "expected_intent": "MORE_INFO",
+      "expected_tags": [
+        "services_products",
+        "about"
+      ],
+      "single_agent": {
+        "success": true,
+        "latency": 7.560588121414185,
+        "response": "We offer a range of B2B services designed to enhance your business operations and drive growth. Here are some key aspects of our services:\n\n- **Tailored Solutions:** We customize our offerings to meet the specific needs of your business.\n- **Expert Team:** Our team consists of industry experts with extensive experience.\n- **Innovative Technology:** We leverage the latest technology to provide efficient and effective solutions.\n- **Customer-Centric Approach:** We prioritize your needs and work closely with you to ensure satisfaction.\n\nWhat sets us apart is our commitment to understanding your unique challenges and delivering solutions that truly make a difference. \n\nAre you free in the next week or so for a call to discuss how we can assist your business?",
+        "usage": {
+          "prompt_tokens": 464,
+          "completion_tokens": 161,
+          "total_tokens": 625
+        },
+        "model": "single-agent"
+      },
+      "hybrid_system": {
+        "success": true,
+        "latency": 7.3628458976745605,
+        "triage_latency": 1.4781951904296875e-05,
+        "response_latency": 7.362831115722656,
+        "response": "We offer a range of services designed to meet the needs of businesses like yours. Here\u2019s a brief overview:\n\n- **Consulting Services**: Tailored strategies to enhance operational efficiency and drive growth.\n- **Product Development**: Innovative solutions that align with market demands and customer needs.\n- **Customer Support**: Dedicated support teams to ensure your satisfaction and address any issues promptly.\n\nWhat sets us apart:\n\n- **Personalized Approach**: We take the time to understand your unique challenges and goals.\n- **Expert Team**: Our team consists of industry experts with extensive experience.\n- **Proven Results**: We have a track record of helping businesses achieve measurable success.\n\nWould you be available for a call in the next week or so to discuss how our services can benefit your business?",
+        "usage": {
+          "prompt_tokens": 520,
+          "completion_tokens": 174,
+          "total_tokens": 694
+        },
+        "triage_result": {
+          "intent": "MORE_INFO",
+          "urgency": "medium",
+          "kb_tags": [
+            "about",
+            "services_products"
+          ],
+          "confidence": 0.7
+        },
+        "model": "hybrid-2-agent"
+      },
+      "timestamp": "2025-12-28T01:42:41.649941+00:00"
+    },
+    {
+      "query": "Show me examples of your work",
+      "expected_intent": "CASE_STUDY_REQUEST",
+      "expected_tags": [
+        "case_studies",
+        "portfolio"
+      ],
+      "single_agent": {
+        "success": true,
+        "latency": 5.246083736419678,
+        "response": "I would be happy to provide you with examples of our work. We have successfully partnered with various companies across different industries, delivering tailored solutions that meet their specific needs. Here are a few highlights:\n\n- **Increased Efficiency**: We helped a manufacturing client streamline their operations, resulting in a 30% reduction in production time.\n- **Cost Savings**: A retail partner saw a 25% decrease in operational costs after implementing our solutions.\n- **Enhanced Customer Experience**: We assisted a tech company in improving their customer support system, leading to a 40% increase in customer satisfaction ratings.\n\nIf you would like more detailed case studies or specific examples related to your industry, I would be glad to discuss this further. Are you available for a call in the next week or so?",
+        "usage": {
+          "prompt_tokens": 456,
+          "completion_tokens": 173,
+          "total_tokens": 629
+        },
+        "model": "single-agent"
+      },
+      "hybrid_system": {
+        "success": true,
+        "latency": 6.193624973297119,
+        "triage_latency": 5.0067901611328125e-06,
+        "response_latency": 6.193619966506958,
+        "response": "I\u2019d be happy to share examples of our work! Here are a few highlights:\n\n- **Case Studies**: We have detailed case studies showcasing how our solutions have helped various clients achieve their goals, including metrics on performance improvements and ROI.\n- **Testimonials**: We also have numerous testimonials from satisfied clients that highlight their experiences and the impact our services have had on their businesses.\n\nIf you're interested, I can send over specific case studies and testimonials that align with your industry. Are you free in the next week or so for a call to discuss this further?",
+        "usage": {
+          "prompt_tokens": 520,
+          "completion_tokens": 125,
+          "total_tokens": 645
+        },
+        "triage_result": {
+          "intent": "CASE_STUDY_REQUEST",
+          "urgency": "medium",
+          "kb_tags": [
+            "case_studies",
+            "testimonials"
+          ],
+          "confidence": 0.8
+        },
+        "model": "hybrid-2-agent"
+      },
+      "timestamp": "2025-12-28T01:42:56.092790+00:00"
+    }
+  ],
+  "summary": {
+    "single_agent": {
+      "success_rate": 1.0,
+      "avg_latency": 4.790993422269821,
+      "total_tokens": 4504
+    },
+    "hybrid_system": {
+      "success_rate": 1.0,
+      "avg_latency": 4.57546603679657,
+      "avg_triage_latency": 1.3709068298339844e-05,
+      "avg_response_latency": 4.5754523277282715,
+      "total_tokens": 5008
+    }
+  }
+}
