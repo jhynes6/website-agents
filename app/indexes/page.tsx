@@ -8,6 +8,7 @@ import { Globe, FileText, Database, ExternalLink, Trash2, Calendar, FolderOpen }
 import { toast } from "sonner"
 import { useStorage } from "@/hooks/useStorage"
 import { useEffect, useState } from 'react'
+import { getBackendUrl } from "@/lib/backend"
 
 interface IndexedSite {
   url: string
@@ -38,7 +39,7 @@ export default function IndexesPage() {
   useEffect(() => {
     const fetchResourceLinks = async () => {
       try {
-        const response = await fetch('/api/firestarter/resource-links')
+        const response = await fetch(getBackendUrl('/api/firestarter/resource-links'))
         if (response.ok) {
           const links = await response.json()
           setResourceLinks(links)
