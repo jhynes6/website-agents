@@ -1186,7 +1186,7 @@ print(data['choices'][0]['message']['content'])`
             </DialogDescription>
           </DialogHeader>
           <div className="mt-4 overflow-y-auto max-h-[60vh]">
-            <pre className="text-xs bg-gray-900 text-white p-4 rounded overflow-x-auto font-mono">
+            <pre className="text-sm bg-gray-900 text-white p-4 rounded overflow-x-auto font-mono">
               {clientDetails?.agent_data ? JSON.stringify(clientDetails.agent_data, null, 2) : 'No data available'}
             </pre>
           </div>
@@ -1212,7 +1212,7 @@ print(data['choices'][0]['message']['content'])`
             </DialogDescription>
           </DialogHeader>
           <div className="mt-4 overflow-y-auto max-h-[60vh]">
-            <pre className="text-xs bg-gray-900 text-white p-4 rounded overflow-x-auto font-mono">
+            <pre className="text-sm bg-gray-900 text-white p-4 rounded overflow-x-auto font-mono">
               {clientDetails?.kb_data ? JSON.stringify(clientDetails.kb_data, null, 2) : 'No data available'}
             </pre>
           </div>
