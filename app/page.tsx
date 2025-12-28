@@ -554,7 +554,7 @@ export default function FirestarterPage() {
             className="font-medium flex items-center gap-2"
           >
             <a
-              href="https://console.upstash.com/search/ca83b161-8d48-4687-aa8d-776ea9673f6f?teamid=0"
+              href="https://cloud.digitalocean.com/gen-ai/workspaces/11f0df43-69be-eb71-b074-4e013e2ddde4/agents"
               target="_blank"
               rel="noopener noreferrer"
             >
