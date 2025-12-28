@@ -14,7 +14,7 @@
       "mintleads-clients-kb/cogent-consulting/"
     ],
     "kb_status": "ok",
-    "last_audit_at": "2025-12-28T00:14:04.373325+00:00",
+    "last_audit_at": "2025-12-28T00:58:28.574448+00:00",
     "details_ref": "reports/kb_inspect/cogent-consulting.json"
   },
   "spaces": {
@@ -47,6 +47,6 @@
   },
   "timestamps": {
     "created_at": "2025-12-27T15:48:45Z",
-    "updated_at": "2025-12-28T00:14:04.373325+00:00"
+    "updated_at": "2025-12-28T00:58:28.574448+00:00"
   }
 }

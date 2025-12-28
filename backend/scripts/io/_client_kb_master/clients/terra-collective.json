@@ -14,7 +14,7 @@
       "mintleads-clients-kb/terra-collective/"
     ],
     "kb_status": "ok",
-    "last_audit_at": "2025-12-28T00:14:04.380714+00:00",
+    "last_audit_at": "2025-12-28T00:58:28.581758+00:00",
     "details_ref": "reports/kb_inspect/terra-collective.json"
   },
   "spaces": {
@@ -44,6 +44,6 @@
   },
   "timestamps": {
     "created_at": "2025-12-27T16:25:53Z",
-    "updated_at": "2025-12-28T00:14:04.380714+00:00"
+    "updated_at": "2025-12-28T00:58:28.581758+00:00"
   }
 }

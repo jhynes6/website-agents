@@ -14,7 +14,7 @@
       "mintleads-clients-kb/cas-severn/"
     ],
     "kb_status": "ok",
-    "last_audit_at": "2025-12-28T00:14:04.372615+00:00",
+    "last_audit_at": "2025-12-28T00:58:28.573676+00:00",
     "details_ref": "reports/kb_inspect/cas-severn.json"
   },
   "spaces": {
@@ -48,6 +48,6 @@
   },
   "timestamps": {
     "created_at": "2025-12-27T15:45:26Z",
-    "updated_at": "2025-12-28T00:14:04.372615+00:00"
+    "updated_at": "2025-12-28T00:58:28.573676+00:00"
   }
 }
