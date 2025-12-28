@@ -199,18 +199,20 @@ export default function IndexesPage() {
               </a>
             </Button>
           )}
-          <Button
-            asChild
-            variant="outline"
-            size="sm"
-            className="gap-2"
-          >
-            <a href="https://cloud.digitalocean.com/gen-ai/workspaces/11f0df43-69be-eb71-b074-4e013e2ddde4/agents" target="_blank" rel="noopener noreferrer">
-              <FileText className="w-4 h-4" />
-              Agent Directory
-              <ExternalLink className="w-3 h-3" />
-            </a>
-          </Button>
+          {resourceLinks.agent_directory && (
+            <Button
+              asChild
+              variant="outline"
+              size="sm"
+              className="gap-2"
+            >
+              <a href={resourceLinks.agent_directory} target="_blank" rel="noopener noreferrer">
+                <FileText className="w-4 h-4" />
+                Agent Directory
+                <ExternalLink className="w-3 h-3" />
+              </a>
+            </Button>
+          )}
         </div>
       )}
 
