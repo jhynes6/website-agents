@@ -241,8 +241,8 @@ function DashboardContent() {
     kb_data: any
     agent_data: any
   } | null>(null)
-  const [showKbDetails, setShowKbDetails] = useState(false)
-  const [showAgentDetails, setShowAgentDetails] = useState(false)
+  const [showKbDetailsModal, setShowKbDetailsModal] = useState(false)
+  const [showAgentDetailsModal, setShowAgentDetailsModal] = useState(false)
 
   useEffect(() => {
     const el = scrollAreaRef.current
@@ -872,27 +872,16 @@ print(data['choices'][0]['message']['content'])`
               )}
             </div>
 
-            {/* Agent Details Dropdown - Left Side */}
+            {/* Agent Details Button - Left Side */}
             {clientDetails?.agent_data && (
               <div className="bg-[#0E3D68] rounded-xl overflow-hidden flex-shrink-0">
                 <button
-                  onClick={() => setShowAgentDetails(!showAgentDetails)}
+                  onClick={() => setShowAgentDetailsModal(true)}
                   className="w-full px-6 py-4 flex items-center justify-between hover:bg-[#0a2d4d] transition-colors"
                 >
-                  <h3 className="text-sm font-semibold text-white">Agent Details</h3>
-                  {showAgentDetails ? (
-                    <ChevronUp className="w-4 h-4 text-white" />
-                  ) : (
-                    <ChevronDown className="w-4 h-4 text-white" />
-                  )}
+                  <h3 className="text-sm font-semibold text-white">View Agent Details</h3>
+                  <ExternalLink className="w-4 h-4 text-white" />
                 </button>
-                {showAgentDetails && (
-                  <div className="px-6 pb-4 pt-2 border-t border-white/20">
-                    <pre className="text-xs bg-[#0a2d4d] text-white p-3 rounded overflow-x-auto max-h-96 overflow-y-auto">
-                      {JSON.stringify(clientDetails.agent_data, null, 2)}
-                    </pre>
-                  </div>
-                )}
               </div>
             )}
 
@@ -1169,27 +1158,16 @@ print(data['choices'][0]['message']['content'])`
                   })()}
                 </div>
 
-                {/* KB Details Dropdown - Right Side */}
+                {/* KB Details Button - Right Side */}
                 {clientDetails?.kb_data && (
                   <div className="mt-4 bg-[#0E3D68] rounded-xl overflow-hidden">
                     <button
-                      onClick={() => setShowKbDetails(!showKbDetails)}
+                      onClick={() => setShowKbDetailsModal(true)}
                       className="w-full px-6 py-4 flex items-center justify-between hover:bg-[#0a2d4d] transition-colors"
                     >
-                      <h3 className="text-sm font-semibold text-white">KB Details</h3>
-                      {showKbDetails ? (
-                        <ChevronUp className="w-4 h-4 text-white" />
-                      ) : (
-                        <ChevronDown className="w-4 h-4 text-white" />
-                      )}
+                      <h3 className="text-sm font-semibold text-white">View KB Details</h3>
+                      <ExternalLink className="w-4 h-4 text-white" />
                     </button>
-                    {showKbDetails && (
-                      <div className="px-6 pb-4 pt-2 border-t border-white/20">
-                        <pre className="text-xs bg-[#0a2d4d] text-white p-3 rounded overflow-x-auto max-h-96 overflow-y-auto">
-                          {JSON.stringify(clientDetails.kb_data, null, 2)}
-                        </pre>
-                      </div>
-                    )}
                   </div>
                 )}
               </div>
@@ -1197,6 +1175,58 @@ print(data['choices'][0]['message']['content'])`
           </div>
         </div>
       </div>
+      
+      {/* Agent Details Modal */}
+      <Dialog open={showAgentDetailsModal} onOpenChange={setShowAgentDetailsModal}>
+        <DialogContent className="sm:max-w-4xl max-h-[80vh] bg-white z-50">
+          <DialogHeader>
+            <DialogTitle>Agent Details</DialogTitle>
+            <DialogDescription>
+              Complete agent configuration and metadata from mintleads-agents-store
+            </DialogDescription>
+          </DialogHeader>
+          <div className="mt-4 overflow-y-auto max-h-[60vh]">
+            <pre className="text-xs bg-gray-900 text-green-400 p-4 rounded overflow-x-auto font-mono">
+              {clientDetails?.agent_data ? JSON.stringify(clientDetails.agent_data, null, 2) : 'No data available'}
+            </pre>
+          </div>
+          <DialogFooter>
+            <Button
+              variant="code"
+              onClick={() => setShowAgentDetailsModal(false)}
+              className="font-medium"
+            >
+              Close
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* KB Details Modal */}
+      <Dialog open={showKbDetailsModal} onOpenChange={setShowKbDetailsModal}>
+        <DialogContent className="sm:max-w-4xl max-h-[80vh] bg-white z-50">
+          <DialogHeader>
+            <DialogTitle>Knowledge Base Details</DialogTitle>
+            <DialogDescription>
+              Complete client and KB metadata from mintleads-clients-kb
+            </DialogDescription>
+          </DialogHeader>
+          <div className="mt-4 overflow-y-auto max-h-[60vh]">
+            <pre className="text-xs bg-gray-900 text-green-400 p-4 rounded overflow-x-auto font-mono">
+              {clientDetails?.kb_data ? JSON.stringify(clientDetails.kb_data, null, 2) : 'No data available'}
+            </pre>
+          </div>
+          <DialogFooter>
+            <Button
+              variant="code"
+              onClick={() => setShowKbDetailsModal(false)}
+              className="font-medium"
+            >
+              Close
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
       
       {/* Delete Confirmation Modal */}
       <Dialog open={showDeleteModal} onOpenChange={setShowDeleteModal}>
