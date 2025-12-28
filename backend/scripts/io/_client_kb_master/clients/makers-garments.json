@@ -14,7 +14,7 @@
       "mintleads-clients-kb/makers-garments/"
     ],
     "kb_status": "ok",
-    "last_audit_at": "2025-12-27T18:09:10.725506+00:00",
+    "last_audit_at": "2025-12-28T00:14:04.376306+00:00",
     "details_ref": "reports/kb_inspect/makers-garments.json"
   },
   "spaces": {
@@ -41,6 +41,6 @@
   },
   "timestamps": {
     "created_at": "2025-12-27T16:05:15Z",
-    "updated_at": "2025-12-27T18:09:10.725506+00:00"
+    "updated_at": "2025-12-28T00:14:04.376306+00:00"
   }
 }

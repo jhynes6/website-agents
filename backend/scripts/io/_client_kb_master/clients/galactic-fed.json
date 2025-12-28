@@ -14,7 +14,7 @@
       "mintleads-clients-kb/galactic-fed/"
     ],
     "kb_status": "ok",
-    "last_audit_at": "2025-12-27T18:09:10.723520+00:00",
+    "last_audit_at": "2025-12-28T00:14:04.374749+00:00",
     "details_ref": "reports/kb_inspect/galactic-fed.json"
   },
   "spaces": {
@@ -45,6 +45,6 @@
   },
   "timestamps": {
     "created_at": "2025-12-27T15:55:53Z",
-    "updated_at": "2025-12-27T18:09:10.723520+00:00"
+    "updated_at": "2025-12-28T00:14:04.374749+00:00"
   }
 }

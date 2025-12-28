@@ -2,8 +2,8 @@
   "name": "inbox-manager",
   "uuid": "59506efd-df44-11f0-b074-4e013e2ddde4",
   "region": "tor1",
-  "model_uuid": "1b07e52b-73c5-11f0-b074-4e013e2ddde4",
-  "model_name": "openai-gpt-5",
+  "model_uuid": "9a3644c7-f300-11ef-bf8f-4e013e2ddde4",
+  "model_name": "openai-gpt-4o-mini",
   "parent_uuid": "00000000-0000-0000-0000-000000000000",
   "retrieval_method": "RETRIEVAL_METHOD_REWRITE",
   "knowledge_base_uuids": [],
@@ -12,19 +12,19 @@
     "uuid": "59506efd-df44-11f0-b074-4e013e2ddde4",
     "name": "inbox-manager",
     "created_at": "2025-12-22T14:41:49Z",
-    "updated_at": "2025-12-27T00:46:02Z",
-    "instruction_template": "inbox_manager",
+    "updated_at": "2025-12-27T23:44:35Z",
+    "instruction": "You are a sales rep for a B2B company and you are managing an inbox of cold email replies. Answer questions ONLY using your knowledge base.\n\n**Rules:**\n- DO NOT answer a question with a question. If you are in doubt about what the prospect is asking for, provide them MORE information and ask them if you answered their question at the end. \n- Do not make up information, but you are trying to sell the prospect on taking an intro call with you.\n- Keep responses brief and to the point\n- Use bullet points if you are providing multiple examples in your reply\n- Ask the prospect if they are free in the next week or so for a call to discuss\n\n**Style:**\nProfessional, warm, and succinct. Use bullets and short paragraphs.",
     "model": {
-      "uuid": "1b07e52b-73c5-11f0-b074-4e013e2ddde4",
-      "name": "OpenAI GPT-5",
-      "inference_name": "openai-gpt-5",
+      "uuid": "9a3644c7-f300-11ef-bf8f-4e013e2ddde4",
+      "name": "OpenAI GPT-4o mini",
+      "inference_name": "openai-gpt-4o-mini",
       "version": {
         "major": 1
       },
       "inference_version": "4294967296",
       "is_foundational": true,
       "upload_complete": true,
-      "created_at": "2025-08-07T19:31:24Z",
+      "created_at": "2025-02-24T22:42:18Z",
       "updated_at": "2025-08-22T21:58:27Z",
       "metadata": {
         "agreements": {
@@ -34,12 +34,12 @@
               "url": "https://www.openai.com/policies"
             }
           ],
-          "title": "OpenAI GPT-5"
+          "title": "OpenAI GPT-4o mini"
         },
-        "description": "OpenAI's cutting-edge proprietary model, offering state-of-the-art performance across reasoning, coding, and language tasks.",
+        "description": "Use your OpenAI API key to access models like GPT-4o and 4o-mini, and reasoning models o1 and o3-mini.",
         "max_tokens": {
-          "default": 2048,
-          "max": 128000,
+          "default": 512,
+          "max": 16384,
           "min": 128
         },
         "temperature": {
@@ -48,7 +48,7 @@
           "min": 0
         },
         "top_p": {
-          "default": 1,
+          "default": 0.9,
           "max": 1,
           "min": 0.1
         }
@@ -63,25 +63,31 @@
       "provider": "MODEL_PROVIDER_OPENAI",
       "usecases": [
         "MODEL_USECASE_AGENT",
-        "MODEL_USECASE_SERVERLESS",
-        "MODEL_USECASE_REASONING"
+        "MODEL_USECASE_SERVERLESS"
       ]
     },
     "deployment": {
       "uuid": "59586d25-df44-11f0-b074-4e013e2ddde4",
       "url": "https://baztvwnwvpesr3xnhzuyldyu.agents.do-ai.run",
       "status": "STATUS_RUNNING",
-      "visibility": "VISIBILITY_PLAYGROUND",
+      "visibility": "VISIBILITY_PUBLIC",
       "created_at": "2025-12-22T14:41:49Z",
-      "updated_at": "2025-12-22T14:45:38Z"
+      "updated_at": "2025-12-28T00:06:21Z"
     },
     "k": 10,
-    "temperature": 0.5,
-    "top_p": 1,
-    "max_tokens": 4000,
+    "temperature": 0.3,
+    "top_p": 0.8,
+    "max_tokens": 4096,
     "project_id": "cb4a32d2-7e9f-44d8-86c7-63b3304c077b",
     "route_uuid": "00000000-0000-0000-0000-000000000000",
     "region": "tor1",
+    "chatbot": {
+      "name": "inbox-manager Chatbot",
+      "primary_color": "#031B4E",
+      "secondary_color": "#E5E8ED",
+      "starting_message": "Hello! How can I help you today?",
+      "button_background_color": "#0061EB"
+    },
     "route_created_at": "0001-01-01T00:00:00Z",
     "user_id": "24575518",
     "chatbot_identifiers": [

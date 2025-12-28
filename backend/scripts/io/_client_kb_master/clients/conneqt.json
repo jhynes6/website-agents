@@ -14,7 +14,7 @@
       "mintleads-clients-kb/conneqt/"
     ],
     "kb_status": "ok",
-    "last_audit_at": "2025-12-27T18:09:10.721789+00:00",
+    "last_audit_at": "2025-12-28T00:14:04.373515+00:00",
     "details_ref": "reports/kb_inspect/conneqt.json"
   },
   "spaces": {
@@ -41,6 +41,6 @@
   },
   "timestamps": {
     "created_at": "2025-12-27T15:46:33Z",
-    "updated_at": "2025-12-27T18:09:10.721789+00:00"
+    "updated_at": "2025-12-28T00:14:04.373515+00:00"
   }
 }

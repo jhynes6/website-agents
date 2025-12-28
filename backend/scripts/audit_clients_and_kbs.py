@@ -338,8 +338,19 @@ async def main():
 
     # 4. Fetch Agents
     print("\n\n--- 3. Fetching Agents ---")
-    agents = await do_client.list_agents()
-    print(f"Found {len(agents)} Agents.")
+    all_agents = await do_client.list_agents()
+    print(f"Found {len(all_agents)} Agents.")
+    
+    # Filter to only inbox-manager agents for clients
+    # Exclude generic agents like "inbox-manager", "copywriting", etc.
+    agents = []
+    for agent in all_agents:
+        agent_name = agent.get("name", "")
+        # Only include agents that match pattern: inbox-manager-{client-slug}
+        if agent_name.startswith("inbox-manager-") and agent_name != "inbox-manager":
+            agents.append(agent)
+    
+    print(f"Filtered to {len(agents)} client inbox-manager agents (excluded {len(all_agents) - len(agents)} non-client agents).")
 
     # 5. Build Summary & Global Stats
     # Exclude _client_kb_master and other system folders explicitly from clients set

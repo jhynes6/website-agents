@@ -1,44 +1,270 @@
 {
-  "generated_at": "2025-12-27T18:09:10.714466+00:00",
+  "generated_at": "2025-12-28T00:21:34.000911+00:00",
   "totals": {
-    "clients": 52,
-    "kbs_ok": 50,
+    "clients": 1,
+    "kbs_ok": 1,
     "kbs_misconfigured": 0,
     "kbs_root": 0,
-    "kbs_missing": 2,
+    "kbs_missing": 0,
     "clients_zero_files": 0,
     "clients_missing_intake": 0,
     "region_mismatches": 0
   },
   "agents": {
-    "total": 2,
+    "total": 49,
     "by_region": {
-      "tor1": 2
+      "tor1": 49
     },
     "with_kb_region_mismatch": 0,
     "list": [
       {
-        "name": "copywriting",
-        "uuid": "a020bcae-e2dd-11f0-b074-4e013e2ddde4",
-        "link": "agents/copywriting.json"
+        "name": "inbox-manager-zoomgrants",
+        "uuid": "30f9d009-e377-11f0-b074-4e013e2ddde4",
+        "link": "agents/inbox-manager-zoomgrants.json"
       },
       {
-        "name": "inbox-manager",
-        "uuid": "59506efd-df44-11f0-b074-4e013e2ddde4",
-        "link": "agents/inbox-manager.json"
+        "name": "inbox-manager-white-label-digital",
+        "uuid": "2caab7df-e377-11f0-b074-4e013e2ddde4",
+        "link": "agents/inbox-manager-white-label-digital.json"
+      },
+      {
+        "name": "inbox-manager-wendt-partners",
+        "uuid": "27f0cc94-e377-11f0-b074-4e013e2ddde4",
+        "link": "agents/inbox-manager-wendt-partners.json"
+      },
+      {
+        "name": "inbox-manager-vew-media",
+        "uuid": "23093bd5-e377-11f0-b074-4e013e2ddde4",
+        "link": "agents/inbox-manager-vew-media.json"
+      },
+      {
+        "name": "inbox-manager-ubiq-education",
+        "uuid": "1ecf43be-e377-11f0-b074-4e013e2ddde4",
+        "link": "agents/inbox-manager-ubiq-education.json"
+      },
+      {
+        "name": "inbox-manager-terra-collective",
+        "uuid": "1a71d1d6-e377-11f0-b074-4e013e2ddde4",
+        "link": "agents/inbox-manager-terra-collective.json"
+      },
+      {
+        "name": "inbox-manager-sock-fancy",
+        "uuid": "15a46854-e377-11f0-b074-4e013e2ddde4",
+        "link": "agents/inbox-manager-sock-fancy.json"
+      },
+      {
+        "name": "inbox-manager-slingshot",
+        "uuid": "0f9799a0-e377-11f0-b074-4e013e2ddde4",
+        "link": "agents/inbox-manager-slingshot.json"
+      },
+      {
+        "name": "inbox-manager-slice-communications",
+        "uuid": "0948b12c-e377-11f0-b074-4e013e2ddde4",
+        "link": "agents/inbox-manager-slice-communications.json"
+      },
+      {
+        "name": "inbox-manager-skayle-360",
+        "uuid": "04c753fe-e377-11f0-b074-4e013e2ddde4",
+        "link": "agents/inbox-manager-skayle-360.json"
+      },
+      {
+        "name": "inbox-manager-simple-machines",
+        "uuid": "fe787c92-e376-11f0-b074-4e013e2ddde4",
+        "link": "agents/inbox-manager-simple-machines.json"
+      },
+      {
+        "name": "inbox-manager-revolttek",
+        "uuid": "f7fdb307-e376-11f0-b074-4e013e2ddde4",
+        "link": "agents/inbox-manager-revolttek.json"
+      },
+      {
+        "name": "inbox-manager-revdrive",
+        "uuid": "f39e9c0d-e376-11f0-b074-4e013e2ddde4",
+        "link": "agents/inbox-manager-revdrive.json"
+      },
+      {
+        "name": "inbox-manager-reach-marketing",
+        "uuid": "ed12576b-e376-11f0-b074-4e013e2ddde4",
+        "link": "agents/inbox-manager-reach-marketing.json"
+      },
+      {
+        "name": "inbox-manager-push-analytics",
+        "uuid": "e3edd639-e376-11f0-b074-4e013e2ddde4",
+        "link": "agents/inbox-manager-push-analytics.json"
+      },
+      {
+        "name": "inbox-manager-pipefy",
+        "uuid": "dff01fe4-e374-11f0-b074-4e013e2ddde4",
+        "link": "agents/inbox-manager-pipefy.json"
+      },
+      {
+        "name": "inbox-manager-pi-lit",
+        "uuid": "d977476c-e374-11f0-b074-4e013e2ddde4",
+        "link": "agents/inbox-manager-pi-lit.json"
+      },
+      {
+        "name": "inbox-manager-peachtree-va",
+        "uuid": "d4fb4a31-e374-11f0-b074-4e013e2ddde4",
+        "link": "agents/inbox-manager-peachtree-va.json"
+      },
+      {
+        "name": "inbox-manager-on-the-marc-media",
+        "uuid": "d0602cd5-e374-11f0-b074-4e013e2ddde4",
+        "link": "agents/inbox-manager-on-the-marc-media.json"
+      },
+      {
+        "name": "inbox-manager-nutramarketers",
+        "uuid": "c9eac5d9-e374-11f0-b074-4e013e2ddde4",
+        "link": "agents/inbox-manager-nutramarketers.json"
+      },
+      {
+        "name": "inbox-manager-nga-healthcare",
+        "uuid": "c53b6da7-e374-11f0-b074-4e013e2ddde4",
+        "link": "agents/inbox-manager-nga-healthcare.json"
+      },
+      {
+        "name": "inbox-manager-nextlevel-thinking",
+        "uuid": "bedb402c-e374-11f0-b074-4e013e2ddde4",
+        "link": "agents/inbox-manager-nextlevel-thinking.json"
+      },
+      {
+        "name": "inbox-manager-mintleads",
+        "uuid": "ba01b17c-e374-11f0-b074-4e013e2ddde4",
+        "link": "agents/inbox-manager-mintleads.json"
+      },
+      {
+        "name": "inbox-manager-manufacturing-geeks",
+        "uuid": "b3ca92bb-e374-11f0-b074-4e013e2ddde4",
+        "link": "agents/inbox-manager-manufacturing-geeks.json"
+      },
+      {
+        "name": "inbox-manager-makers-garments",
+        "uuid": "af54413b-e374-11f0-b074-4e013e2ddde4",
+        "link": "agents/inbox-manager-makers-garments.json"
+      },
+      {
+        "name": "inbox-manager-lithyem",
+        "uuid": "480beea0-e374-11f0-b074-4e013e2ddde4",
+        "link": "agents/inbox-manager-lithyem.json"
+      },
+      {
+        "name": "inbox-manager-lib-consulting-group",
+        "uuid": "41a59752-e374-11f0-b074-4e013e2ddde4",
+        "link": "agents/inbox-manager-lib-consulting-group.json"
+      },
+      {
+        "name": "inbox-manager-klickrr",
+        "uuid": "3d3bf80e-e374-11f0-b074-4e013e2ddde4",
+        "link": "agents/inbox-manager-klickrr.json"
+      },
+      {
+        "name": "inbox-manager-integrity-professionals",
+        "uuid": "387f25e9-e374-11f0-b074-4e013e2ddde4",
+        "link": "agents/inbox-manager-integrity-professionals.json"
+      },
+      {
+        "name": "inbox-manager-incyte-media",
+        "uuid": "338437b3-e374-11f0-b074-4e013e2ddde4",
+        "link": "agents/inbox-manager-incyte-media.json"
+      },
+      {
+        "name": "inbox-manager-galactic-fed",
+        "uuid": "2f2639cf-e374-11f0-b074-4e013e2ddde4",
+        "link": "agents/inbox-manager-galactic-fed.json"
+      },
+      {
+        "name": "inbox-manager-forge-apollo",
+        "uuid": "2ad92201-e374-11f0-b074-4e013e2ddde4",
+        "link": "agents/inbox-manager-forge-apollo.json"
+      },
+      {
+        "name": "inbox-manager-f1-cloud-solutions",
+        "uuid": "246870f8-e374-11f0-b074-4e013e2ddde4",
+        "link": "agents/inbox-manager-f1-cloud-solutions.json"
+      },
+      {
+        "name": "inbox-manager-evenbound",
+        "uuid": "1fd849a9-e374-11f0-b074-4e013e2ddde4",
+        "link": "agents/inbox-manager-evenbound.json"
+      },
+      {
+        "name": "inbox-manager-dodeka-digital",
+        "uuid": "19484aa0-e374-11f0-b074-4e013e2ddde4",
+        "link": "agents/inbox-manager-dodeka-digital.json"
+      },
+      {
+        "name": "inbox-manager-d2-creative",
+        "uuid": "125f0aa2-e373-11f0-b074-4e013e2ddde4",
+        "link": "agents/inbox-manager-d2-creative.json"
+      },
+      {
+        "name": "inbox-manager-conneqt",
+        "uuid": "0daa5796-e373-11f0-b074-4e013e2ddde4",
+        "link": "agents/inbox-manager-conneqt.json"
+      },
+      {
+        "name": "inbox-manager-cogent-consulting",
+        "uuid": "086332a4-e373-11f0-b074-4e013e2ddde4",
+        "link": "agents/inbox-manager-cogent-consulting.json"
+      },
+      {
+        "name": "inbox-manager-clearfield-group",
+        "uuid": "01a128aa-e373-11f0-b074-4e013e2ddde4",
+        "link": "agents/inbox-manager-clearfield-group.json"
+      },
+      {
+        "name": "inbox-manager-clarke-consulting",
+        "uuid": "fc7a1330-e372-11f0-b074-4e013e2ddde4",
+        "link": "agents/inbox-manager-clarke-consulting.json"
+      },
+      {
+        "name": "inbox-manager-cas-severn",
+        "uuid": "c7c65020-e371-11f0-b074-4e013e2ddde4",
+        "link": "agents/inbox-manager-cas-severn.json"
+      },
+      {
+        "name": "inbox-manager-bucklandco",
+        "uuid": "c1cc3d43-e371-11f0-b074-4e013e2ddde4",
+        "link": "agents/inbox-manager-bucklandco.json"
+      },
+      {
+        "name": "inbox-manager-beistle",
+        "uuid": "bcff6f19-e371-11f0-b074-4e013e2ddde4",
+        "link": "agents/inbox-manager-beistle.json"
+      },
+      {
+        "name": "inbox-manager-atrenet",
+        "uuid": "b6317ad5-e371-11f0-b074-4e013e2ddde4",
+        "link": "agents/inbox-manager-atrenet.json"
+      },
+      {
+        "name": "inbox-manager-a-perfect-promotion",
+        "uuid": "afadf9bf-e371-11f0-b074-4e013e2ddde4",
+        "link": "agents/inbox-manager-a-perfect-promotion.json"
+      },
+      {
+        "name": "inbox-manager-archway-learning-solutions",
+        "uuid": "d131a10b-e368-11f0-b074-4e013e2ddde4",
+        "link": "agents/inbox-manager-archway-learning-solutions.json"
+      },
+      {
+        "name": "inbox-manager-american-ethanol",
+        "uuid": "cafb8a2b-e368-11f0-b074-4e013e2ddde4",
+        "link": "agents/inbox-manager-american-ethanol.json"
+      },
+      {
+        "name": "inbox-manager-abundantly",
+        "uuid": "c46c6557-e368-11f0-b074-4e013e2ddde4",
+        "link": "agents/inbox-manager-abundantly.json"
+      },
+      {
+        "name": "inbox-manager-x-agency",
+        "uuid": "1582641c-e362-11f0-b074-4e013e2ddde4",
+        "link": "agents/inbox-manager-x-agency.json"
       }
     ]
   },
-  "top_warnings": [
-    {
-      "client_slug": "iconic-supply-co.",
-      "warning": "KB status: missing"
-    },
-    {
-      "client_slug": "kilter.la",
-      "warning": "KB status: missing"
-    }
-  ],
+  "top_warnings": [],
   "reports": {
     "client_audit_results_csv": "reports/client_audit_results.csv",
     "kb_inspect_dir": "reports/kb_inspect/",

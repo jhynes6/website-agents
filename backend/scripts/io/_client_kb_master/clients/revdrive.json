@@ -14,7 +14,7 @@
       "mintleads-clients-kb/revdrive/"
     ],
     "kb_status": "ok",
-    "last_audit_at": "2025-12-27T18:09:10.734983+00:00",
+    "last_audit_at": "2025-12-28T00:14:04.379281+00:00",
     "details_ref": "reports/kb_inspect/revdrive.json"
   },
   "spaces": {
@@ -41,6 +41,6 @@
   },
   "timestamps": {
     "created_at": "2025-12-27T16:17:18Z",
-    "updated_at": "2025-12-27T18:09:10.734983+00:00"
+    "updated_at": "2025-12-28T00:14:04.379281+00:00"
   }
 }

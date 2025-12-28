@@ -1,0 +1,101 @@
+{
+  "name": "inbox-manager-x-agency",
+  "uuid": "1582641c-e362-11f0-b074-4e013e2ddde4",
+  "region": "tor1",
+  "model_uuid": "9a3644c7-f300-11ef-bf8f-4e013e2ddde4",
+  "model_name": "openai-gpt-4o-mini",
+  "parent_uuid": "00000000-0000-0000-0000-000000000000",
+  "retrieval_method": "RETRIEVAL_METHOD_REWRITE",
+  "knowledge_base_uuids": [],
+  "has_region_mismatch": false,
+  "raw": {
+    "uuid": "1582641c-e362-11f0-b074-4e013e2ddde4",
+    "name": "inbox-manager-x-agency",
+    "created_at": "2025-12-27T20:24:45Z",
+    "updated_at": "2025-12-27T23:44:32Z",
+    "instruction": "You are a sales rep for a B2B company and you are managing an inbox of cold email replies. Answer questions ONLY using your knowledge base.\n\n**Rules:**\n- DO NOT answer a question with a question. If you are in doubt about what the prospect is asking for, provide them MORE information and ask them if you answered their question at the end. \n- Do not make up information, but you are trying to sell the prospect on taking an intro call with you.\n- Keep responses brief and to the point\n- Use bullet points if you are providing multiple examples in your reply\n- Ask the prospect if they are free in the next week or so for a call to discuss\n\n**Style:**\nProfessional, warm, and succinct. Use bullets and short paragraphs.",
+    "model": {
+      "uuid": "9a3644c7-f300-11ef-bf8f-4e013e2ddde4",
+      "name": "OpenAI GPT-4o mini",
+      "inference_name": "openai-gpt-4o-mini",
+      "version": {
+        "major": 1
+      },
+      "inference_version": "4294967296",
+      "is_foundational": true,
+      "upload_complete": true,
+      "created_at": "2025-02-24T22:42:18Z",
+      "updated_at": "2025-08-22T21:58:27Z",
+      "metadata": {
+        "agreements": {
+          "list": [
+            {
+              "title": "OpenAI Policies",
+              "url": "https://www.openai.com/policies"
+            }
+          ],
+          "title": "OpenAI GPT-4o mini"
+        },
+        "description": "Use your OpenAI API key to access models like GPT-4o and 4o-mini, and reasoning models o1 and o3-mini.",
+        "max_tokens": {
+          "default": 512,
+          "max": 16384,
+          "min": 128
+        },
+        "temperature": {
+          "default": 1,
+          "max": 1,
+          "min": 0
+        },
+        "top_p": {
+          "default": 0.9,
+          "max": 1,
+          "min": 0.1
+        }
+      },
+      "parent_uuid": "00000000-0000-0000-0000-000000000000",
+      "agreement": {
+        "uuid": "11eff300-7792-cabe-bf8f-4e013e2ddde4",
+        "name": "OpenAI Policies",
+        "description": "By purchasing, deploying, accessing, or using any OpenAI model, you and your team are bound to, and will comply with, the relevant",
+        "url": "https://openai.com/policies/"
+      },
+      "provider": "MODEL_PROVIDER_OPENAI",
+      "usecases": [
+        "MODEL_USECASE_AGENT",
+        "MODEL_USECASE_SERVERLESS"
+      ]
+    },
+    "deployment": {
+      "uuid": "158957cc-e362-11f0-b074-4e013e2ddde4",
+      "url": "https://opure4gijiommkcf3huh3jhx.agents.do-ai.run",
+      "status": "STATUS_RUNNING",
+      "visibility": "VISIBILITY_PUBLIC",
+      "created_at": "2025-12-27T20:24:45Z",
+      "updated_at": "2025-12-28T00:06:20Z"
+    },
+    "k": 5,
+    "temperature": 0.3,
+    "top_p": 0.8,
+    "max_tokens": 4096,
+    "project_id": "cb4a32d2-7e9f-44d8-86c7-63b3304c077b",
+    "route_uuid": "00000000-0000-0000-0000-000000000000",
+    "region": "tor1",
+    "chatbot": {
+      "name": "inbox-manager-x-agency Chatbot",
+      "primary_color": "#031B4E",
+      "secondary_color": "#E5E8ED",
+      "starting_message": "Hello! How can I help you today?",
+      "button_background_color": "#0061EB"
+    },
+    "route_created_at": "0001-01-01T00:00:00Z",
+    "user_id": "24575518",
+    "chatbot_identifiers": [
+      {
+        "agent_chatbot_identifier": "3vlkCPEkOCCS8aIQO1onyLXXOP3nr7D7"
+      }
+    ],
+    "retrieval_method": "RETRIEVAL_METHOD_REWRITE",
+    "provide_citations": true
+  }
+}
