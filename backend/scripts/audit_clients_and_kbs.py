@@ -309,12 +309,11 @@ async def main():
     kb_master_dir = io_dir / "_client_kb_master"
     kb_master_clients_dir = kb_master_dir / "clients"
     kb_master_reports_dir = kb_master_dir / "reports"
-    kb_master_agents_dir = kb_master_dir / "agents"  # New agents folder
+    # Note: agents folder removed - now stored in separate mintleads-agents-store bucket
     
     # Clean recreate logic or just ensure exists
     kb_master_clients_dir.mkdir(parents=True, exist_ok=True)
     kb_master_reports_dir.mkdir(parents=True, exist_ok=True)
-    kb_master_agents_dir.mkdir(parents=True, exist_ok=True)
     
     kb_inspect_dir = kb_master_reports_dir / "kb_inspect"
     kb_inspect_dir.mkdir(parents=True, exist_ok=True)
@@ -375,13 +374,13 @@ async def main():
             "total": len(agents),
             "by_region": defaultdict(int),
             "with_kb_region_mismatch": 0,
-            "list": [], 
+            # Note: detailed agent data now in mintleads-agents-store bucket
         },
         "top_warnings": [],
         "reports": {
-            "client_audit_results_csv": "reports/client_audit_results.csv",
+            "client_audit_results_json": "reports/client_audit_results.json",
             "kb_inspect_dir": "reports/kb_inspect/",
-            "agents_dir": "agents/"
+            # Note: agent data stored in separate mintleads-agents-store bucket
         },
     }
 
@@ -408,31 +407,8 @@ async def main():
         if has_mismatch:
             summary["agents"]["with_kb_region_mismatch"] += 1
             summary["totals"]["region_mismatches"] += 1
-
-        agent_record = {
-            "name": agent.get("name"),
-            "uuid": agent.get("uuid"),
-            "region": region,
-            "model_uuid": agent.get("model")['uuid'],
-            "model_name": agent.get("model")['inference_name'],
-            "parent_uuid": agent.get("model")['parent_uuid'],
-            "retrieval_method": agent.get("retrieval_method"),
-            "knowledge_base_uuids": kb_list,
-            "has_region_mismatch": has_mismatch,
-            "raw": agent
-        }
-        agent_name_slug = re.sub(r'[^a-zA-Z0-9_-]', '-', agent.get("name", "unknown")).lower()
-        agent_path = kb_master_agents_dir / f"{agent_name_slug}.json"
         
-        summary["agents"]["list"].append({
-            "name": agent.get("name"), 
-            "uuid": agent.get("uuid"),
-            "link": f"agents/{agent_name_slug}.json"
-        })
-        try:
-            agent_path.write_text(json.dumps(agent_record, indent=2))
-        except Exception as e:
-            logger.error(f"Failed to write agent JSON: {e}")
+        # Note: Agent files no longer created here - stored in mintleads-agents-store bucket
 
     # Build per-client JSON
     for client in sorted(list(all_clients)):
