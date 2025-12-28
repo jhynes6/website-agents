@@ -782,8 +782,8 @@ print(data['choices'][0]['message']['content'])`
       <div className="max-w-7xl mx-auto px-4 py-6">
         <div className="flex flex-col lg:flex-row gap-6 lg:h-[600px]">
           {/* Stats Cards - Show at top on mobile */}
-          <div className="lg:w-1/4 flex flex-col gap-4 lg:h-full">
-            <div className="relative bg-white rounded-xl border border-gray-200 overflow-hidden flex-1">
+          <div className="lg:w-1/4 flex flex-col gap-4 lg:h-full lg:overflow-y-auto">
+            <div className="relative bg-white rounded-xl border border-gray-200 overflow-hidden flex-shrink-0">
               {/* OG Image Background */}
               {siteData.metadata.ogImage && (
                 <div className="absolute inset-0 z-0">
@@ -838,7 +838,7 @@ print(data['choices'][0]['message']['content'])`
               </div>
             </div>
 
-            <div className="bg-white rounded-xl p-6 border border-gray-200 flex flex-col flex-1">
+            <div className="bg-white rounded-xl p-6 border border-gray-200 flex flex-col flex-shrink-0">
               <h2 className="text-lg font-semibold text-[#36322F] mb-4">Agent</h2>
               {siteData.agent ? (
                 <div className="space-y-3 flex-1">
@@ -874,7 +874,7 @@ print(data['choices'][0]['message']['content'])`
 
             {/* Agent Details Dropdown - Left Side */}
             {clientDetails?.agent_data && (
-              <div className="bg-[#0E3D68] rounded-xl overflow-hidden">
+              <div className="bg-[#0E3D68] rounded-xl overflow-hidden flex-shrink-0">
                 <button
                   onClick={() => setShowAgentDetails(!showAgentDetails)}
                   className="w-full px-6 py-4 flex items-center justify-between hover:bg-[#0a2d4d] transition-colors"
@@ -896,7 +896,7 @@ print(data['choices'][0]['message']['content'])`
               </div>
             )}
 
-            <div className="bg-white rounded-xl p-6 border border-gray-200 flex flex-col flex-1">
+            <div className="bg-white rounded-xl p-6 border border-gray-200 flex flex-col flex-shrink-0">
               <h2 className="text-lg font-semibold text-[#36322F] mb-4">Quick Start</h2>
               <div className="space-y-4 flex-1">
                 <div>
