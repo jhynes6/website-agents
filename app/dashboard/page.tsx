@@ -593,9 +593,6 @@ function DashboardContent() {
     )
   }
   
-
-  const modelName = `firecrawl-${siteData.clientSlug}`
-  
   // Get agent endpoint URL if available
   const agentEndpointUrl = siteData.agent?.endpointUrl || null
   const agentApiUrl = agentEndpointUrl 
@@ -1268,11 +1265,16 @@ print(data['choices'][0]['message']['content'])`
           
           <div className="space-y-3 mb-6">
             <div>
-              <span className="text-sm text-gray-600">Model Name:</span>
-              <code className="ml-2 text-sm text-orange-600">{modelName}</code>
+              <span className="text-sm text-gray-600">Agent Endpoint:</span>
+              <code className="ml-2 text-sm text-gray-700 break-all">{agentEndpointUrl || 'Not configured'}</code>
             </div>
             <div>
-              <span className="text-sm text-gray-600">Endpoint:</span>
+              <span className="text-sm text-gray-600">Model:</span>
+              <code className="ml-2 text-sm text-orange-600">{siteData.agent?.model || 'n/a'}</code>
+              <span className="ml-2 text-xs text-gray-500">(configured in agent)</span>
+            </div>
+            <div>
+              <span className="text-sm text-gray-600">API Path:</span>
               <code className="ml-2 text-sm text-gray-700">/api/v1/chat/completions</code>
             </div>
           </div>
