@@ -4,9 +4,10 @@ import { useRouter } from 'next/navigation'
 import Image from "next/image"
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
-import { Globe, FileText, Database, ExternalLink, Trash2, Calendar } from 'lucide-react'
+import { Globe, FileText, Database, ExternalLink, Trash2, Calendar, FolderOpen } from 'lucide-react'
 import { toast } from "sonner"
 import { useStorage } from "@/hooks/useStorage"
+import { useEffect, useState } from 'react'
 
 interface IndexedSite {
   url: string
@@ -22,9 +23,32 @@ interface IndexedSite {
   } & Record<string, unknown>
 }
 
+interface ResourceLinks {
+  client_data: string | null
+  client_kb_data: string | null
+  agent_directory: string | null
+}
+
 export default function IndexesPage() {
   const router = useRouter()
   const { indexes, loading, deleteIndex, isUsingRedis } = useStorage()
+  const [resourceLinks, setResourceLinks] = useState<ResourceLinks | null>(null)
+
+  // Fetch resource links on mount
+  useEffect(() => {
+    const fetchResourceLinks = async () => {
+      try {
+        const response = await fetch('/api/firestarter/resource-links')
+        if (response.ok) {
+          const links = await response.json()
+          setResourceLinks(links)
+        }
+      } catch (error) {
+        console.error('Failed to fetch resource links:', error)
+      }
+    }
+    fetchResourceLinks()
+  }, [])
 
   const handleSelectIndex = (index: IndexedSite) => {
     // Store the site info in session storage for the dashboard
@@ -93,6 +117,54 @@ export default function IndexesPage() {
           {isUsingRedis && <span className="text-xs text-gray-500 ml-2">(using Redis storage)</span>}
         </p>
       </div>
+
+      {/* Resource Links Buttons */}
+      {resourceLinks && (
+        <div className="mb-6 flex flex-wrap gap-3">
+          {resourceLinks.client_data && (
+            <Button
+              asChild
+              variant="outline"
+              size="sm"
+              className="gap-2"
+            >
+              <a href={resourceLinks.client_data} target="_blank" rel="noopener noreferrer">
+                <FolderOpen className="w-4 h-4" />
+                Client Data
+                <ExternalLink className="w-3 h-3" />
+              </a>
+            </Button>
+          )}
+          {resourceLinks.client_kb_data && (
+            <Button
+              asChild
+              variant="outline"
+              size="sm"
+              className="gap-2"
+            >
+              <a href={resourceLinks.client_kb_data} target="_blank" rel="noopener noreferrer">
+                <Database className="w-4 h-4" />
+                Client KB Data
+                <ExternalLink className="w-3 h-3" />
+              </a>
+            </Button>
+          )}
+          {resourceLinks.agent_directory && (
+            <Button
+              asChild
+              variant="outline"
+              size="sm"
+              className="gap-2"
+            >
+              <a href={resourceLinks.agent_directory} target="_blank" rel="noopener noreferrer">
+                <FileText className="w-4 h-4" />
+                Agent Directory
+                <ExternalLink className="w-3 h-3" />
+              </a>
+            </Button>
+          )}
+        </div>
+      )}
 
       {loading ? (
         <div className="text-center py-10">

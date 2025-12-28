@@ -1,7 +1,7 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
-from .routes import create, debug, query, stats, indexes, agents, agent_debug
+from .routes import create, debug, query, stats, indexes, agents, agent_debug, resources
 
 app = FastAPI(title="Firestarter Python Backend", version="0.1.0")
 
@@ -21,6 +21,7 @@ app.include_router(stats.router, prefix="/api/firestarter", tags=["stats"])
 app.include_router(indexes.router, prefix="/api/firestarter", tags=["indexes"])
 app.include_router(agents.router, prefix="/api/firestarter", tags=["agents"])
 app.include_router(agent_debug.router, prefix="/api/firestarter", tags=["agent_debug"])
+app.include_router(resources.router, prefix="/api/firestarter", tags=["resources"])
 
 
 @app.get("/healthz")

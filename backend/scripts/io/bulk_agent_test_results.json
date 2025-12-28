@@ -7,58 +7,58 @@
   ],
   "results": [
     {
-      "agent_name": "inbox-manager",
-      "client_slug": "inbox_manager",
-      "endpoint_url": "https://baztvwnwvpesr3xnhzuyldyu.agents.do-ai.run",
+      "agent_name": "inbox-manager-zoomgrants",
+      "client_slug": "zoomgrants",
+      "endpoint_url": "https://grj4srtdumzesfc5ye2252zu.agents.do-ai.run",
       "has_api_key": true,
-      "tested_at": "2025-12-27T23:51:20.755571+00:00",
+      "tested_at": "2025-12-28T00:32:36.951482+00:00",
       "queries": [
         {
           "query": "what does your company do?",
-          "response": "Our company specializes in providing innovative solutions tailored for businesses to enhance their operations and drive growth. We offer a range of services, including:\n\n- Customized software development\n- Data analytics and business intelligence\n- Cloud solutions and infrastructure management\n- IT consulting and support services\n\nWe focus on understanding your unique needs to deliver effective solutions. Would you be available for a call in the next week or so to discuss how we can assist your business?",
+          "response": "ZoomGrants provides a comprehensive grant management system designed to streamline the grant application and management process for organizations. Our software helps clients:\n\n- Automate grant application processes\n- Track financial and program needs throughout the grant lifecycle\n- Manage reporting and compliance requirements\n\nThis allows organizations to focus more on their core missions while efficiently handling their grant management tasks. \n\nAre you available for a call in the next week or so to discuss how our solutions can benefit your organization?",
           "error": null,
-          "duration_ms": 2239.24,
+          "duration_ms": 5172.98,
           "status": "success",
           "tokens": {
-            "prompt": 344,
-            "completion": 87,
-            "total": 431
+            "prompt": 4670,
+            "completion": 101,
+            "total": 4771
           }
         },
         {
           "query": "tell me what you sell",
-          "response": "We offer a range of solutions designed to enhance business operations and drive growth. Our products and services include:\n\n- Software solutions tailored for various industries\n- Consulting services to optimize processes\n- Training programs for staff development\n- Customer support to ensure seamless implementation\n\nIf you're interested, I would love to schedule a call to discuss how our offerings can benefit your business. Are you available in the next week or so for a chat?",
+          "response": "We offer a comprehensive grant management software solution designed to streamline the entire grant process for organizations. Key features include:\n\n- **Customizable Applications**: Tailor the application process to meet your specific needs.\n- **Simplified Review Process**: Automate tasks like proposal processing and progress tracking.\n- **Powerful Administrative Tools**: Manage grants efficiently from start to finish.\n- **User-Friendly Interface**: Easy navigation for grant applicants.\n- **Responsive Customer Service**: 24/7 support for any inquiries.\n- **Simple Pricing Plans**: Flexible options to suit various organizational needs.\n\nIf you're interested in learning more, are you available for a call in the next week or so?",
           "error": null,
-          "duration_ms": 2173.48,
+          "duration_ms": 3651.71,
           "status": "success",
           "tokens": {
-            "prompt": 343,
-            "completion": 85,
-            "total": 428
+            "prompt": 6220,
+            "completion": 148,
+            "total": 6368
           }
         },
         {
           "query": "what do you sell and what industries have you worked with?",
-          "response": "We offer a range of solutions designed to enhance business efficiency and drive growth. Our primary offerings include:\n\n- Software solutions for project management and collaboration\n- Data analytics tools for informed decision-making\n- Customer relationship management (CRM) systems\n\nWe have experience working with various industries, including:\n\n- Technology\n- Healthcare\n- Finance\n- Manufacturing\n- Retail\n\nIf you're interested, I would love to schedule a call to discuss how our solutions can benefit your specific industry. Are you free in the next week or so for a chat?",
+          "response": "We offer grant management software designed to streamline the grant application and management process. Our solutions are tailored to meet the specific needs of various industries, including:\n\n- **Transportation**: For managing public transportation grants and related projects.\n- **Entitled Jurisdictions**: Supporting grants for areas lacking adequate services.\n- **Private Grants**: Tailored solutions for nonprofits and private entities.\n\nOur software provides customizable tools for application management, award tracking, and reporting, making it easier for organizations to manage their grant processes effectively. \n\nAre you available for a call in the next week or so to discuss how our solutions can benefit your organization?",
           "error": null,
-          "duration_ms": 2583.77,
+          "duration_ms": 5614.94,
           "status": "success",
           "tokens": {
-            "prompt": 350,
-            "completion": 107,
-            "total": 457
+            "prompt": 4814,
+            "completion": 143,
+            "total": 4957
           }
         },
         {
           "query": "do you have any case studies?",
-          "response": "Yes, we have several case studies that showcase how our solutions have helped businesses achieve their goals. These case studies highlight:\n\n- Specific challenges faced by clients\n- The solutions we provided\n- Measurable results and improvements\n\nI would be happy to share these with you. Are you free in the next week or so for a call to discuss how we can help your business?",
+          "response": "Yes, we have case studies that highlight the effectiveness of our services. One notable case study involves the Grant Professionals Association (GPA), which is a nonprofit membership organization in the grants industry. Here are some key points:\n\n- **Services Provided**: Application management platform for conference speaker submissions and scholarship applications, reviewer workflow and scoring tools, and automated communications/notification system.\n- **Results**: \n  - The GrantSummit attracted over 1,200 grant professionals for a three-day conference.\n  - The GPA received hundreds of speaker applications and scholarship applications each year.\n\nIf you're interested in learning more about how our solutions can benefit your organization, are you available for a call in the next week or so?",
           "error": null,
-          "duration_ms": 3034.1,
+          "duration_ms": 4770.37,
           "status": "success",
           "tokens": {
-            "prompt": 345,
-            "completion": 76,
-            "total": 421
+            "prompt": 2445,
+            "completion": 158,
+            "total": 2603
           }
         }
       ],
@@ -68,45 +68,1020 @@
         "errors": 0,
         "timeouts": 0,
         "success_rate": 100.0,
-        "avg_duration_ms": 2507.65
+        "avg_duration_ms": 4802.5
       }
     },
     {
-      "agent_name": "inbox-manager-a-perfect-promotion",
-      "client_slug": "a-perfect-promotion",
-      "endpoint_url": "https://nwxvolduakitg5drqxik7o6w.agents.do-ai.run",
+      "agent_name": "inbox-manager-white-label-digital",
+      "client_slug": "white-label-digital",
+      "endpoint_url": "https://j52laelsazbzftc4nebrub2m.agents.do-ai.run",
       "has_api_key": true,
-      "tested_at": "2025-12-27T23:51:35.790760+00:00",
+      "tested_at": "2025-12-28T00:33:01.166445+00:00",
       "queries": [
         {
           "query": "what does your company do?",
-          "response": "Our company specializes in providing innovative solutions tailored for businesses. We focus on enhancing operational efficiency, improving productivity, and driving growth through our products and services. \n\nKey areas include:\n- Streamlining processes\n- Offering advanced technology solutions\n- Providing expert consulting services\n\nIf you're interested, I would love to schedule a call to discuss how we can support your business needs. Are you free in the next week or so?",
+          "response": "Our company, White Label Digital, specializes in lead generation and digital marketing services. Here are some key offerings:\n\n- **Lead Generation**: We help businesses generate high-quality sales leads to boost their sales efforts.\n- **Digital Advertising**: We create and manage online advertising campaigns across various platforms to enhance visibility and engagement.\n- **Shopping Feed Management**: We optimize Google Shopping feeds to improve performance and drive traffic to e-commerce sites.\n\nWould you be available for a call in the next week or so to discuss how we can assist your business further?",
           "error": null,
-          "duration_ms": 3476.89,
+          "duration_ms": 5569.0,
           "status": "success",
           "tokens": {
-            "prompt": 455,
-            "completion": 92,
-            "total": 547
+            "prompt": 2995,
+            "completion": 119,
+            "total": 3114
           }
         },
         {
           "query": "tell me what you sell",
-          "response": "We offer a range of B2B solutions designed to enhance your business operations. Our products include:\n\n- Software solutions for project management and collaboration\n- Customer relationship management (CRM) tools\n- Data analytics and reporting services\n- Marketing automation platforms\n\nThese solutions are tailored to improve efficiency, streamline processes, and drive growth. Would you be available for a call in the next week or so to discuss how we can support your business needs?",
+          "response": "We specialize in providing solutions for online retailers, particularly in optimizing Google Shopping feeds and digital advertising strategies. Our services include:\n\n- Streamlining product feeds to improve performance and reduce management time.\n- Offering insights on effective ad targeting and frequency capping.\n- Providing guidance on leveraging AI and data analytics for better campaign results.\n\nWe are always looking for problems to solve and would love to discuss how we can help your business. Are you free in the next week or so for a call?",
           "error": null,
-          "duration_ms": 4784.3,
+          "duration_ms": 4568.75,
           "status": "success",
           "tokens": {
-            "prompt": 454,
-            "completion": 96,
-            "total": 550
+            "prompt": 4063,
+            "completion": 103,
+            "total": 4166
           }
         },
         {
           "query": "what do you sell and what industries have you worked with?",
-          "response": "We offer a range of solutions tailored for B2B companies, focusing on enhancing operational efficiency and driving growth. Our primary offerings include:\n\n- Software solutions for project management\n- Customer relationship management (CRM) tools\n- Data analytics and reporting services\n\nWe have successfully partnered with various industries, including:\n\n- Technology\n- Manufacturing\n- Retail\n- Healthcare\n- Financial services\n\nIf you\u2019re interested, I\u2019d love to schedule a call to discuss how our solutions can benefit your business. Are you available in the next week or so?",
+          "response": "We specialize in providing digital marketing solutions, particularly focused on optimizing Google Shopping feeds and managing online advertising campaigns. Our services are designed to help businesses improve their online presence and drive traffic effectively.\n\nWe have worked with various industries, including:\n\n- E-commerce and online retail\n- Home services\n- Financial services\n- Consumer goods\n\nIf you're interested in learning more about how we can assist your business, are you free for a call in the next week or so?",
           "error": null,
-          "duration_ms": 3803.1,
+          "duration_ms": 2854.47,
+          "status": "success",
+          "tokens": {
+            "prompt": 4308,
+            "completion": 109,
+            "total": 4417
+          }
+        },
+        {
+          "query": "do you have any case studies?",
+          "response": "Yes, we have several case studies that showcase our work and the results we've achieved for clients. Here are a few highlights:\n\n- **Home Services Case Study**: Demonstrates our approach to digital advertising in the home services industry.\n- **Financial Services Case Study**: Highlights strategies and outcomes in the financial sector.\n- **E-commerce Case Study**: Focuses on our methods and results for e-commerce clients.\n\nIf you're interested, I can provide more detailed information on these case studies. Would you be available for a call next week to discuss how we can help your business?",
+          "error": null,
+          "duration_ms": 3440.99,
+          "status": "success",
+          "tokens": {
+            "prompt": 4457,
+            "completion": 130,
+            "total": 4587
+          }
+        }
+      ],
+      "summary": {
+        "total_queries": 4,
+        "successful": 4,
+        "errors": 0,
+        "timeouts": 0,
+        "success_rate": 100.0,
+        "avg_duration_ms": 4108.3
+      }
+    },
+    {
+      "agent_name": "inbox-manager-wendt-partners",
+      "client_slug": "wendt-partners",
+      "endpoint_url": "https://q6sdqk5efbqhvt2hahpekr5c.agents.do-ai.run",
+      "has_api_key": true,
+      "tested_at": "2025-12-28T00:33:22.604426+00:00",
+      "queries": [
+        {
+          "query": "what does your company do?",
+          "response": "Wendt Partners specializes in providing business growth solutions, particularly in the following areas:\n\n- **CRM Implementation**: We help businesses set up and optimize their Customer Relationship Management systems, ensuring they can effectively manage customer interactions and data.\n\n- **Customer Success Training**: We offer training programs to ensure your team can maximize the benefits of your CRM and improve customer engagement.\n\n- **Sales and Marketing Alignment**: We assist organizations in aligning their sales and marketing efforts for better efficiency and results.\n\n- **Partnerships with Technology Providers**: We have partnerships with companies like PSOHub to integrate project management solutions with HubSpot, enhancing operational efficiency.\n\nIf you're interested in learning more about how we can support your business, are you available for a call in the next week or so?",
+          "error": null,
+          "duration_ms": 5575.68,
+          "status": "success",
+          "tokens": {
+            "prompt": 7016,
+            "completion": 164,
+            "total": 7180
+          }
+        },
+        {
+          "query": "tell me what you sell",
+          "response": "We specialize in providing B2B growth consulting services, particularly focusing on:\n\n- **CPQ (Configure, Price, Quote) Solutions**: Helping businesses effectively configure their products and services to generate accurate quotes quickly.\n- **CRM Implementation and Optimization**: Assisting organizations in selecting and implementing CRM systems that suit their specific needs, particularly in manufacturing and complex sales environments.\n- **Sales and Marketing Alignment**: Ensuring that sales and marketing strategies work together to enhance customer relationships and drive growth.\n- **Training and Support**: Offering training sessions for teams to maximize the use of platforms like HubSpot.\n\nWould you be available for a call in the next week or so to discuss how we can support your business?",
+          "error": null,
+          "duration_ms": 4618.25,
+          "status": "success",
+          "tokens": {
+            "prompt": 5895,
+            "completion": 153,
+            "total": 6048
+          }
+        },
+        {
+          "query": "what do you sell and what industries have you worked with?",
+          "response": "We specialize in providing B2B business growth consulting services. Our focus is on helping companies develop effective strategies to achieve new revenue and market targets. \n\nWe have worked with a diverse range of industries, including:\n\n- Technology\n- Healthcare\n- Industrial\n- Professional Services\n\nSome of our notable clients include companies in electric vehicle charging, pharmaceutical manufacturing, telehealth solutions, and more. \n\nWould you be available for a call in the next week or so to discuss how we can assist your business?",
+          "error": null,
+          "duration_ms": 3953.11,
+          "status": "success",
+          "tokens": {
+            "prompt": 5760,
+            "completion": 117,
+            "total": 5877
+          }
+        },
+        {
+          "query": "do you have any case studies?",
+          "response": "Yes, we have several case studies that showcase how our clients have successfully implemented HubSpot and transformed their businesses. Here are a few examples:\n\n- **Centrix Dental**: Faced challenges with a legacy ERP and a lack of CRM. They implemented HubSpot to unify their sales, marketing, and operational needs, resulting in significant growth [[C1]].\n\n- **BarTrack**: A startup that needed to unify sales, service, and marketing. They leveraged HubSpot CRM to enhance customer experience and drive growth across all departments [[C2]].\n\n- **HR Resolutions**: Migrated to HubSpot to improve client response times and streamline operations, leading to enhanced client loyalty and growth [[C3]].\n\n- **Skagit Valley Malting**: Implemented HubSpot CRM to improve service and sales in the agricultural commodities industry, resulting in rapid growth and increased production capacity [[C4]].\n\nIf you're interested in discussing how we can help your business achieve similar results, are you free for a call in the next week or so?",
+          "error": null,
+          "duration_ms": 5228.99,
+          "status": "success",
+          "tokens": {
+            "prompt": 5831,
+            "completion": 224,
+            "total": 6055
+          }
+        }
+      ],
+      "summary": {
+        "total_queries": 4,
+        "successful": 4,
+        "errors": 0,
+        "timeouts": 0,
+        "success_rate": 100.0,
+        "avg_duration_ms": 4844.01
+      }
+    },
+    {
+      "agent_name": "inbox-manager-vew-media",
+      "client_slug": "vew-media",
+      "endpoint_url": "https://sa4suvfasatyev5n2fpjoqcj.agents.do-ai.run",
+      "has_api_key": true,
+      "tested_at": "2025-12-28T00:33:46.984957+00:00",
+      "queries": [
+        {
+          "query": "what does your company do?",
+          "response": "VEW Media specializes in enhancing a company's visibility through effective public relations strategies. Our services include:\n\n- Crafting compelling news stories that attract media attention.\n- Utilizing a mix of traditional and innovative PR tactics to promote our clients.\n- Helping clients gain media recognition to drive sales and increase exposure.\n\nWith over 18 years of experience, we have successfully worked with a diverse range of clients, from financial corporations to consumer products. Our goal is to tell your unique story in a way that resonates with journalists and your target audience.\n\nAre you available for a call in the next week or so to discuss how we can help your business?",
+          "error": null,
+          "duration_ms": 5827.97,
+          "status": "success",
+          "tokens": {
+            "prompt": 2630,
+            "completion": 134,
+            "total": 2764
+          }
+        },
+        {
+          "query": "tell me what you sell",
+          "response": "VEW Media specializes in public relations services designed to increase visibility for businesses. Our offerings include:\n\n- **Media Relations**: We help clients tell their unique stories to garner media coverage.\n- **Branding**: We assist in developing corporate identities and marketing programs.\n- **Strategic Communications**: We implement business communication strategies that can significantly boost earnings.\n- **Publicity Campaigns**: Our campaigns utilize various PR tactics to enhance product and service exposure.\n\nWould you be available for a call in the next week or so to discuss how we can assist your business?",
+          "error": null,
+          "duration_ms": 5463.56,
+          "status": "success",
+          "tokens": {
+            "prompt": 2318,
+            "completion": 120,
+            "total": 2438
+          }
+        },
+        {
+          "query": "what do you sell and what industries have you worked with?",
+          "response": "At VEW Media, we specialize in public relations services designed to increase visibility for our clients. Our offerings include:\n\n- Media relations\n- Story development\n- Corporate identity creation\n- Marketing program establishment\n\nWe have worked with a diverse range of industries, including:\n\n- Financial services\n- Healthcare\n- Biotech\n- Consumer products\n- Retail\n\nOur experience spans over 18 years, helping various companies achieve media recognition and drive sales. Would you be available for a call in the next week or so to discuss how we can assist your business?",
+          "error": null,
+          "duration_ms": 3671.78,
+          "status": "success",
+          "tokens": {
+            "prompt": 2331,
+            "completion": 128,
+            "total": 2459
+          }
+        },
+        {
+          "query": "do you have any case studies?",
+          "response": "We currently do not have specific case studies available for sharing. However, our team has extensive experience in public relations, particularly in helping clients gain media attention and improve their branding. \n\nSome highlights of our work include:\n- Successfully placing clients in major media outlets like The Wall Street Journal and CNN.\n- Implementing business communication strategies that have significantly increased client earnings.\n- Developing tailored media relations campaigns across various industries.\n\nIf you're interested, I would love to discuss how we can help your business achieve similar results. Are you free for a call in the next week or so?",
+          "error": null,
+          "duration_ms": 3598.72,
+          "status": "success",
+          "tokens": {
+            "prompt": 2480,
+            "completion": 130,
+            "total": 2610
+          }
+        }
+      ],
+      "summary": {
+        "total_queries": 4,
+        "successful": 4,
+        "errors": 0,
+        "timeouts": 0,
+        "success_rate": 100.0,
+        "avg_duration_ms": 4640.51
+      }
+    },
+    {
+      "agent_name": "inbox-manager-ubiq-education",
+      "client_slug": "ubiq-education",
+      "endpoint_url": "https://l2s4tdqbt4fin2g6w3v4f7di.agents.do-ai.run",
+      "has_api_key": true,
+      "tested_at": "2025-12-28T00:34:10.551612+00:00",
+      "queries": [
+        {
+          "query": "what does your company do?",
+          "response": "UBIQ transforms the school website market by providing cutting-edge technologies in:\n\n- Content management\n- Asset management\n- Digital experience\n- First-party data collection\n- AI and machine learning\n\nOur solutions empower schools to leverage data as a competitive advantage, enabling them to deliver personalized messages through the right channels at the right time. This approach leads to better outcomes and significantly higher ROI for our clients.\n\nWould you be available for a call in the next week or so to discuss how we can support your needs?",
+          "error": null,
+          "duration_ms": 5112.21,
+          "status": "success",
+          "tokens": {
+            "prompt": 5783,
+            "completion": 110,
+            "total": 5893
+          }
+        },
+        {
+          "query": "tell me what you sell",
+          "response": "We offer a range of products and services designed to enhance educational experiences through innovative technology. Our solutions include:\n\n- AI-powered tools for automation and applications\n- Data-driven marketing strategies\n- Services that improve engagement and communication within educational institutions\n\nIf you're interested in learning more about how our offerings can benefit your organization, would you be available for a call in the next week or so?",
+          "error": null,
+          "duration_ms": 4627.48,
+          "status": "success",
+          "tokens": {
+            "prompt": 5927,
+            "completion": 89,
+            "total": 6016
+          }
+        },
+        {
+          "query": "what do you sell and what industries have you worked with?",
+          "response": "We offer a range of products and services designed to enhance educational experiences through data-driven solutions. Our offerings include:\n\n- AI-powered tools for automation and applications\n- Analytics services to improve marketing and engagement strategies\n- Solutions tailored for educational institutions and organizations\n\nWe have worked with various industries, primarily focusing on education, but our solutions can also be adapted for sectors that require data-driven insights and innovative technology applications.\n\nAre you free in the next week or so for a call to discuss how our solutions could benefit your organization?",
+          "error": null,
+          "duration_ms": 5574.99,
+          "status": "success",
+          "tokens": {
+            "prompt": 6027,
+            "completion": 120,
+            "total": 6147
+          }
+        },
+        {
+          "query": "do you have any case studies?",
+          "response": "Yes, we have several case studies that showcase how our solutions have benefited schools. These case studies highlight:\n\n- Improved marketing strategies and outcomes\n- Enhanced user experience on school websites\n- Increased admissions inquiries and engagement\n\nIf you're interested, I can provide more details or share specific examples. Are you free in the next week or so for a call to discuss this further?",
+          "error": null,
+          "duration_ms": 3902.51,
+          "status": "success",
+          "tokens": {
+            "prompt": 5880,
+            "completion": 81,
+            "total": 5961
+          }
+        }
+      ],
+      "summary": {
+        "total_queries": 4,
+        "successful": 4,
+        "errors": 0,
+        "timeouts": 0,
+        "success_rate": 100.0,
+        "avg_duration_ms": 4804.3
+      }
+    },
+    {
+      "agent_name": "inbox-manager-terra-collective",
+      "client_slug": "terra-collective",
+      "endpoint_url": "https://yr4om2inovltf5uxfz6ldxte.agents.do-ai.run",
+      "has_api_key": true,
+      "tested_at": "2025-12-28T00:34:34.773773+00:00",
+      "queries": [
+        {
+          "query": "what does your company do?",
+          "response": "At Terra Collective, we specialize in strategy-grounded, story-led marketing for brands that want to grow with intention. Our services include:\n\n- **Social Media Management**: Tailored strategies to enhance your online presence.\n- **Brand Strategy**: Developing a cohesive brand identity that reflects your unique vision.\n- **Email Marketing**: Creating targeted campaigns to nurture leads and engage customers.\n- **Event Management**: Organizing and managing events from concept to execution.\n- **Foundational Offerings**: Custom websites, SEO, and branding to establish your brand's core elements.\n\nWe focus on elevating lifestyle, design, and experience-driven industries, helping brands break through the noise with aligned and beautiful marketing. \n\nAre you free in the next week or so for a call to discuss how we can support your business?",
+          "error": null,
+          "duration_ms": 7409.14,
+          "status": "success",
+          "tokens": {
+            "prompt": 3792,
+            "completion": 172,
+            "total": 3964
+          }
+        },
+        {
+          "query": "tell me what you sell",
+          "response": "At Terra Collective, we offer a range of marketing services designed to support your growth and enhance your brand presence. Our offerings include:\n\n- **Social Media Management**: Tailored strategies to engage your audience and grow your following.\n- **Brand Strategy**: Comprehensive branding services that reflect your unique identity.\n- **Email Marketing**: Targeted campaigns to nurture leads and drive conversions.\n- **Event Management**: Full-service event planning from concept to execution.\n- **Foundational Offerings**: Custom websites, SEO, and branding to establish your business's core elements.\n\nWe specialize in elevating lifestyle, design, and experience-driven industries. If you're interested in learning more, are you available for a call in the next week or so?",
+          "error": null,
+          "duration_ms": 5439.04,
+          "status": "success",
+          "tokens": {
+            "prompt": 4033,
+            "completion": 154,
+            "total": 4187
+          }
+        },
+        {
+          "query": "what do you sell and what industries have you worked with?",
+          "response": "We offer a range of marketing services designed to support your growth, including:\n\n- Social media management\n- Brand strategy\n- Email marketing\n- Event management\n- Custom website design\n- SEO optimization\n\nWe specialize in elevating lifestyle, design, and experience-driven industries. Our clients include:\n\n- Wedding venues\n- Designers\n- Home builders\n- Real estate professionals\n- Luxury developers\n- Fashion and jewelry brands\n- Wellness companies\n- Service-based businesses and creative professionals\n\nIf you're interested, are you free in the next week or so for a call to discuss how we can help your business?",
+          "error": null,
+          "duration_ms": 4349.79,
+          "status": "success",
+          "tokens": {
+            "prompt": 4129,
+            "completion": 139,
+            "total": 4268
+          }
+        },
+        {
+          "query": "do you have any case studies?",
+          "response": "Yes, we have several case studies that showcase our work and the results we've achieved for our clients. Here are a couple of examples:\n\n- **AGR Creative Studio** (Interior Design)\n  - Services: Social media strategy, paid media, content production, analytics.\n  - Results: \n    - Followers increased by +242.14%\n    - Engagement grew by nearly +338%\n    - Impressions increased by +68,958.62%\n\n- **Squeeze Massage**\n  - Services: Organic growth and paid ads.\n  - Results:\n    - Reach grew by +4,200%\n    - Engagements climbed by +357%\n\nIf you're interested in learning more about these case studies or how we can help your business, are you free for a call in the next week or so?",
+          "error": null,
+          "duration_ms": 7062.81,
+          "status": "success",
+          "tokens": {
+            "prompt": 2328,
+            "completion": 175,
+            "total": 2503
+          }
+        }
+      ],
+      "summary": {
+        "total_queries": 4,
+        "successful": 4,
+        "errors": 0,
+        "timeouts": 0,
+        "success_rate": 100.0,
+        "avg_duration_ms": 6065.19
+      }
+    },
+    {
+      "agent_name": "inbox-manager-sock-fancy",
+      "client_slug": "sock-fancy",
+      "endpoint_url": "https://zurdr4hx5s2v5eouyrkxf4kf.agents.do-ai.run",
+      "has_api_key": true,
+      "tested_at": "2025-12-28T00:35:04.039508+00:00",
+      "queries": [
+        {
+          "query": "what does your company do?",
+          "response": "Sock Fancy specializes in creating high-quality, custom socks. Here are some key points about our company:\n\n- We have been in the sock industry since 2013, focusing on comfort and durability.\n- Our socks are made from premium combed cotton using advanced 200-needle count machines, ensuring high woven detail for your brand.\n- We offer unique custom products and have expanded our capabilities significantly, operating out of a 140,000 sq. ft. facility in Atlanta, GA.\n\nWould you be available for a call in the next week or so to discuss how we can help with your sock needs?",
+          "error": null,
+          "duration_ms": 6047.77,
+          "status": "success",
+          "tokens": {
+            "prompt": 1458,
+            "completion": 130,
+            "total": 1588
+          }
+        },
+        {
+          "query": "tell me what you sell",
+          "response": "We specialize in high-quality custom socks designed for businesses looking to enhance their brand visibility. Our offerings include:\n\n- **Branded Merchandise Design**: Custom sock designs tailored to your brand.\n- **Product Manufacturing**: Production of durable and comfortable socks made from premium combed cotton.\n- **Promotional Products**: Limited-edition runs for special campaigns.\n- **E-commerce Support**: Retail fulfillment and merchandising assistance.\n\nOur socks are made using advanced techniques to ensure the highest woven detail, making them a perfect promotional item for your business. \n\nAre you available for a call in the next week or so to discuss how we can help your brand?",
+          "error": null,
+          "duration_ms": 5502.95,
+          "status": "success",
+          "tokens": {
+            "prompt": 1457,
+            "completion": 136,
+            "total": 1593
+          }
+        },
+        {
+          "query": "what do you sell and what industries have you worked with?",
+          "response": "We specialize in custom socks and branded merchandise. Our products are made with premium combed cotton, ensuring comfort and durability. \n\nIndustries we have worked with include:\n\n- Food & Beverage (e.g., King of Pops)\n- E-commerce\n- Retail\n- Promotional products\n\nOur expertise lies in creating unique custom products tailored to various industries. Would you be available for a call in the next week or so to discuss how we can assist your business?",
+          "error": null,
+          "duration_ms": 4016.34,
+          "status": "success",
+          "tokens": {
+            "prompt": 1470,
+            "completion": 108,
+            "total": 1578
+          }
+        },
+        {
+          "query": "do you have any case studies?",
+          "response": "Yes, we have several case studies that showcase our work and the results we've achieved for our clients. Here are a few highlights:\n\n- **King of Pops x Sock Fancy**\n  - **Industry:** Food & Beverage\n  - **Services Provided:**\n    - Custom sock design\n    - Product manufacturing\n    - Promotional product creation\n    - E-commerce merchandising support\n  - **Qualitative Results:**\n    - Outfitted the entire team with custom socks\n    - Used socks as a revenue driver on their website\n    - Employed socks as promotional items for social media and storefront displays\n\nIf you're interested in learning more about our case studies or discussing how we can help your business, are you free for a call in the next week or so?",
+          "error": null,
+          "duration_ms": 5650.26,
+          "status": "success",
+          "tokens": {
+            "prompt": 1632,
+            "completion": 170,
+            "total": 1802
+          }
+        }
+      ],
+      "summary": {
+        "total_queries": 4,
+        "successful": 4,
+        "errors": 0,
+        "timeouts": 0,
+        "success_rate": 100.0,
+        "avg_duration_ms": 5304.33
+      }
+    },
+    {
+      "agent_name": "inbox-manager-slingshot",
+      "client_slug": "slingshot",
+      "endpoint_url": "https://mub22ddlls4ojtewqryr3oqf.agents.do-ai.run",
+      "has_api_key": true,
+      "tested_at": "2025-12-28T00:35:30.261721+00:00",
+      "queries": [
+        {
+          "query": "what does your company do?",
+          "response": "Slingshot Product Development Group specializes in innovative design and development services, focusing on creating new products through a comprehensive and multidisciplinary approach. Here are some key aspects of what we do:\n\n- **Product Development**: We guide clients through the entire product development process, from ideation to market launch.\n- **Engineering Services**: Our expertise includes mechanical, electrical, software, and firmware engineering.\n- **Industrial Design**: We create user-centered designs that enhance product functionality and appeal.\n- **Science & Technology**: We leverage advanced research in materials science and biological sciences to innovate new products.\n- **Manufacturing Coordination**: We assist clients with sourcing and managing product supply chains.\n\nWith over 20 years of experience and more than 1,000 new products developed, we are dedicated to solving problems and delivering tailored solutions for our clients.\n\nAre you free in the next week or so for a call to discuss how we can assist you?",
+          "error": null,
+          "duration_ms": 6909.63,
+          "status": "success",
+          "tokens": {
+            "prompt": 4092,
+            "completion": 197,
+            "total": 4289
+          }
+        },
+        {
+          "query": "tell me what you sell",
+          "response": "We offer a comprehensive range of product development services, including:\n\n- **Project Management**: Overseeing the entire development process.\n- **Science and Technology**: Leveraging advanced materials and technologies.\n- **Industrial Design**: Creating user-focused and manufacturable designs.\n- **Engineering**: Comprehensive product engineering from concept to creation.\n- **Manufacturing**: Assisting with sourcing and managing supply chains.\n- **Business Strategy**: Helping align product development with business goals.\n- **Voice of Customer**: Understanding customer needs to inform product design.\n- **Regulatory Affairs**: Ensuring compliance with industry standards.\n- **Risk Management**: Identifying and mitigating potential project risks.\n- **Patent Strategy and Intellectual Property**: Protecting your innovations.\n\nIf you'd like to learn more about how we can assist you, are you available for a call in the next week or so?",
+          "error": null,
+          "duration_ms": 6163.19,
+          "status": "success",
+          "tokens": {
+            "prompt": 5196,
+            "completion": 192,
+            "total": 5388
+          }
+        },
+        {
+          "query": "what do you sell and what industries have you worked with?",
+          "response": "We offer a wide range of product development services, including:\n\n- **Project Management**\n- **Science and Technology**\n- **Industrial Design**\n- **Engineering**\n- **Manufacturing**\n- **Business Strategy**\n- **Voice of Customer**\n- **Regulatory Affairs**\n- **Risk Management**\n- **Patent Strategy and Intellectual Property**\n\nWe have worked with various industries, including:\n\n- Healthcare\n- Consumer Products\n- Industrial Equipment\n- Automotive\n- Food & Agriculture\n- Technology\n\nOur multidisciplinary approach allows us to tailor solutions to meet the specific needs of each industry. Would you be available for a call in the next week or so to discuss how we can assist your business?",
+          "error": null,
+          "duration_ms": 5703.57,
+          "status": "success",
+          "tokens": {
+            "prompt": 5040,
+            "completion": 154,
+            "total": 5194
+          }
+        },
+        {
+          "query": "do you have any case studies?",
+          "response": "Yes, we have several case studies showcasing our work across various industries. Here are a few highlights:\n\n- **CDC: Counterfeit Drug Indicator**: We redesigned a laboratory device into a portable unit for field testing, resulting in 25 field-ready prototypes and additional intellectual property for the CDC.\n- **Irrimax**: Focused on simplifying wound irrigation, enhancing patient comfort and hygiene.\n- **Cordless Freedom in the Backyard**: Developed innovative solutions for outdoor gardening tools.\n\nYou can explore more case studies on our website. Would you be available for a call next week to discuss how we can assist you with your project?",
+          "error": null,
+          "duration_ms": 3707.52,
+          "status": "success",
+          "tokens": {
+            "prompt": 4015,
+            "completion": 136,
+            "total": 4151
+          }
+        }
+      ],
+      "summary": {
+        "total_queries": 4,
+        "successful": 4,
+        "errors": 0,
+        "timeouts": 0,
+        "success_rate": 100.0,
+        "avg_duration_ms": 5620.98
+      }
+    },
+    {
+      "agent_name": "inbox-manager-slice-communications",
+      "client_slug": "slice-communications",
+      "endpoint_url": "https://wh2jlorvdwqj6ovk6a3ll5dk.agents.do-ai.run",
+      "has_api_key": true,
+      "tested_at": "2025-12-28T00:35:57.749618+00:00",
+      "queries": [
+        {
+          "query": "what does your company do?",
+          "response": "At Slice Communications, we provide strategic communication solutions designed to drive transformative results for businesses. Our core services include:\n\n- **Brand Building & Corporate Communications**: Shaping and amplifying your brand narrative to foster recognition and loyalty.\n- **Products & Services Marketing**: Developing coordinated strategies to elevate your brand and convert customers.\n- **Advocacy & Engagement**: Building alliances and mobilizing support for your initiatives.\n- **Employer Brand Communications**: Showcasing your employer brand to attract top talent.\n- **Crisis Communications**: Managing sensitive situations to safeguard your reputation.\n- **Executive Communications**: Partnering with leaders to inspire and motivate teams.\n\nOur integrated approach ensures that every aspect of your communication strategy is executed with precision and impact. Would you be available for a call in the next week or so to discuss how we can help your business?",
+          "error": null,
+          "duration_ms": 5251.11,
+          "status": "success",
+          "tokens": {
+            "prompt": 4035,
+            "completion": 181,
+            "total": 4216
+          }
+        },
+        {
+          "query": "tell me what you sell",
+          "response": "We offer a range of strategic communication solutions designed to help businesses achieve their goals. Our core services include:\n\n- **Brand Building & Corporate Communications**: Amplifying your brand narrative and fostering meaningful relationships.\n- **Products & Services Marketing**: Developing coordinated strategies to elevate your brand and convert customers.\n- **Advocacy & Engagement**: Cultivating alliances and mobilizing audiences to support your initiatives.\n- **Employer Brand Communications**: Showcasing your employer brand to attract and retain talent.\n- **Crisis Communications**: Managing sensitive projects and safeguarding your reputation.\n- **Executive Communications**: Supporting C-suite leaders in inspiring vision and connecting with teams.\n\nWould you be available for a call in the next week or so to discuss how our solutions can benefit your business?",
+          "error": null,
+          "duration_ms": 7097.91,
+          "status": "success",
+          "tokens": {
+            "prompt": 3082,
+            "completion": 162,
+            "total": 3244
+          }
+        },
+        {
+          "query": "what do you sell and what industries have you worked with?",
+          "response": "We offer a range of strategic communication solutions designed to drive transformative results. Our core services include:\n\n- Brand Building & Corporate Communications\n- Products & Services Marketing\n- Advocacy & Engagement\n- Employer Brand Communications\n- Transition Communications\n- Crisis Communications\n- Executive Communications\n\nWe have experience working across various industries, including:\n\n- B2B and B2C\n- Finance and Insurance\n- Tourism\n- Technology\n- Architecture, Engineering, and Construction (AEC)\n- Real Estate\n- Health\n- Education\n- Nonprofit\n- Advocacy\n\nWould you be available for a call in the next week or so to discuss how we can support your specific needs?",
+          "error": null,
+          "duration_ms": 4561.16,
+          "status": "success",
+          "tokens": {
+            "prompt": 3062,
+            "completion": 151,
+            "total": 3213
+          }
+        },
+        {
+          "query": "do you have any case studies?",
+          "response": "Yes, we have several case studies that showcase our work and the results we've achieved for our clients. Here are a few examples:\n\n- **The Franklin Institute**: We executed a strategic influencer marketing campaign to reduce audience churn for their podcast, achieving record-breaking downloads and reducing the typical download dip from 84% to 74% [[C3]].\n\n- **Enviri**: We raised awareness of their Environmental, Social, and Governance (ESG) findings through a multichannel rollout strategy, leading to increased engagement and awareness, with social media engagement nearly doubling [[C4]].\n\n- **BLT Architects**: We helped them transform their brand and increase their national presence through media relations, social media growth, and community events, ultimately positioning them for continued growth [[C5]].\n\nIf you're interested in discussing how we can help your business, are you free for a call in the next week or so?",
+          "error": null,
+          "duration_ms": 5988.75,
+          "status": "success",
+          "tokens": {
+            "prompt": 3235,
+            "completion": 199,
+            "total": 3434
+          }
+        }
+      ],
+      "summary": {
+        "total_queries": 4,
+        "successful": 4,
+        "errors": 0,
+        "timeouts": 0,
+        "success_rate": 100.0,
+        "avg_duration_ms": 5724.73
+      }
+    },
+    {
+      "agent_name": "inbox-manager-skayle-360",
+      "client_slug": "skayle-360",
+      "endpoint_url": "https://hdyfienypkokexa3xvofh45n.agents.do-ai.run",
+      "has_api_key": true,
+      "tested_at": "2025-12-28T00:36:25.653374+00:00",
+      "queries": [
+        {
+          "query": "what does your company do?",
+          "response": "Our company, Skayle 360, focuses on empowering small businesses through a variety of services aimed at fostering growth and innovation. Here are some key offerings:\n\n- **SCALE UP CEO Roundtable**: A peer network for CEOs to share insights, strategies, and support for overcoming challenges and scaling their businesses.\n- **Transformational Speaking Engagements**: Keynote talks that inspire and provide actionable strategies for business transformation.\n- **Training Programs**: Tailored training solutions designed to meet the unique needs of organizations, helping them unlock new dimensions of success.\n\nWe are dedicated to helping small businesses thrive by enhancing their operational excellence, customer experience, and innovative capabilities. Would you be available for a call next week to discuss how we can support your business goals?",
+          "error": null,
+          "duration_ms": 7019.79,
+          "status": "success",
+          "tokens": {
+            "prompt": 4962,
+            "completion": 161,
+            "total": 5123
+          }
+        },
+        {
+          "query": "tell me what you sell",
+          "response": "We offer a range of services designed to help small businesses grow and thrive. Our focus is on providing strategic guidance and support in areas such as:\n\n- **Effective Communication:** Helping businesses articulate their messages clearly and resonate with their audience.\n- **Company Culture Development:** Assisting in creating a vibrant workplace culture that motivates and retains talent.\n- **Strategic Planning:** Providing insights for long-term planning and market analysis to navigate future challenges.\n- **Innovation Support:** Encouraging businesses to embrace change and explore new ideas for improvement.\n- **Financial Acumen Training:** Offering resources to enhance understanding of financial management and decision-making.\n\nIf you're interested in learning more about how we can support your business, are you available for a call in the next week or so?",
+          "error": null,
+          "duration_ms": 6277.12,
+          "status": "success",
+          "tokens": {
+            "prompt": 5255,
+            "completion": 156,
+            "total": 5411
+          }
+        },
+        {
+          "query": "what do you sell and what industries have you worked with?",
+          "response": "We offer a range of services focused on business transformation, including:\n\n- **Custom Training Solutions**: Tailored training programs designed to meet the unique needs of organizations, enhancing skills and fostering team-building.\n- **CEO Roundtable**: A peer network for small business CEOs to share insights, strategies, and support for growth.\n- **Differentiation Strategies**: Helping businesses identify and implement strategies to stand out in their markets through exceptional customer experience, operational excellence, or innovation.\n\nWe have worked with various industries, focusing on small to medium-sized businesses looking to enhance their operational efficiency and growth potential. \n\nAre you available for a call in the next week or so to discuss how we can support your business?",
+          "error": null,
+          "duration_ms": 4293.45,
+          "status": "success",
+          "tokens": {
+            "prompt": 4942,
+            "completion": 159,
+            "total": 5101
+          }
+        },
+        {
+          "query": "do you have any case studies?",
+          "response": "We currently do not have specific case studies available for sharing. However, our Custom Training Program has successfully transformed businesses by providing tailored training solutions that address unique challenges. \n\nSome key features of our program include:\n\n- **1:1 Coaching**: Personalized guidance from our Lead Trainer, Chris Ciunci.\n- **Profound Business Audit**: An in-depth evaluation of current practices to identify areas for improvement.\n- **Post-Training Support**: Ongoing check-ins to ensure the effective application of new strategies.\n\nIf you're interested, I would love to discuss how our training can benefit your organization in more detail. Are you free for a call in the next week or so?",
+          "error": null,
+          "duration_ms": 6914.22,
+          "status": "success",
+          "tokens": {
+            "prompt": 5399,
+            "completion": 150,
+            "total": 5549
+          }
+        }
+      ],
+      "summary": {
+        "total_queries": 4,
+        "successful": 4,
+        "errors": 0,
+        "timeouts": 0,
+        "success_rate": 100.0,
+        "avg_duration_ms": 6126.15
+      }
+    },
+    {
+      "agent_name": "inbox-manager-simple-machines",
+      "client_slug": "simple-machines",
+      "endpoint_url": "https://qfmn2uvw4vn3l7b7izrogo7s.agents.do-ai.run",
+      "has_api_key": true,
+      "tested_at": "2025-12-28T00:36:55.162500+00:00",
+      "queries": [
+        {
+          "query": "what does your company do?",
+          "response": "Our company, Simple Machines Marketing, specializes in providing a range of marketing and sales solutions, including:\n\n- **CRM Migration**: We help businesses transition to platforms like HubSpot for better sales and marketing efficiency.\n- **Website Optimization**: We enhance website structures and content to improve user experience and conversion rates.\n- **Digital Marketing**: We offer services such as SEO, content marketing, and lead generation to drive traffic and engagement.\n- **Sales Enablement**: We create tools and strategies to empower sales teams, including training and custom reporting.\n\nWould you be available for a call in the next week or so to discuss how we can assist your business?",
+          "error": null,
+          "duration_ms": 5768.22,
+          "status": "success",
+          "tokens": {
+            "prompt": 5296,
+            "completion": 141,
+            "total": 5437
+          }
+        },
+        {
+          "query": "tell me what you sell",
+          "response": "We offer a range of marketing services designed to boost sales and improve communication between sales and marketing teams. Our services include:\n\n- **Email Marketing**: We provide templates and strategies to enhance email outreach.\n- **Sales Enablement**: Tools and resources to align sales and marketing efforts effectively.\n- **Custom Marketing Solutions**: Tailored strategies to meet specific business needs.\n\nIf you're interested in learning more about how we can help your business, are you free for a call in the next week or so?",
+          "error": null,
+          "duration_ms": 5430.61,
+          "status": "success",
+          "tokens": {
+            "prompt": 5585,
+            "completion": 112,
+            "total": 5697
+          }
+        },
+        {
+          "query": "what do you sell and what industries have you worked with?",
+          "response": "We specialize in marketing solutions tailored for B2B companies, particularly in the manufacturing sector. Our services include:\n\n- Website design and optimization\n- Marketing automation (including HubSpot integration)\n- Lead generation strategies\n- SEO and content marketing\n- Trade show support and advertising\n\nWe have successfully worked with various industries, including:\n\n- Construction\n- Defense\n- Original equipment manufacturing\n- Metal products\n\nIf you're interested in learning more about how we can assist your organization, are you free for a call in the next week or so?",
+          "error": null,
+          "duration_ms": 4999.42,
+          "status": "success",
+          "tokens": {
+            "prompt": 5059,
+            "completion": 124,
+            "total": 5183
+          }
+        },
+        {
+          "query": "do you have any case studies?",
+          "response": "Yes, we have a variety of case studies that showcase how our services have helped businesses achieve their goals. These case studies highlight:\n\n- Specific challenges faced by clients\n- Solutions we implemented\n- Measurable results and outcomes\n\nIf you're interested in a particular industry or type of service, I can provide more tailored examples. Would you be available for a call in the next week or so to discuss this further?",
+          "error": null,
+          "duration_ms": 4802.01,
+          "status": "success",
+          "tokens": {
+            "prompt": 5521,
+            "completion": 98,
+            "total": 5619
+          }
+        }
+      ],
+      "summary": {
+        "total_queries": 4,
+        "successful": 4,
+        "errors": 0,
+        "timeouts": 0,
+        "success_rate": 100.0,
+        "avg_duration_ms": 5250.07
+      }
+    },
+    {
+      "agent_name": "inbox-manager-revolttek",
+      "client_slug": "revolttek",
+      "endpoint_url": "https://ynjwofwawmupmyrpqu7vwc5t.agents.do-ai.run",
+      "has_api_key": true,
+      "tested_at": "2025-12-28T00:37:21.166801+00:00",
+      "queries": [
+        {
+          "query": "what does your company do?",
+          "response": "RevoltTek specializes in providing innovative point-of-sale (POS) solutions tailored for restaurants and retail businesses. Here\u2019s a brief overview of our offerings:\n\n- **Genius for Restaurants**: A cloud-based POS system that includes features like online ordering, loyalty programs, and inventory management.\n- **Genius for Retail**: A retail management solution that offers inventory tracking, eCommerce integration, and sales analytics.\n- **Como Sense**: A customer engagement platform that integrates with POS systems to enhance loyalty programs and marketing efforts.\n- **Revolt Payments**: Flexible payment processing solutions, including a Cash Discount Program and customizable POS systems.\n\nWe are dedicated to empowering local businesses by understanding their unique challenges and providing tailored solutions. Would you be available for a call in the next week or so to discuss how we can support your business?",
+          "error": null,
+          "duration_ms": 6704.59,
+          "status": "success",
+          "tokens": {
+            "prompt": 3793,
+            "completion": 175,
+            "total": 3968
+          }
+        },
+        {
+          "query": "tell me what you sell",
+          "response": "We offer a range of innovative solutions tailored for restaurants and retail businesses, including:\n\n- **Point of Sale Systems**: Cloud-based POS systems designed for restaurants and retail, featuring online ordering, loyalty programs, and inventory management.\n- **Payment Processing**: Flexible payment solutions, including a Cash Discount Program, Free POS Systems, and Standard Interchange Pricing for transparency.\n- **Customer Engagement**: Como Sense, a platform for personalized loyalty programs and automated marketing to boost customer retention.\n- **Web Design**: Custom web design services to enhance your online presence.\n- **Additional Services**: Backup internet solutions, mobile payments, tableside ordering, and kitchen display systems.\n\nWould you be available for a call in the next week or so to discuss how our solutions can benefit your business?",
+          "error": null,
+          "duration_ms": 5653.42,
+          "status": "success",
+          "tokens": {
+            "prompt": 6140,
+            "completion": 163,
+            "total": 6303
+          }
+        },
+        {
+          "query": "what do you sell and what industries have you worked with?",
+          "response": "We specialize in providing innovative Point of Sale (POS) solutions tailored for various industries, primarily focusing on:\n\n- **Restaurants**: Our Genius for Restaurants POS system offers features like online ordering, loyalty programs, and inventory management.\n- **Retail**: Genius for Retail is designed for retail management, providing inventory tracking, eCommerce integration, and sales analytics.\n\nWe have worked with businesses of all sizes, from small cafes to multi-location restaurant chains, helping them enhance operations and drive profitability. \n\nAre you available for a call in the next week or so to discuss how we can support your business?",
+          "error": null,
+          "duration_ms": 4713.76,
+          "status": "success",
+          "tokens": {
+            "prompt": 6298,
+            "completion": 136,
+            "total": 6434
+          }
+        },
+        {
+          "query": "do you have any case studies?",
+          "response": "We currently do not have specific case studies available. However, we can share success stories and examples of how our Genius for Restaurants POS system has helped businesses streamline operations, increase profitability, and enhance customer experiences. \n\nSome key benefits include:\n- Improved menu profitability through data-driven insights.\n- Increased sales via automated upselling and cross-selling features.\n- Enhanced customer engagement through loyalty programs and online ordering.\n\nIf you're interested, I would love to discuss this further on a call. Are you available in the next week or so?",
+          "error": null,
+          "duration_ms": 5672.43,
+          "status": "success",
+          "tokens": {
+            "prompt": 5903,
+            "completion": 119,
+            "total": 6022
+          }
+        }
+      ],
+      "summary": {
+        "total_queries": 4,
+        "successful": 4,
+        "errors": 0,
+        "timeouts": 0,
+        "success_rate": 100.0,
+        "avg_duration_ms": 5686.05
+      }
+    },
+    {
+      "agent_name": "inbox-manager-revdrive",
+      "client_slug": "revdrive",
+      "endpoint_url": "https://k43n3ugxobo5ahu7fjit65aa.agents.do-ai.run",
+      "has_api_key": true,
+      "tested_at": "2025-12-28T00:37:48.916043+00:00",
+      "queries": [
+        {
+          "query": "what does your company do?",
+          "response": "RevDrive specializes in developing effective outbound email campaigns designed to help businesses increase their revenue. Here\u2019s what we offer:\n\n- **Identify the Right Customer Profile**: We help you distinguish between your \"Ideal\" and \"Right\" customers to target effectively.\n- **Deliverability Expertise**: Our team understands spam filters and creates campaigns that avoid landing in spam folders.\n- **Personalized Messaging**: We craft meaningful messages that resonate with each prospect.\n\nWe work with various clients, including marketing agencies and SaaS businesses, aiming to enhance their cold email outreach without simply hiring more staff or relying on data services like ZoomInfo.\n\nAre you available for a call in the next week or so to discuss how we can assist you further?",
+          "error": null,
+          "duration_ms": 6895.21,
+          "status": "success",
+          "tokens": {
+            "prompt": 4074,
+            "completion": 154,
+            "total": 4228
+          }
+        },
+        {
+          "query": "tell me what you sell",
+          "response": "We specialize in developing effective outbound email campaigns designed to generate leads and get calls on your calendar. Our services include:\n\n- Identifying the Right Customer Profile tailored to your business needs.\n- Creating creatively written campaigns that avoid spam filters.\n- Offering support for marketing agencies, SAAS businesses, and founders looking to scale their outreach.\n\nWe have different pricing plans based on your needs, including Pro, Expert, and Enterprise packages. \n\nWould you be available for a call in the next week or so to discuss how we can help you grow your revenue?",
+          "error": null,
+          "duration_ms": 3354.66,
+          "status": "success",
+          "tokens": {
+            "prompt": 4073,
+            "completion": 119,
+            "total": 4192
+          }
+        },
+        {
+          "query": "what do you sell and what industries have you worked with?",
+          "response": "We specialize in developing outbound email campaigns designed to generate leads and get calls on your calendar. Our services include:\n\n- Identifying the Right Customer Profile\n- Customized List Building\n- Ensuring emails land in inboxes, avoiding spam filters\n\nWe have worked with various industries, including:\n\n- Marketing agencies\n- SaaS businesses\n- Founders looking to step out of founder-led sales\n\nIf you're interested in learning more about how we can help your business, are you available for a call in the next week or so?",
+          "error": null,
+          "duration_ms": 5615.3,
+          "status": "success",
+          "tokens": {
+            "prompt": 4086,
+            "completion": 122,
+            "total": 4208
+          }
+        },
+        {
+          "query": "do you have any case studies?",
+          "response": "We have several success stories that highlight our effectiveness in lead generation. For example:\n\n- We assisted a custom socks company in targeting executive assistants to CEOs of Fortune 500 companies. This campaign resulted in a doubling of their sales orders and established a sales pipeline that lasted for the rest of the year.\n\nIf you're interested in learning more about our case studies and how we can help your business, are you available for a call in the next week or so?",
+          "error": null,
+          "duration_ms": 3486.51,
+          "status": "success",
+          "tokens": {
+            "prompt": 4076,
+            "completion": 104,
+            "total": 4180
+          }
+        }
+      ],
+      "summary": {
+        "total_queries": 4,
+        "successful": 4,
+        "errors": 0,
+        "timeouts": 0,
+        "success_rate": 100.0,
+        "avg_duration_ms": 4837.92
+      }
+    },
+    {
+      "agent_name": "inbox-manager-reach-marketing",
+      "client_slug": "reach-marketing",
+      "endpoint_url": "https://s6vt2gtb2djzthya3bmleodd.agents.do-ai.run",
+      "has_api_key": true,
+      "tested_at": "2025-12-28T00:38:13.272727+00:00",
+      "queries": [
+        {
+          "query": "what does your company do?",
+          "response": "At Reach Marketing, we provide integrated marketing solutions that combine traditional marketing methods with digital technologies. Our services focus on helping businesses effectively reach their target audience and grow their operations. Here are some key offerings:\n\n- **Business Email Lists**: We offer curated databases of email addresses for professionals and businesses, which include additional data like job titles and company information to enhance marketing efforts.\n- **Data Append Services**: We help businesses enhance their existing databases by adding current email addresses and other relevant data points.\n- **Lead Generation**: Our targeted email marketing campaigns are designed to engage potential clients and guide them through the sales funnel.\n- **Data Hygiene and Enrichment**: We ensure that your data is accurate and up-to-date, improving the overall quality of your marketing efforts.\n\nWould you be available for a call in the next week or so to discuss how we can support your marketing goals?",
+          "error": null,
+          "duration_ms": 6617.58,
+          "status": "success",
+          "tokens": {
+            "prompt": 5506,
+            "completion": 187,
+            "total": 5693
+          }
+        },
+        {
+          "query": "tell me what you sell",
+          "response": "We offer integrated marketing solutions that combine traditional marketing methods with digital technologies. Our services include:\n\n- **Data Append Services**: Enhancing your customer database by finding current email addresses for valuable contacts.\n- **Private Prospecting Databases**: Creating comprehensive databases of potential customers to improve direct marketing results.\n- **Multichannel Campaign Strategies**: Helping you establish effective campaigns using a combination of email, direct mail, telemarketing, and mobile messaging.\n\nWould you be available for a call in the next week or so to discuss how we can support your marketing efforts?",
+          "error": null,
+          "duration_ms": 6577.49,
+          "status": "success",
+          "tokens": {
+            "prompt": 5240,
+            "completion": 122,
+            "total": 5362
+          }
+        },
+        {
+          "query": "what do you sell and what industries have you worked with?",
+          "response": "At Reach Marketing, we offer a comprehensive suite of services focused on B2B lead generation and marketing technology. Our key offerings include:\n\n- **Email Marketing**: Customized campaigns designed for targeted audiences.\n- **B2B List Building**: Curated databases of leads to enhance marketing efforts.\n- **Marketing Qualified Leads (MQL)**: High-quality leads generated from your digital assets.\n- **Sales Qualified Leads (SQL)**: Leads that are ready for direct engagement and meetings.\n- **Marketing Automation Consulting**: Expertise in platforms like Salesforce Pardot, HubSpot, and Marketo.\n\nWe have collaborated with a diverse range of industries, including:\n\n- Information Technology\n- Business Services\n- Media\n- Financial Services\n- Manufacturing\n- Electronic Products\n- Healthcare\n\nIf you're interested in learning more about how we can assist your business, are you available for a call in the next week or so?",
+          "error": null,
+          "duration_ms": 6181.04,
+          "status": "success",
+          "tokens": {
+            "prompt": 5239,
+            "completion": 200,
+            "total": 5439
+          }
+        },
+        {
+          "query": "do you have any case studies?",
+          "response": "Yes, we have several case studies that showcase our success in various marketing initiatives. Here are a few highlights:\n\n- **Rohde & Schwarz**: Improved data accuracy and depth, increased high-quality leads by 375%, and achieved 100% data accuracy through targeted campaigns [[C1]].\n\n- **Vistaprint**: Enhanced outreach cost-effectively, resulting in a significant increase in qualified meetings booked and a 240% ROI [[C1]].\n\n- **Gartner**: Achieved a 695% ROI with improved email deliverability and engagement through a well-executed email marketing strategy [[C1]].\n\n- **Delta Dental**: Increased reach by 225,000 and improved engagement rates through targeted educational campaigns [[C1]].\n\nIf you're interested in discussing how we can achieve similar results for your business, are you free for a call in the next week or so?",
+          "error": null,
+          "duration_ms": 5312.75,
+          "status": "success",
+          "tokens": {
+            "prompt": 5491,
+            "completion": 197,
+            "total": 5688
+          }
+        }
+      ],
+      "summary": {
+        "total_queries": 4,
+        "successful": 4,
+        "errors": 0,
+        "timeouts": 0,
+        "success_rate": 100.0,
+        "avg_duration_ms": 6172.22
+      }
+    },
+    {
+      "agent_name": "inbox-manager-push-analytics",
+      "client_slug": "push-analytics",
+      "endpoint_url": "https://rdabccbrgrr3io2pl3ghomhc.agents.do-ai.run",
+      "has_api_key": true,
+      "tested_at": "2025-12-28T00:38:42.965640+00:00",
+      "queries": [
+        {
+          "query": "what does your company do?",
+          "response": "Our company specializes in providing innovative solutions that enhance business performance and drive growth. We focus on leveraging advanced technologies, such as machine learning and data analytics, to optimize marketing strategies and improve customer engagement.\n\nKey offerings include:\n\n- Performance Max campaigns for effective advertising across multiple channels.\n- Data analysis tools to identify trends and improve decision-making.\n- Targeted advertising solutions tailored to specific business needs.\n\nWould you be available for a call in the next week or so to discuss how our solutions can benefit your business?",
+          "error": null,
+          "duration_ms": 5137.05,
+          "status": "success",
+          "tokens": {
+            "prompt": 5551,
+            "completion": 109,
+            "total": 5660
+          }
+        },
+        {
+          "query": "tell me what you sell",
+          "response": "We specialize in providing marketing solutions tailored for eCommerce businesses, particularly those using Shopify. Our services include:\n\n- **Email Marketing**: Helping businesses build and optimize their email lists to drive sales and revenue.\n- **Content Creation**: Assisting in creating engaging content that showcases products and builds customer trust.\n- **SEO Services**: Improving search engine visibility to increase organic traffic.\n- **Social Media Marketing**: Utilizing social media to connect with potential customers and promote products.\n- **Partnership Development**: Facilitating partnerships with complementary businesses to expand reach.\n\nIf you're interested in learning more about how we can help your business grow, are you available for a call in the next week or so?",
+          "error": null,
+          "duration_ms": 5547.91,
+          "status": "success",
+          "tokens": {
+            "prompt": 4828,
+            "completion": 146,
+            "total": 4974
+          }
+        },
+        {
+          "query": "what do you sell and what industries have you worked with?",
+          "response": "We specialize in providing marketing solutions tailored for eCommerce businesses, particularly those using Shopify. Our services include:\n\n- **Marketing Strategy Development**: Helping businesses create effective marketing plans.\n- **Content Creation**: Crafting compelling product descriptions and content to engage customers.\n- **SEO Optimization**: Enhancing online visibility through search engine optimization.\n- **Email Marketing**: Building and managing email lists for targeted promotions.\n- **Retargeting Ads**: Implementing ads to re-engage potential customers.\n\nWe have worked with various industries, including retail, fashion, electronics, and health & wellness, focusing on helping them increase their online sales and improve customer engagement.\n\nAre you available for a call in the next week or so to discuss how we can assist your business?",
+          "error": null,
+          "duration_ms": 4433.72,
+          "status": "success",
+          "tokens": {
+            "prompt": 5234,
+            "completion": 170,
+            "total": 5404
+          }
+        },
+        {
+          "query": "do you have any case studies?",
+          "response": "Yes, we have several case studies showcasing the success of Performance Max (Pmax) campaigns. Here are a few notable examples:\n\n- **MoneyMe**: Increased conversions by 22% and achieved a 20% reduction in overall Cost Per Action (CPA).\n- **SumUp**: Saw a 12% increase in mobile POS sales and an 83% decrease in CPA.\n- **Neo4J**: Achieved a 157% increase in new enterprise leads and a 54% decrease in CPA.\n- **Ford of Port Richey**: Reported a 194% increase in conversions and a 61% reduction in cost per lead.\n- **Estee Lauder**: Experienced a 45% higher Return on Ad Spend (ROAS) compared to Smart Shopping campaigns.\n- **Joybird**: Increased revenue by 95% and ROAS by 40%.\n\nThese examples illustrate the effectiveness of Pmax across various industries. Would you be available for a call in the next week or so to discuss how Pmax can benefit your business?",
+          "error": null,
+          "duration_ms": 5603.15,
+          "status": "success",
+          "tokens": {
+            "prompt": 3628,
+            "completion": 226,
+            "total": 3854
+          }
+        }
+      ],
+      "summary": {
+        "total_queries": 4,
+        "successful": 4,
+        "errors": 0,
+        "timeouts": 0,
+        "success_rate": 100.0,
+        "avg_duration_ms": 5180.46
+      }
+    },
+    {
+      "agent_name": "inbox-manager-pipefy",
+      "client_slug": "pipefy",
+      "endpoint_url": "https://rkczllk7utyyqyj5sxuzpeon.agents.do-ai.run",
+      "has_api_key": true,
+      "tested_at": "2025-12-28T00:39:08.692464+00:00",
+      "queries": [
+        {
+          "query": "what does your company do?",
+          "response": "Our company, Pipefy, provides a platform that enables businesses to automate their workflows and manage processes efficiently. We offer a variety of services, including:\n\n- Workflow automation tools to streamline operations.\n- Customizable templates for different business processes.\n- Integration capabilities with other software and tools.\n- Collaboration features to enhance team productivity.\n\nIf you're interested in learning more about how Pipefy can benefit your organization, are you free for a call in the next week or so?",
+          "error": null,
+          "duration_ms": 6456.13,
+          "status": "success",
+          "tokens": {
+            "prompt": 5768,
+            "completion": 102,
+            "total": 5870
+          }
+        },
+        {
+          "query": "tell me what you sell",
+          "response": "We offer a powerful process management platform designed to streamline operations for businesses. Our key features include:\n\n- **Customizable Workflows**: Tailor processes to fit your specific business needs.\n- **Sales Pipeline Management**: Efficiently track leads and manage sales opportunities.\n- **Automation**: Reduce manual tasks and improve efficiency through automated workflows.\n- **Integration Capabilities**: Connect with various software tools to create a seamless operation.\n- **Data Analytics**: Gain insights into your processes with reports and dashboards.\n\nIf you're interested in learning more, are you available for a call in the next week or so?",
+          "error": null,
+          "duration_ms": 5537.9,
+          "status": "success",
+          "tokens": {
+            "prompt": 5335,
+            "completion": 130,
+            "total": 5465
+          }
+        },
+        {
+          "query": "what do you sell and what industries have you worked with?",
+          "response": "We offer a powerful workflow automation platform that helps businesses digitize their processes using AI Agents and no-code solutions. Our platform is designed to streamline operations, enhance efficiency, and improve productivity across various industries.\n\nSome of the industries we have worked with include:\n\n- **Financial Services**: Automating processes like credit analysis and compliance.\n- **Insurance**: Streamlining claims processing and policy management.\n- **Consumer Goods**: Enhancing HR and supply chain operations.\n- **Healthcare**: Improving patient onboarding and operational workflows.\n\nIf you're interested in learning more about how our solutions can benefit your organization, are you free for a call in the next week or so?",
+          "error": null,
+          "duration_ms": 5976.7,
+          "status": "success",
+          "tokens": {
+            "prompt": 5869,
+            "completion": 149,
+            "total": 6018
+          }
+        },
+        {
+          "query": "do you have any case studies?",
+          "response": "Yes, we have several case studies showcasing how our solutions have helped various organizations improve their processes. Here are a few highlights:\n\n- **GE Healthcare**: Improved customer support processes, resulting in faster ticket resolution and clearer operational rules.\n- **Vindi**: Reduced new customer onboarding time by 73%, significantly enhancing their efficiency.\n- **CNH**: Integrated over 15 HR systems, saving 2,200 working hours annually and improving employee experiences.\n\nIf you're interested in learning more about these case studies or how our solutions can benefit your organization, would you be free for a call in the next week or so?",
+          "error": null,
+          "duration_ms": 5215.37,
+          "status": "success",
+          "tokens": {
+            "prompt": 4733,
+            "completion": 140,
+            "total": 4873
+          }
+        }
+      ],
+      "summary": {
+        "total_queries": 4,
+        "successful": 4,
+        "errors": 0,
+        "timeouts": 0,
+        "success_rate": 100.0,
+        "avg_duration_ms": 5796.52
+      }
+    },
+    {
+      "agent_name": "inbox-manager-pi-lit",
+      "client_slug": "pi-lit",
+      "endpoint_url": "https://qkajff2i3hkpuuwmrtktotre.agents.do-ai.run",
+      "has_api_key": true,
+      "tested_at": "2025-12-28T00:39:36.882549+00:00",
+      "queries": [
+        {
+          "query": "what does your company do?",
+          "response": "Our company specializes in providing innovative solutions tailored to meet the needs of businesses like yours. We focus on:\n\n- Streamlining operations to enhance efficiency\n- Offering cutting-edge technology to improve productivity\n- Delivering exceptional customer support to ensure satisfaction\n\nI would love to discuss how our solutions can specifically benefit your organization. Are you free in the next week or so for a call?",
+          "error": null,
+          "duration_ms": 2985.16,
+          "status": "success",
+          "tokens": {
+            "prompt": 455,
+            "completion": 84,
+            "total": 539
+          }
+        },
+        {
+          "query": "tell me what you sell",
+          "response": "We offer a range of B2B solutions designed to enhance business efficiency and productivity. Our products and services include:\n\n- Software solutions tailored for specific industries\n- Consulting services to optimize operations\n- Training programs for staff development\n- Customer support to ensure seamless integration\n\nIf you\u2019re interested in learning more about how we can help your business, are you free for a call in the next week or so?",
+          "error": null,
+          "duration_ms": 3506.45,
+          "status": "success",
+          "tokens": {
+            "prompt": 454,
+            "completion": 87,
+            "total": 541
+          }
+        },
+        {
+          "query": "what do you sell and what industries have you worked with?",
+          "response": "We offer a range of solutions tailored for various industries. Our primary focus includes:\n\n- **Software Solutions**: Designed to enhance operational efficiency.\n- **Consulting Services**: Aimed at optimizing business processes.\n- **Training Programs**: To upskill teams and improve productivity.\n\nWe have experience working with industries such as:\n\n- Technology\n- Healthcare\n- Finance\n- Manufacturing\n- Retail\n\nIf you're interested in learning more about how our solutions can benefit your business, are you available for a call in the next week or so?",
+          "error": null,
+          "duration_ms": 3508.71,
           "status": "success",
           "tokens": {
             "prompt": 467,
@@ -116,14 +1091,14 @@
         },
         {
           "query": "do you have any case studies?",
-          "response": "Yes, we have several case studies that highlight how our solutions have helped businesses achieve their goals. Here are a few examples:\n\n- **Increased Efficiency**: A client improved their operational efficiency by 30% after implementing our software.\n- **Cost Savings**: Another company saved 20% on their annual budget by streamlining processes with our solutions.\n- **Enhanced Customer Satisfaction**: A client reported a 40% increase in customer satisfaction scores after using our services.\n\nI would be happy to share more detailed case studies with you. Are you free in the next week or so for a call to discuss this further?",
+          "response": "Yes, we have several case studies that showcase how our solutions have helped businesses like yours. Here are a few highlights:\n\n- **Increased Efficiency**: A client improved their operational efficiency by 30% after implementing our solution.\n- **Cost Savings**: Another company saved over $100,000 annually by streamlining their processes with our tools.\n- **Customer Satisfaction**: We helped a client boost their customer satisfaction scores by 25% through enhanced service delivery.\n\nI would love to discuss these case studies in more detail and explore how we can help your business. Are you free for a call in the next week or so?",
           "error": null,
-          "duration_ms": 3916.46,
+          "duration_ms": 4760.16,
           "status": "success",
           "tokens": {
             "prompt": 457,
-            "completion": 140,
-            "total": 597
+            "completion": 144,
+            "total": 601
           }
         }
       ],
@@ -133,62 +1108,62 @@
         "errors": 0,
         "timeouts": 0,
         "success_rate": 100.0,
-        "avg_duration_ms": 3995.19
+        "avg_duration_ms": 3690.12
       }
     },
     {
-      "agent_name": "inbox-manager-abundantly",
-      "client_slug": "abundantly",
-      "endpoint_url": "https://wbr2ity2pm7rwfaaeuyu33hg.agents.do-ai.run",
+      "agent_name": "inbox-manager-peachtree-va",
+      "client_slug": "peachtree-va",
+      "endpoint_url": "https://nknjkugyyf7tf77hwc45d2dg.agents.do-ai.run",
       "has_api_key": true,
-      "tested_at": "2025-12-27T23:51:56.776276+00:00",
+      "tested_at": "2025-12-28T00:39:56.647507+00:00",
       "queries": [
         {
           "query": "what does your company do?",
-          "response": "Abundantly is dedicated to enhancing employee recognition and engagement within organizations. We offer a platform that helps businesses:\n\n- Foster open communication and feedback through employee surveys.\n- Recognize and reward employees for their contributions.\n- Improve company culture and employee experience.\n- Provide tools for onboarding and ongoing employee development.\n\nOur goal is to empower organizations to create a positive work environment where employees feel valued and motivated. Would you be available for a call in the next week or so to discuss how we can support your organization?",
+          "response": "Our company specializes in providing versatile virtual assistant services tailored to meet the unique needs of businesses. We focus on helping companies streamline their operations and enhance productivity by offering support in various areas, including:\n\n- Administrative tasks\n- Customer service\n- Project management\n- Social media management\n- Data entry and analysis\n\nWe aim to allow businesses to focus on their core activities while we handle the essential support functions. Would you be available for a call in the next week or so to discuss how we can assist your business?",
           "error": null,
-          "duration_ms": 3472.21,
+          "duration_ms": 5235.57,
           "status": "success",
           "tokens": {
-            "prompt": 9828,
+            "prompt": 1508,
             "completion": 111,
-            "total": 9939
+            "total": 1619
           }
         },
         {
           "query": "tell me what you sell",
-          "response": "We offer a recognition platform designed to enhance employee engagement and appreciation within organizations. Our services include:\n\n- **Employee Recognition Programs:** Tailored solutions that celebrate individual and team achievements.\n- **Personalized Messaging Tools:** Features that allow managers to send heartfelt, customized recognition messages.\n- **Group-Based Recognition:** Tools to acknowledge team successes and foster collaboration.\n- **Rewards System:** A variety of rewards options, including gift cards and personalized gifts, to suit diverse employee preferences.\n- **Analytics and Reporting:** Insights to help organizations measure the impact of their recognition efforts.\n\nIf you're interested in learning more about how our platform can benefit your organization, are you free for a call in the next week or so?",
+          "response": "We specialize in providing virtual assistant services tailored to meet the unique needs of businesses. Our offerings include:\n\n- Administrative support\n- Customer service assistance\n- Social media management\n- Project management\n- Data entry and organization\n\nThese services are designed to help businesses streamline operations and improve efficiency. Would you be available for a call in the next week or so to discuss how we can support your specific needs?",
           "error": null,
-          "duration_ms": 3704.96,
+          "duration_ms": 2639.3,
           "status": "success",
           "tokens": {
-            "prompt": 9940,
-            "completion": 147,
-            "total": 10087
+            "prompt": 1507,
+            "completion": 86,
+            "total": 1593
           }
         },
         {
           "query": "what do you sell and what industries have you worked with?",
-          "response": "At Abundantly, we specialize in employee recognition and engagement solutions. Our platform is designed to help organizations foster a culture of appreciation, which can lead to increased employee motivation, reduced turnover, and improved overall workplace morale.\n\nWe have worked with various industries, including:\n\n- Manufacturing\n- Assisted Living\n- Quick Service Restaurants (QSR)\n- Corporate sectors\n\nOur solutions are tailored to meet the unique needs of each industry, ensuring that organizations can effectively recognize and reward their employees. Would you be available for a call in the next week or so to discuss how we can support your organization?",
+          "response": "We offer a range of services tailored to enhance business operations, including:\n\n- Virtual assistance\n- Client management solutions\n- Campaign management\n\nWe have experience working with various industries, including:\n\n- Professional services\n- E-commerce\n- Healthcare\n- Technology\n\nIf you're interested, I would love to discuss how our services can benefit your specific needs. Are you free for a call in the next week or so?",
           "error": null,
-          "duration_ms": 3976.9,
+          "duration_ms": 4460.74,
           "status": "success",
           "tokens": {
-            "prompt": 9330,
-            "completion": 132,
-            "total": 9462
+            "prompt": 1520,
+            "completion": 99,
+            "total": 1619
           }
         },
         {
           "query": "do you have any case studies?",
-          "response": "Yes, we have several case studies that highlight the effectiveness of our employee recognition and engagement solutions. Here are a few examples:\n\n- **Commonwealth Senior Living (CSL)**: Implemented an employee engagement and recognition platform, resulting in improved internal communications and engagement analytics.\n- **Results**: CSL operates over 40 communities across six states, showcasing the scalability and impact of our solutions.\n\nIf you're interested in discussing how our case studies can relate to your organization, are you free for a call in the next week or so?",
+          "response": "We have a variety of resources that showcase our success stories and the impact we've made for our clients. While I can't provide specific case studies at the moment, I can share:\n\n- Examples of industries we've worked with\n- Metrics demonstrating our effectiveness\n- Client testimonials\n\nIf you're interested, I would love to discuss this in more detail during a call. Are you free in the next week or so for a conversation?",
           "error": null,
-          "duration_ms": 3795.5,
+          "duration_ms": 3054.39,
           "status": "success",
           "tokens": {
-            "prompt": 9548,
-            "completion": 121,
-            "total": 9669
+            "prompt": 1510,
+            "completion": 98,
+            "total": 1608
           }
         }
       ],
@@ -198,322 +1173,62 @@
         "errors": 0,
         "timeouts": 0,
         "success_rate": 100.0,
-        "avg_duration_ms": 3737.39
+        "avg_duration_ms": 3847.5
       }
     },
     {
-      "agent_name": "inbox-manager-american-ethanol",
-      "client_slug": "american-ethanol",
-      "endpoint_url": "https://qs54lr2plwkdawd3fsl77x5w.agents.do-ai.run",
+      "agent_name": "inbox-manager-on-the-marc-media",
+      "client_slug": "on-the-marc-media",
+      "endpoint_url": "https://hhnmga3fgpihzz2f6aiu3fev.agents.do-ai.run",
       "has_api_key": true,
-      "tested_at": "2025-12-27T23:52:16.730614+00:00",
+      "tested_at": "2025-12-28T00:40:17.042244+00:00",
       "queries": [
         {
           "query": "what does your company do?",
-          "response": "American Ethanol is dedicated to providing high-quality fuel and solvents for a variety of applications. Here are some key points about our offerings:\n\n- **Ethanol Fireplace Fuel**: We developed the first clean-burning bioethanol fuel specifically for ventless fireplaces, ensuring a safe and efficient burn.\n- **High-Purity Ethanol**: Our USP-grade ethanol is ideal for producing high-quality cannabis extractions.\n- **Specialty Alcohols and Solvents**: We supply premium specialty alcohols and solvents that meet stringent industry standards.\n- **Sourcing**: We prioritize using American-grown corn and wheat, supporting domestic agriculture and sustainable practices.\n- **Custom Solutions**: We offer bulk purchasing options and private label services for our products.\n\nIf you're interested in learning more or discussing how we can meet your specific needs, are you free for a call in the next week or so?",
+          "response": "On The Marc Media specializes in providing comprehensive public relations and marketing services. Our offerings include:\n\n- Public relations\n- Digital advertising\n- Social media management\n- Email marketing\n- Video production\n- Branding\n- Content marketing\n- Graphic design\n- SEO & SEM\n- Website development and maintenance\n\nWe focus on helping businesses increase their visibility, credibility, and ultimately, their revenue. Would you be available for a call in the next week or so to discuss how we can assist your company?",
           "error": null,
-          "duration_ms": 4794.92,
+          "duration_ms": 5854.05,
           "status": "success",
           "tokens": {
-            "prompt": 7964,
-            "completion": 187,
-            "total": 8151
+            "prompt": 2161,
+            "completion": 110,
+            "total": 2271
           }
         },
         {
           "query": "tell me what you sell",
-          "response": "We offer a range of products under the American Ethanol brand, primarily focused on ethanol-based solutions. Our products are designed to meet various needs, particularly in the fuel and solvent markets. \n\nIf you're interested in learning more about our specific offerings or how they can benefit your business, I would love to schedule a call to discuss this further. Are you available for a call in the next week or so?",
+          "response": "We offer a range of marketing and public relations services tailored for businesses, particularly in the legal sector. Our services include:\n\n- Public relations\n- Digital advertising\n- Social media management\n- Email marketing\n- Video production\n- Branding\n- Content marketing\n- Graphic design\n- SEO & SEM\n- Website development and maintenance\n\nThese strategies are designed to enhance visibility, credibility, and ultimately drive more business for our clients. Would you be available for a call in the next week or so to discuss how we can support your goals?",
           "error": null,
-          "duration_ms": 4986.7,
+          "duration_ms": 4683.05,
           "status": "success",
           "tokens": {
-            "prompt": 9329,
-            "completion": 90,
-            "total": 9419
+            "prompt": 2132,
+            "completion": 119,
+            "total": 2251
           }
         },
         {
           "query": "what do you sell and what industries have you worked with?",
-          "response": "We offer a range of high-quality products, including:\n\n- **Ethanol Fireplace Fuel**: Clean-burning fuel specifically formulated for ventless fireplaces.\n- **High-Purity Solvents**: Suitable for various applications, including cannabis extraction.\n- **Specialty Alcohols**: Food-grade ethyl alcohol and other premium beverage products for distillation.\n\nWe have experience serving multiple industries, including:\n\n- **Cannabis Extraction**: Providing ultra-high purity solvents and hydrocarbons for extraction processes.\n- **Fireplace Fuel**: Leading the market in clean-burning ethanol fireplace fuels for over 15 years.\n- **Distilleries**: Supplying food-grade alcohol for beverage production.\n\nIf you're interested in discussing how we can meet your specific needs, are you free for a call in the next week or so?",
+          "response": "We offer a range of marketing and public relations services tailored to help businesses increase visibility, credibility, and ultimately drive more business. Our services include:\n\n- Public relations\n- Digital advertising\n- Social media management\n- Email marketing\n- Video production\n- Branding\n- Content marketing\n- Graphic design\n- SEO & SEM\n- Website development and maintenance\n\nWe have worked with various industries, particularly focusing on law firms and legal services, helping them enhance their marketing strategies and establish themselves as trusted sources of expertise. \n\nAre you available for a call in the next week or so to discuss how we can assist your business?",
           "error": null,
-          "duration_ms": 4609.83,
+          "duration_ms": 5393.38,
           "status": "success",
           "tokens": {
-            "prompt": 8116,
-            "completion": 179,
-            "total": 8295
+            "prompt": 2157,
+            "completion": 142,
+            "total": 2299
           }
         },
         {
           "query": "do you have any case studies?",
-          "response": "We currently do not have specific case studies available. However, we can share insights into how our high-purity solvents and fuels have positively impacted various industries, particularly in cannabis extraction and fireplace fuel applications. \n\nIf you're interested, I would love to discuss how our products can meet your specific needs and share more detailed information during an introductory call. Are you available for a call in the next week or so?",
+          "response": "Yes, we have several case studies that showcase our work and the results we've achieved for our clients. Here are a few examples:\n\n- **SmolenPlevy**: A long-standing client in the legal sector, we managed their public relations and marketing services, focusing on award submissions to enhance their reputation.\n  \n- **General Lawyer Firm**: This full-service law firm sought our assistance to stand out in a highly competitive Washington, D.C. market, where they faced intense competition among numerous lawyers.\n\n- **Stein Sperling**: Another law firm that engaged us for public relations assistance to differentiate themselves in the crowded legal landscape of the D.C. region.\n\nIf you're interested, I would love to schedule a call to discuss these case studies in more detail and how we can help your business. Are you free in the next week or so for a call?",
           "error": null,
-          "duration_ms": 3214.31,
+          "duration_ms": 5908.29,
           "status": "success",
           "tokens": {
-            "prompt": 6958,
-            "completion": 91,
-            "total": 7049
-          }
-        }
-      ],
-      "summary": {
-        "total_queries": 4,
-        "successful": 4,
-        "errors": 0,
-        "timeouts": 0,
-        "success_rate": 100.0,
-        "avg_duration_ms": 4401.44
-      }
-    },
-    {
-      "agent_name": "inbox-manager-archway-learning-solutions",
-      "client_slug": "archway-learning-solutions",
-      "endpoint_url": "https://w3ujbmoq7cxcwputaqh3obun.agents.do-ai.run",
-      "has_api_key": true,
-      "tested_at": "2025-12-27T23:52:39.340899+00:00",
-      "queries": [
-        {
-          "query": "what does your company do?",
-          "response": "Our company specializes in providing educational solutions and resources tailored for businesses. We focus on enhancing learning experiences through:\n\n- Customized training programs\n- Online courses and workshops\n- Community engagement and support\n\nOur goal is to empower organizations by improving their workforce skills and knowledge. Would you be available for a call in the next week or so to discuss how we can assist your business?",
-          "error": null,
-          "duration_ms": 4460.14,
-          "status": "success",
-          "tokens": {
-            "prompt": 3980,
-            "completion": 83,
-            "total": 4063
-          }
-        },
-        {
-          "query": "tell me what you sell",
-          "response": "We offer a range of educational solutions designed to enhance learning and development for businesses. Our products and services include:\n\n- Customized training programs\n- E-learning modules\n- Workshops and seminars\n- Consulting services for organizational development\n\nThese solutions are tailored to meet the specific needs of your organization, helping to improve employee skills and drive performance. \n\nAre you available for a call in the next week or so to discuss how we can support your business?",
-          "error": null,
-          "duration_ms": 3244.19,
-          "status": "success",
-          "tokens": {
-            "prompt": 3712,
-            "completion": 94,
-            "total": 3806
-          }
-        },
-        {
-          "query": "what do you sell and what industries have you worked with?",
-          "response": "We specialize in providing customized training solutions and Learning Management Systems (LMS) designed to meet the unique needs of various organizations. Our services include:\n\n- Tailored training programs\n- LMS implementation and customization\n- Content development and management\n- Ongoing support and maintenance for training systems\n\nWe have successfully collaborated with a range of industries, including:\n\n- Non-profit organizations (e.g., The Electrocoat Association)\n- Healthcare (e.g., Judson Senior Living, Certus Healthcare)\n- Various professional groups seeking to enhance member engagement and professional development\n\nWould you be available for a call in the next week or so to discuss how we can support your organization's training needs?",
-          "error": null,
-          "duration_ms": 4794.92,
-          "status": "success",
-          "tokens": {
-            "prompt": 3447,
-            "completion": 151,
-            "total": 3598
-          }
-        },
-        {
-          "query": "do you have any case studies?",
-          "response": "Yes, we have several case studies showcasing our successful training solutions. Here are a few highlights:\n\n- **Judson**: We facilitated the integration of new hires into the company system and culture by creating an interactive book featuring personalized videos from leadership and staff.\n\n- **Certus Healthcare**: Focused on onboarding material that helped employees understand company culture and policies, directly communicated by senior leadership.\n\n- **Local In-Home Adult Care Services Agency**: Transitioned from in-person orientation to an engaging online format to streamline the onboarding process as they expanded into new territories.\n\nThese examples illustrate how we tailor our training programs to meet specific organizational needs. Would you be interested in discussing how we can help your organization with a similar approach? Are you free for a call in the next week or so?",
-          "error": null,
-          "duration_ms": 5940.92,
-          "status": "success",
-          "tokens": {
-            "prompt": 3593,
-            "completion": 172,
-            "total": 3765
-          }
-        }
-      ],
-      "summary": {
-        "total_queries": 4,
-        "successful": 4,
-        "errors": 0,
-        "timeouts": 0,
-        "success_rate": 100.0,
-        "avg_duration_ms": 4610.04
-      }
-    },
-    {
-      "agent_name": "inbox-manager-atrenet",
-      "client_slug": "atrenet",
-      "endpoint_url": "https://k2wqfgh6udyhvtwm7t5crmeo.agents.do-ai.run",
-      "has_api_key": true,
-      "tested_at": "2025-12-27T23:53:02.785031+00:00",
-      "queries": [
-        {
-          "query": "what does your company do?",
-          "response": "AtreNet specializes in delivering handcrafted B2B websites specifically for technology companies. Here\u2019s a brief overview of what we do:\n\n- **Website Development**: We create bespoke, category-defining websites that reflect each client's unique brand and culture.\n- **Client Relationships**: We focus on establishing long-lasting relationships with our clients, ensuring we understand their needs and goals.\n- **Ethical Focus**: We strive to work with ethical companies, aligning our values with those of our clients.\n- **Community Contribution**: A portion of our profits supports initiatives like the Drop In Coalition, which empowers marginalized youth through STEAM activities.\n\nWould you be available for a call in the next week or so to discuss how we can help your company?",
-          "error": null,
-          "duration_ms": 5704.06,
-          "status": "success",
-          "tokens": {
-            "prompt": 3516,
-            "completion": 157,
-            "total": 3673
-          }
-        },
-        {
-          "query": "tell me what you sell",
-          "response": "At AtreNet, we specialize in delivering handcrafted B2B websites specifically for technology companies. Our services include:\n\n- **Website Design and Development**: Creating bespoke designs that capture your unique brand and company culture.\n- **Website Optimization**: Enhancing user experience and improving site performance to drive traffic and conversions.\n- **Agile Evolution**: Providing ongoing support and updates to ensure your website evolves with your business needs.\n- **Client Success Programs**: Establishing long-lasting relationships and delivering impactful results for our clients.\n\nWould you be available for a call in the next week or so to discuss how we can support your business?",
-          "error": null,
-          "duration_ms": 3926.25,
-          "status": "success",
-          "tokens": {
-            "prompt": 4701,
-            "completion": 135,
-            "total": 4836
-          }
-        },
-        {
-          "query": "what do you sell and what industries have you worked with?",
-          "response": "AtreNet specializes in delivering handcrafted B2B websites specifically for technology companies. Our services focus on:\n\n- Website design and optimization\n- User experience enhancement\n- Strategic repositioning of corporate websites\n\nWe have worked with a diverse range of industries, primarily serving B2B technology companies. Some of our notable clients include:\n\n- Cybersecurity firms\n- Software development companies\n- Venture capital firms\n- Energy solutions providers\n\nIf you're interested in learning more about how we can help your business, are you free for a call in the next week or so?",
-          "error": null,
-          "duration_ms": 6382.89,
-          "status": "success",
-          "tokens": {
-            "prompt": 4831,
-            "completion": 129,
-            "total": 4960
-          }
-        },
-        {
-          "query": "do you have any case studies?",
-          "response": "Yes, we have several case studies that showcase our work and the success we've achieved for our clients. Here are a couple of examples:\n\n- **Valtix**: We helped Valtix, a fast-moving cybersecurity company, with their website design and ongoing support. Our collaboration enabled them to effectively communicate their multicloud security value proposition and evolve their SEO strategy [[C1]].\n\n- **Amplitude**: We supported Amplitude in a rapid site relaunch to align with their product rollout and public offering plans. This project transformed their site into a more enterprise-ready solution, allowing their marketing team to manage updates efficiently [[C5]].\n\nIf you're interested in learning more about these case studies or others, would you be available for a call in the next week or so?",
-          "error": null,
-          "duration_ms": 5880.62,
-          "status": "success",
-          "tokens": {
-            "prompt": 2415,
-            "completion": 169,
-            "total": 2584
-          }
-        }
-      ],
-      "summary": {
-        "total_queries": 4,
-        "successful": 4,
-        "errors": 0,
-        "timeouts": 0,
-        "success_rate": 100.0,
-        "avg_duration_ms": 5473.45
-      }
-    },
-    {
-      "agent_name": "inbox-manager-beistle",
-      "client_slug": "beistle",
-      "endpoint_url": "https://vuw5pe7sa7lve6dxdr5zt74h.agents.do-ai.run",
-      "has_api_key": true,
-      "tested_at": "2025-12-27T23:53:29.683524+00:00",
-      "queries": [
-        {
-          "query": "what does your company do?",
-          "response": "Our company specializes in providing innovative solutions tailored for businesses to enhance their operations and drive growth. We focus on:\n\n- Streamlining processes to improve efficiency\n- Offering data-driven insights for better decision-making\n- Providing top-notch customer support and service\n\nIf you're interested, I would love to discuss how our solutions can specifically benefit your business. Are you free for a call in the next week or so?",
-          "error": null,
-          "duration_ms": 5650.17,
-          "status": "success",
-          "tokens": {
-            "prompt": 455,
-            "completion": 90,
-            "total": 545
-          }
-        },
-        {
-          "query": "tell me what you sell",
-          "response": "We offer a range of B2B solutions designed to enhance efficiency and drive growth for businesses. Our products include:\n\n- Software solutions for project management\n- Customer relationship management (CRM) tools\n- Data analytics and reporting services\n- Custom integrations tailored to your business needs\n\nIf you're interested, I would love to discuss how our solutions can benefit your organization. Are you free in the next week or so for a call?",
-          "error": null,
-          "duration_ms": 5173.57,
-          "status": "success",
-          "tokens": {
-            "prompt": 454,
-            "completion": 91,
-            "total": 545
-          }
-        },
-        {
-          "query": "what do you sell and what industries have you worked with?",
-          "response": "We offer a range of solutions tailored for businesses looking to enhance their operations and drive growth. Our services are designed to meet the needs of various industries, including:\n\n- Technology\n- Healthcare\n- Finance\n- Manufacturing\n- Retail\n\nIf you're interested, I would love to discuss how our solutions can specifically benefit your business. Are you free in the next week or so for a call?",
-          "error": null,
-          "duration_ms": 2618.16,
-          "status": "success",
-          "tokens": {
-            "prompt": 467,
-            "completion": 95,
-            "total": 562
-          }
-        },
-        {
-          "query": "do you have any case studies?",
-          "response": "Yes, we have several case studies that showcase how our solutions have benefited businesses similar to yours. These case studies highlight:\n\n- Specific challenges faced by clients\n- The solutions we provided\n- Measurable outcomes and improvements achieved\n\nIf you're interested, I can share some examples tailored to your industry. Would you be free in the next week or so for a call to discuss this further?",
-          "error": null,
-          "duration_ms": 4170.54,
-          "status": "success",
-          "tokens": {
-            "prompt": 457,
-            "completion": 93,
-            "total": 550
-          }
-        }
-      ],
-      "summary": {
-        "total_queries": 4,
-        "successful": 4,
-        "errors": 0,
-        "timeouts": 0,
-        "success_rate": 100.0,
-        "avg_duration_ms": 4403.11
-      }
-    },
-    {
-      "agent_name": "inbox-manager-bucklandco",
-      "client_slug": "bucklandco",
-      "endpoint_url": "https://qyj52owo3674fqzw7kodmnwa.agents.do-ai.run",
-      "has_api_key": true,
-      "tested_at": "2025-12-27T23:53:52.300222+00:00",
-      "queries": [
-        {
-          "query": "what does your company do?",
-          "response": "BucklandCo is a full-service marketing and design agency that specializes in driving growth for our clients. Here are some key areas we focus on:\n\n- **Strategic Oversight**: We provide fractional Director of Ecommerce services to oversee the development and growth of your ecommerce ecosystem.\n- **Shopify Services**: This includes website design, development, and maintenance, as well as content planning and operations.\n- **Digital Advertising**: We offer strategic support, planning, buying, optimizing, and reporting for digital ad campaigns.\n- **Search Engine Optimization (SEO)**: Our services include content writing, meta optimizations, keyword research, and website optimization.\n- **Email & SMS Marketing**: We handle account setup, strategy, design, deployment, and comprehensive audits for email and SMS flows and campaigns.\n- **Organic Social Media**: We assist with content calendar planning, platform management, and customer service.\n\nIf you're interested in learning more about how we can support your business, are you free for a call in the next week or so?",
-          "error": null,
-          "duration_ms": 7011.81,
-          "status": "success",
-          "tokens": {
-            "prompt": 4732,
-            "completion": 217,
-            "total": 4949
-          }
-        },
-        {
-          "query": "tell me what you sell",
-          "response": "We offer a comprehensive suite of marketing and design services tailored to drive growth for businesses. Our key offerings include:\n\n- **Strategic Oversight**: Fractional Director of Ecommerce to enhance your ecommerce ecosystem.\n- **Shopify Services**: Website design, development, and maintenance, along with content planning and operations.\n- **Digital Advertising**: Strategic support, planning, buying, optimizing, and reporting.\n- **Search Engine Optimization**: Content writing, page building, keyword research, and website optimization.\n- **Email & SMS Marketing**: Klaviyo migrations, account setup, strategy, design, deployment, and reporting.\n- **Organic Social Media**: Content calendar planning and platform management.\n\nWe focus on building authentic relationships and delivering tailored solutions to meet your specific needs. Would you be available for a call in the next week or so to discuss how we can assist your business?",
-          "error": null,
-          "duration_ms": 4778.62,
-          "status": "success",
-          "tokens": {
-            "prompt": 4877,
+            "prompt": 2642,
             "completion": 184,
-            "total": 5061
-          }
-        },
-        {
-          "query": "what do you sell and what industries have you worked with?",
-          "response": "We offer a full suite of marketing services tailored to meet the needs of businesses across various industries. Our expertise includes:\n\n- Digital advertising\n- E-commerce strategies\n- Branding and design\n- Project management\n- Marketing strategy development\n\nWe have worked with clients in both B2B and B2C sectors, helping them enhance their marketing efforts and achieve their business goals. \n\nWould you be available for a call in the next week or so to discuss how we can support your specific needs?",
-          "error": null,
-          "duration_ms": 4026.36,
-          "status": "success",
-          "tokens": {
-            "prompt": 5299,
-            "completion": 115,
-            "total": 5414
-          }
-        },
-        {
-          "query": "do you have any case studies?",
-          "response": "Yes, we have several case studies showcasing our work with various clients. Here are a few highlights:\n\n- **Reyn Spooner**: Developed a consolidated ad strategy that led to significant growth, including a 30% increase in average order value.\n- **Goorin Bros.**: Implemented custom Shopify integrations and eCommerce strategies for a successful site relaunch.\n- **Ivory Ella**: Executed a full website redesign while optimizing customer acquisition and retention, resulting in increased ad engagement rates.\n- **Packed Party**: Provided eCommerce expertise to meet growth demands, focusing on user-specific requirements for their site update.\n- **Zero Motorcycles**: Launched global advertising efforts that consistently increased lead volume year over year.\n\nIf you're interested in discussing how we can help your business, are you free for a call in the next week or so?",
-          "error": null,
-          "duration_ms": 5879.58,
-          "status": "success",
-          "tokens": {
-            "prompt": 5195,
-            "completion": 190,
-            "total": 5385
+            "total": 2826
           }
         }
       ],
@@ -523,62 +1238,62 @@
         "errors": 0,
         "timeouts": 0,
         "success_rate": 100.0,
-        "avg_duration_ms": 5424.09
+        "avg_duration_ms": 5459.69
       }
     },
     {
-      "agent_name": "inbox-manager-cas-severn",
-      "client_slug": "cas-severn",
-      "endpoint_url": "https://rmvipyi5sgobcdzfrzlrh4kj.agents.do-ai.run",
+      "agent_name": "inbox-manager-nutramarketers",
+      "client_slug": "nutramarketers",
+      "endpoint_url": "https://lbidcvxrsondozv7wdollkyv.agents.do-ai.run",
       "has_api_key": true,
-      "tested_at": "2025-12-27T23:54:18.999519+00:00",
+      "tested_at": "2025-12-28T00:40:43.886307+00:00",
       "queries": [
         {
           "query": "what does your company do?",
-          "response": "CAS Severn provides a range of managed services and enterprise solutions designed to enhance IT security and operational efficiency. Here are some key offerings:\n\n- **Managed Services**: Optimized operations and help desk support to improve user accessibility.\n- **Enterprise Management Solutions**: Rapid integration and deployment within IT infrastructures.\n- **Data Protection**: Services built around IBM products for backup and infrastructure performance management.\n- **Security Solutions**: Security-as-a-Service based on IBM technologies, including compliance and vulnerability management.\n- **IBM i Managed Services**: Comprehensive support for the IBM i ecosystem, including hosting and disaster recovery.\n\nOur goal is to help organizations streamline their IT operations while ensuring robust security and compliance. Would you be available for a call in the next week or so to discuss how we can support your needs?",
+          "response": "NutraMarketers specializes in providing marketing, consulting, and lead generation services specifically for companies in the dietary supplement and nutrition industry. Our role is to act as a marketing and consulting intermediary, helping brands grow without directly manufacturing or supplying any products. \n\nHere are some key services we offer:\n\n- **Consultation:** Understanding your vision, challenges, and goals.\n- **Custom Marketing Plans:** Tailored strategies designed for your brand.\n- **Execution:** Acting as your dedicated marketing department.\n\nWould you be available for a call in the next week or so to discuss how we can assist your business?",
           "error": null,
-          "duration_ms": 6918.82,
+          "duration_ms": 6390.28,
           "status": "success",
           "tokens": {
-            "prompt": 5910,
-            "completion": 169,
-            "total": 6079
+            "prompt": 4446,
+            "completion": 129,
+            "total": 4575
           }
         },
         {
           "query": "tell me what you sell",
-          "response": "We offer a wide range of IT commodities and solutions tailored for government agencies, including:\n\n- **Hardware**: Laptops, desktops, servers, and printers.\n- **Software**: Operating systems, security software, and enterprise management tools.\n- **Services**: IT strategic planning, project management, data center solutions, and cybersecurity services.\n\nOur focus is on providing the best pricing and ease of doing business through our various government contracts, ensuring that our clients receive top-notch service and support. \n\nAre you available for a call in the next week or so to discuss how we can assist you further?",
+          "response": "We specialize in providing marketing, consulting, and lead generation services specifically for companies in the dietary supplement and nutrition industry. Our services include:\n\n- Tailored marketing strategies\n- Amazon listing optimization\n- Google Ads and social media advertising\n- Compliance navigation for FDA and platform regulations\n- Influencer marketing support\n\nWould you be available for a call in the next week or so to discuss how we can assist your brand?",
           "error": null,
-          "duration_ms": 5532.89,
+          "duration_ms": 3036.07,
           "status": "success",
           "tokens": {
-            "prompt": 6589,
-            "completion": 131,
-            "total": 6720
+            "prompt": 5512,
+            "completion": 94,
+            "total": 5606
           }
         },
         {
           "query": "what do you sell and what industries have you worked with?",
-          "response": "At CAS Severn, we provide a range of IT solutions and services, including:\n\n- **Cybersecurity Consulting**: Comprehensive strategies to protect against cyber threats.\n- **Compliance Management**: Tools to help organizations meet industry regulations.\n- **Cloud Services**: Support for hybrid cloud transformation and managed services.\n- **AI and Data Analytics**: Solutions like Watsonx.ai to harness data for actionable insights.\n- **Project Management Services**: Oversight and management of IT projects from planning to execution.\n- **Application Development**: Custom development and software integration services.\n\nWe have extensive experience working with various industries, including:\n\n- **Public Sector**\n- **Healthcare**\n- **Financial Services**\n\nOur goal is to provide tailored solutions that meet the unique challenges of each sector. Would you be available for a call in the next week or so to discuss how we can assist your organization?",
+          "response": "We specialize in providing marketing, consulting, and lead generation services specifically for companies within the dietary supplement and nutrition industry. Our expertise includes:\n\n- **Marketing Strategy**: Tailored marketing plans to grow your brand.\n- **Compliance**: Navigating FDA regulations and ensuring marketing materials meet compliance standards.\n- **E-commerce Solutions**: Services for platforms like Amazon, Shopify, and more.\n- **Influencer Marketing**: Identifying and managing partnerships with relevant influencers.\n\nWe have worked with various supplement brands, helping them achieve significant growth and success in a competitive market. \n\nAre you available for a call in the next week or so to discuss how we can assist your business?",
           "error": null,
-          "duration_ms": 4384.96,
+          "duration_ms": 5143.46,
           "status": "success",
           "tokens": {
-            "prompt": 5048,
-            "completion": 193,
-            "total": 5241
+            "prompt": 5486,
+            "completion": 152,
+            "total": 5638
           }
         },
         {
           "query": "do you have any case studies?",
-          "response": "Yes, we have a variety of case studies that showcase how we have successfully partnered with clients across different industries. These case studies highlight our tailored solutions and the positive outcomes achieved, including:\n\n- Reducing total cost of ownership\n- Increasing performance\n- Simplifying management\n- Improving infrastructure security\n\nYou can explore our case studies on our website to see specific examples of our work. If you have a particular project or question in mind, I would be happy to discuss it further. Are you available for a call in the next week or so?",
+          "response": "Yes, we have several case studies showcasing our work with clients in the dietary supplements industry. Here are a few highlights:\n\n- **Superior Labs**: Achieved over $60 million in lifetime sales and landed on the Inc. 5000 fastest-growing privately held companies list.\n- **Influencer Supplement Brand**: Demonstrated effective strategies in influencer marketing and brand building.\n\nThese case studies illustrate our expertise in areas such as branding, Amazon optimization, and strategic consulting. \n\nWould you be available for a call in the next week or so to discuss how we can help your brand achieve similar success?",
           "error": null,
-          "duration_ms": 3989.57,
+          "duration_ms": 4637.89,
           "status": "success",
           "tokens": {
-            "prompt": 4400,
-            "completion": 124,
-            "total": 4524
+            "prompt": 4005,
+            "completion": 134,
+            "total": 4139
           }
         }
       ],
@@ -588,81 +1303,16 @@
         "errors": 0,
         "timeouts": 0,
         "success_rate": 100.0,
-        "avg_duration_ms": 5206.56
-      }
-    },
-    {
-      "agent_name": "inbox-manager-clarke-consulting",
-      "client_slug": "clarke-consulting",
-      "endpoint_url": "https://v5ih5ds5k4nhhnnhgrhbpgol.agents.do-ai.run",
-      "has_api_key": true,
-      "tested_at": "2025-12-27T23:54:44.830398+00:00",
-      "queries": [
-        {
-          "query": "what does your company do?",
-          "response": "Clarke Consulting serves as a dedicated virtual IT department, primarily focused on supporting biotech startups and other small to medium businesses. Here\u2019s a brief overview of our services:\n\n- **Dedicated IT Staff**: We provide consistent support through dedicated primary and backup IT staff, ensuring you always work with familiar faces.\n- **Comprehensive IT Solutions**: Our services include managing IT infrastructures, both cloud and on-premise, tailored specifically for the biotech industry.\n- **Flexible Engagement Models**: We offer various engagement options, including fixed fee, hourly consulting projects, and monthly service agreements.\n\nOur goal is to help you streamline operations and focus on your core business while we handle your IT needs. Would you be available for a call in the next week or so to discuss how we can assist your company?",
-          "error": null,
-          "duration_ms": 4313.23,
-          "status": "success",
-          "tokens": {
-            "prompt": 6351,
-            "completion": 158,
-            "total": 6509
-          }
-        },
-        {
-          "query": "tell me what you sell",
-          "response": "At Clarke Consulting, we provide IT consulting and systems integration services, primarily focused on the following areas:\n\n- **IT Infrastructure**: Implementation of stable IT infrastructures, especially in biotech companies.\n- **Industry Expertise**: Experience across various industries, including:\n  - Biopharmaceutical/Drug Development\n  - Biomedical Devices\n  - Online Retail and Hosting\n  - Legal Services\n  - Venture Capital\n- **Service Models**: We engage with clients through:\n  - Fixed fee and hourly consulting projects\n  - Monthly service agreements\n  - On-site outsourcing\n\nOur goal is to support your core business with IT services without the long-term commitments of recruiting and training full-time staff. Would you be available for a call in the next week or so to discuss how we can assist your business?",
-          "error": null,
-          "duration_ms": 4109.55,
-          "status": "success",
-          "tokens": {
-            "prompt": 9210,
-            "completion": 160,
-            "total": 9370
-          }
-        },
-        {
-          "query": "what do you sell and what industries have you worked with?",
-          "response": "At Clarke Consulting, we provide a range of IT services tailored to support businesses, particularly in the biotech sector. Our offerings include:\n\n- **Managed IT Solutions**: Comprehensive IT management without the long-term commitments of hiring full-time staff.\n- **Dedicated IT Staff**: Consistent support from primary and backup IT personnel who are familiar with your business.\n- **Consulting Services**: Assistance with technical problems and IT infrastructure design.\n\nWe have experience across various industries, including:\n\n- Biopharmaceutical/Drug Development\n- Biomedical Devices\n- Online Retail and Hosting\n- Legal Services\n- Venture Capital\n\nWould you be available for a call in the next week or so to discuss how we can support your business?",
-          "error": null,
-          "duration_ms": 3551.9,
-          "status": "success",
-          "tokens": {
-            "prompt": 6222,
-            "completion": 143,
-            "total": 6365
-          }
-        },
-        {
-          "query": "do you have any case studies?",
-          "response": "Yes, we have several case studies that highlight our successful projects and the impact we've made for our clients. Here are a few examples:\n\n- **Case Study 1**: A client grew by 100 employees in one year and successfully went public (IPO).\n- **Case Study 2**: We provided flawless IT support during a $2.4 billion acquisition for a client.\n- **Case Study 3**: We assisted a small biotech company in building a big data network to support their operations.\n\nIf you're interested, I can share more details about these case studies. Would you be available for a call in the next week or so to discuss how we can help your business?",
-          "error": null,
-          "duration_ms": 2873.59,
-          "status": "success",
-          "tokens": {
-            "prompt": 4627,
-            "completion": 138,
-            "total": 4765
-          }
-        }
-      ],
-      "summary": {
-        "total_queries": 4,
-        "successful": 4,
-        "errors": 0,
-        "timeouts": 0,
-        "success_rate": 100.0,
-        "avg_duration_ms": 3712.07
+        "avg_duration_ms": 4801.93
       }
     }
   ],
   "summary": {
-    "total_agents_tested": 10,
-    "agents_with_results": 10,
-    "total_queries_sent": 40,
-    "successful_queries": 40,
+    "total_agents_tested": 20,
+    "agents_with_results": 20,
+    "total_queries_sent": 80,
+    "successful_queries": 80,
     "overall_success_rate": 100.0,
-    "tested_at": "2025-12-27T23:55:02.681951+00:00"
+    "tested_at": "2025-12-28T00:41:06.097265+00:00"
   }
 }
