@@ -872,54 +872,25 @@ print(data['choices'][0]['message']['content'])`
               )}
             </div>
 
-            {/* Client Details Dropdowns */}
-            {clientDetails && (
-              <div className="space-y-4">
-                {/* KB/Client Data Dropdown */}
-                {clientDetails.kb_data && (
-                  <div className="bg-white rounded-xl border border-gray-200 overflow-hidden">
-                    <button
-                      onClick={() => setShowKbDetails(!showKbDetails)}
-                      className="w-full px-6 py-4 flex items-center justify-between hover:bg-gray-50 transition-colors"
-                    >
-                      <h3 className="text-sm font-semibold text-[#36322F]">KB Details</h3>
-                      {showKbDetails ? (
-                        <ChevronUp className="w-4 h-4 text-gray-500" />
-                      ) : (
-                        <ChevronDown className="w-4 h-4 text-gray-500" />
-                      )}
-                    </button>
-                    {showKbDetails && (
-                      <div className="px-6 pb-4 pt-2 border-t border-gray-100">
-                        <pre className="text-xs bg-gray-50 p-3 rounded overflow-x-auto max-h-96 overflow-y-auto">
-                          {JSON.stringify(clientDetails.kb_data, null, 2)}
-                        </pre>
-                      </div>
-                    )}
-                  </div>
-                )}
-
-                {/* Agent Data Dropdown */}
-                {clientDetails.agent_data && (
-                  <div className="bg-white rounded-xl border border-gray-200 overflow-hidden">
-                    <button
-                      onClick={() => setShowAgentDetails(!showAgentDetails)}
-                      className="w-full px-6 py-4 flex items-center justify-between hover:bg-gray-50 transition-colors"
-                    >
-                      <h3 className="text-sm font-semibold text-[#36322F]">Agent Details</h3>
-                      {showAgentDetails ? (
-                        <ChevronUp className="w-4 h-4 text-gray-500" />
-                      ) : (
-                        <ChevronDown className="w-4 h-4 text-gray-500" />
-                      )}
-                    </button>
-                    {showAgentDetails && (
-                      <div className="px-6 pb-4 pt-2 border-t border-gray-100">
-                        <pre className="text-xs bg-gray-50 p-3 rounded overflow-x-auto max-h-96 overflow-y-auto">
-                          {JSON.stringify(clientDetails.agent_data, null, 2)}
-                        </pre>
-                      </div>
-                    )}
+            {/* Agent Details Dropdown - Left Side */}
+            {clientDetails?.agent_data && (
+              <div className="bg-[#0E3D68] rounded-xl overflow-hidden">
+                <button
+                  onClick={() => setShowAgentDetails(!showAgentDetails)}
+                  className="w-full px-6 py-4 flex items-center justify-between hover:bg-[#0a2d4d] transition-colors"
+                >
+                  <h3 className="text-sm font-semibold text-white">Agent Details</h3>
+                  {showAgentDetails ? (
+                    <ChevronUp className="w-4 h-4 text-white" />
+                  ) : (
+                    <ChevronDown className="w-4 h-4 text-white" />
+                  )}
+                </button>
+                {showAgentDetails && (
+                  <div className="px-6 pb-4 pt-2 border-t border-white/20">
+                    <pre className="text-xs bg-[#0a2d4d] text-white p-3 rounded overflow-x-auto max-h-96 overflow-y-auto">
+                      {JSON.stringify(clientDetails.agent_data, null, 2)}
+                    </pre>
                   </div>
                 )}
               </div>
@@ -1197,6 +1168,30 @@ print(data['choices'][0]['message']['content'])`
                     )
                   })()}
                 </div>
+
+                {/* KB Details Dropdown - Right Side */}
+                {clientDetails?.kb_data && (
+                  <div className="mt-4 bg-[#0E3D68] rounded-xl overflow-hidden">
+                    <button
+                      onClick={() => setShowKbDetails(!showKbDetails)}
+                      className="w-full px-6 py-4 flex items-center justify-between hover:bg-[#0a2d4d] transition-colors"
+                    >
+                      <h3 className="text-sm font-semibold text-white">KB Details</h3>
+                      {showKbDetails ? (
+                        <ChevronUp className="w-4 h-4 text-white" />
+                      ) : (
+                        <ChevronDown className="w-4 h-4 text-white" />
+                      )}
+                    </button>
+                    {showKbDetails && (
+                      <div className="px-6 pb-4 pt-2 border-t border-white/20">
+                        <pre className="text-xs bg-[#0a2d4d] text-white p-3 rounded overflow-x-auto max-h-96 overflow-y-auto">
+                          {JSON.stringify(clientDetails.kb_data, null, 2)}
+                        </pre>
+                      </div>
+                    )}
+                  </div>
+                )}
               </div>
             </div>
           </div>
