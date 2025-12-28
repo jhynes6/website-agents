@@ -47,7 +47,10 @@ def format_agent_list(agents: List[Dict[str, Any]], show_kbs: bool = True) -> st
         uuid = agent.get('uuid', 'N/A')
         model = agent.get('model', {}).get('inference_name', 'N/A')
         region = agent.get('region', 'N/A')
-        kb_count = len(agent.get('knowledge_base_uuids', []))
+        # Check both knowledge_bases (full agent details) and knowledge_base_uuids (list endpoint)
+        kbs = agent.get('knowledge_bases', [])
+        kb_uuids = agent.get('knowledge_base_uuids', [])
+        kb_count = len(kbs) if kbs else len(kb_uuids)
         status = agent.get('deployment', {}).get('status', 'UNKNOWN')
         
         lines.append(f"📦 {name}")
@@ -57,13 +60,11 @@ def format_agent_list(agents: List[Dict[str, Any]], show_kbs: bool = True) -> st
         lines.append(f"   KBs: {kb_count}")
         lines.append(f"   Status: {status}")
         
-        if show_kbs and kb_count > 0:
-            kbs = agent.get('knowledge_bases', [])
-            if kbs:
-                for kb in kbs:
-                    kb_name = kb.get('name', 'unknown')
-                    kb_uuid = kb.get('uuid', 'N/A')
-                    lines.append(f"      └─ {kb_name} ({kb_uuid})")
+        if show_kbs and kb_count > 0 and kbs:
+            for kb in kbs:
+                kb_name = kb.get('name', 'unknown')
+                kb_uuid = kb.get('uuid', 'N/A')
+                lines.append(f"      └─ {kb_name} ({kb_uuid})")
         
         lines.append("")
     
@@ -181,9 +182,15 @@ def format_agent_detail(agent: Dict[str, Any]) -> str:
 async def list_agents(
     filter_name: Optional[str] = None,
     no_kb: bool = False,
-    output_json: bool = False
+    output_json: bool = False,
+    fetch_full_details: bool = False
 ) -> List[Dict[str, Any]]:
-    """List all agents with optional filtering."""
+    """
+    List all agents with optional filtering.
+    
+    Note: The list_agents() API doesn't include KB details by default.
+    Set fetch_full_details=True to get individual agent details (slower).
+    """
     print("Fetching agents...", file=sys.stderr)
     agents = await do_client.list_agents()
     
@@ -191,8 +198,28 @@ async def list_agents(
     if filter_name:
         agents = [a for a in agents if filter_name.lower() in a.get('name', '').lower()]
     
+    # Optionally fetch full details for each agent to get KB info
+    if fetch_full_details:
+        print(f"Fetching full details for {len(agents)} agents...", file=sys.stderr)
+        detailed_agents = []
+        for agent in agents:
+            uuid = agent.get('uuid')
+            if uuid:
+                full_agent = await do_client.get_agent(uuid)
+                if full_agent:
+                    detailed_agents.append(full_agent)
+                else:
+                    detailed_agents.append(agent)
+            else:
+                detailed_agents.append(agent)
+        agents = detailed_agents
+    
     if no_kb:
-        agents = [a for a in agents if len(a.get('knowledge_base_uuids', [])) == 0]
+        # Check both knowledge_bases (full details) and knowledge_base_uuids (list)
+        agents = [
+            a for a in agents 
+            if len(a.get('knowledge_bases', [])) == 0 and len(a.get('knowledge_base_uuids', [])) == 0
+        ]
     
     # Sort by name
     agents.sort(key=lambda x: x.get('name', ''))
@@ -304,6 +331,11 @@ Examples:
         action="store_true",
         help="Compare with registry data (requires --agent)"
     )
+    parser.add_argument(
+        "--full",
+        action="store_true",
+        help="Fetch full details for each agent (slower, but shows KB connections)"
+    )
     
     args = parser.parse_args()
     
@@ -324,7 +356,8 @@ Examples:
         agents = await list_agents(
             filter_name=args.filter,
             no_kb=args.no_kb,
-            output_json=args.json
+            output_json=args.json,
+            fetch_full_details=args.full
         )
         
         if not args.json:
