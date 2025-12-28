@@ -33,12 +33,35 @@ async def sync_agents_to_spaces():
     """Sync all agents from DO API to Spaces."""
     settings = get_settings()
     
-    # 1. Fetch all agents from DO
+    # 1. Fetch all agents from DO (list first, then get full details)
     logger.info("Fetching agents from DigitalOcean API...")
-    agents = await do_client.list_agents()
-    logger.info(f"Found {len(agents)} agents")
+    agents_list = await do_client.list_agents()
+    logger.info(f"Found {len(agents_list)} agents")
     
-    # 2. Build registry structure
+    # 2. Fetch full details for each agent to get KB info
+    logger.info("Fetching full details for each agent (includes KB connections)...")
+    agents = []
+    for idx, agent in enumerate(agents_list, 1):
+        agent_uuid = agent.get('uuid')
+        if agent_uuid:
+            try:
+                full_agent = await do_client.get_agent(agent_uuid)
+                if full_agent:
+                    agents.append(full_agent)
+                    if idx % 10 == 0:
+                        logger.info(f"  Fetched {idx}/{len(agents_list)} agents...")
+                else:
+                    logger.warning(f"  Could not fetch details for {agent.get('name')}")
+                    agents.append(agent)
+            except Exception as e:
+                logger.warning(f"  Error fetching {agent.get('name')}: {e}")
+                agents.append(agent)
+        else:
+            agents.append(agent)
+    
+    logger.info(f"✓ Fetched full details for {len(agents)} agents")
+    
+    # 3. Build registry structure
     registry = {}
     
     for agent in agents:
@@ -75,6 +98,10 @@ async def sync_agents_to_spaces():
         api_key = None
         # We'll need to create new API keys or fetch from local registry during migration
         
+        # Extract KB info from knowledge_bases array (full details)
+        knowledge_bases = agent.get('knowledge_bases', [])
+        kb_uuids = [kb.get('uuid') for kb in knowledge_bases if kb.get('uuid')]
+        
         registry[slug] = {
             "agent_uuid": agent_uuid,
             "agent_name": agent_name,
@@ -83,11 +110,11 @@ async def sync_agents_to_spaces():
             "api_key": api_key,  # Will need to be populated separately
             "region": agent.get('region'),
             "model": agent.get('model', {}).get('inference_name'),
-            "knowledge_base_uuids": agent.get('knowledge_base_uuids', []),
+            "knowledge_base_uuids": kb_uuids,  # Extract from knowledge_bases
+            "knowledge_bases": knowledge_bases,  # Include full KB details
             "retrieval_method": agent.get('retrieval_method'),
             "created_at": agent.get('created_at'),
             "updated_at": datetime.now(timezone.utc).isoformat(),
-            "raw": agent  # Store full agent object for reference
         }
     
     # 3. Upload to Spaces
