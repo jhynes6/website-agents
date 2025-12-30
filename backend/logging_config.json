@@ -1,0 +1,6 @@
+{
+    "LoggingEnabled": {
+      "TargetBucket": "mintleads-clients-kb-logs",
+      "TargetPrefix": "access-logs/mintleads-clients-kb/"
+    }
+  }

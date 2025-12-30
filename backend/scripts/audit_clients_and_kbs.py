@@ -17,6 +17,7 @@ from typing import Dict, Any, List, Optional
 backend_dir = Path(__file__).resolve().parent.parent
 sys.path.append(str(backend_dir))
 
+
 from app.clients.digital_ocean_client import DigitalOceanClient, do_client
 from app.config import get_settings
 
@@ -90,7 +91,7 @@ async def audit_spaces(settings, client_slug: Optional[str] = None) -> Dict[str,
     })
     
     paginator = s3.get_paginator('list_objects_v2')
-    
+
     prefix = f"{client_slug}/" if client_slug else ""
     page_iterator = paginator.paginate(Bucket=bucket, Prefix=prefix)
 
@@ -334,7 +335,7 @@ async def main():
             misconfigured_kbs.append(kb)
         if kb['pointing_to_root']:
             if kb not in misconfigured_kbs: misconfigured_kbs.append(kb)
-
+            
     # 4. Fetch Agents
     print("\n\n--- 3. Fetching Agents ---")
     all_agents = await do_client.list_agents()
@@ -575,7 +576,7 @@ async def main():
             row['KB Status'] = status
             row['KB UUID'] = kb['uuid']
             row['KB Sources'] = "; ".join(kb['sources'])
-        else:
+    else:
             row['KB Status'] = "MISSING"
             
         json_output.append(row)

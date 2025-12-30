@@ -3,6 +3,7 @@ import asyncio
 import logging
 import os
 import time
+import re
 from pathlib import Path
 from urllib.parse import urlparse
 from typing import Any, Dict, List, Optional
@@ -14,7 +15,9 @@ from googleapiclient.errors import HttpError
 
 from ..clients.firecrawl import firecrawl_client
 from ..clients.llm import llm_client
+from ..clients.pinecone_client import pinecone_kb_client
 from ..clients.digital_ocean_client import DigitalOceanClient
+from ..clients.supabase_agent_storage_client import SupabaseAgentStorageClient
 from ..config import get_settings
 from ..logging import log, logger
 from ..services.drive_ingest import (
@@ -48,6 +51,243 @@ DRIVE_VALID_CATEGORIES = [
 router = APIRouter()
 do_client = DigitalOceanClient()
 
+# Initialize Supabase Agent Storage client (lazy - only if configured)
+_supabase_storage_client = None
+
+def get_supabase_storage_client() -> Optional[SupabaseAgentStorageClient]:
+    """Get Supabase Storage client if configured."""
+    global _supabase_storage_client
+    if _supabase_storage_client is None:
+        settings = get_settings()
+        if settings.supabase_agent_url and settings.supabase_agent_key:
+            try:
+                _supabase_storage_client = SupabaseAgentStorageClient()
+                log("create.supabase.initialized", {"url": str(settings.supabase_agent_url)})
+            except Exception as e:
+                log("create.supabase.init_error", {"error": str(e)})
+                return None
+        else:
+            log("create.supabase.not_configured", {})
+            return None
+    return _supabase_storage_client
+
+_MD_CODEBLOCK_RE = re.compile(r"```[\s\S]*?```", re.MULTILINE)
+_MD_IMAGE_RE = re.compile(r"!\[[^\]]*]\([^)]+\)")
+_MD_LINK_RE = re.compile(r"\[([^\]]+)\]\([^)]+\)")
+_MD_HTML_TAG_RE = re.compile(r"<[^>]+>")
+_MD_BASE64_IMAGE_RE = re.compile(r"!\[[^\]]*]\(<Base64-Image-Removed>\)")
+_MD_SOCIAL_SHARE_RE = re.compile(r"\[(Facebook|Twitter|LinkedIn|Email)\]\([^)]+\)", re.IGNORECASE)
+_MD_ADDTOANY_RE = re.compile(r"https?://www\.addtoany\.com/add_to/\S+", re.IGNORECASE)
+_MD_STANDALONE_CTA_RE = re.compile(
+    r"(?im)^\s*(talk to us|schedule a call( today)?|learn more|contact us|book a call|request (a )?demo)\s*$"
+)
+
+
+def _preclean_markdown_for_kb(text: str) -> str:
+    """
+    Deterministic cleanup to remove common Firecrawl noise.
+    - Removes images (including <Base64-Image-Removed>)
+    - Converts markdown links to just anchor text
+    - Removes social-share link blocks + addtoany URLs
+    - Collapses whitespace
+    """
+    t = (text or "").strip()
+    if not t:
+        return ""
+    t = _MD_CODEBLOCK_RE.sub(" ", t)
+    t = _MD_BASE64_IMAGE_RE.sub(" ", t)
+    t = _MD_IMAGE_RE.sub(" ", t)
+    t = _MD_ADDTOANY_RE.sub("", t)
+    # remove social share blocks
+    t = _MD_SOCIAL_SHARE_RE.sub(" ", t)
+    # links -> anchor text only
+    t = _MD_LINK_RE.sub(r"\1", t)
+    t = _MD_HTML_TAG_RE.sub(" ", t)
+    # remove CTA-only lines
+    t = _MD_STANDALONE_CTA_RE.sub("", t)
+    # collapse whitespace + blank lines
+    t = re.sub(r"[ \t]+\n", "\n", t)
+    t = re.sub(r"\n{3,}", "\n\n", t)
+    t = re.sub(r"[ \t]{2,}", " ", t).strip()
+    return t
+
+
+async def _llm_clean_markdown_for_kb(*, url: str, title: str, markdown: str) -> str:
+    """
+    Use gpt-4o-mini to remove headers/footers/nav/link noise while preserving
+    the page's sales-relevant content.
+    Returns cleaned markdown only (no code fences).
+    """
+    md = (markdown or "").strip()
+    if not md:
+        return ""
+
+    # Keep prompt bounded: head + tail to include footer patterns
+    head = md[:8000]
+    tail = md[-2000:] if len(md) > 10000 else ""
+    if tail:
+        md_in = head + "\n\n---\n\n[FOOTER_CONTEXT]\n" + tail
+    else:
+        md_in = head
+
+    system = (
+        "You clean scraped website markdown for a sales knowledge base.\n"
+        "Remove anything not useful to understanding what the company sells.\n"
+        "MUST remove:\n"
+        "- headers, nav menus, footers, legal boilerplate, cookie banners\n"
+        "- social share links (facebook/twitter/linkedin/email), addtoany blocks\n"
+        "- large image/logo walls and image-only sections (including Base64-Image-Removed)\n"
+        "- standalone CTAs and form field lists (name/email/phone dropdowns etc)\n"
+        "- outbound links: keep the visible text only, and drop the URL\n"
+        "\n"
+        "MUST keep:\n"
+        "- product/service descriptions, features, benefits, process, deliverables\n"
+        "- pricing details, case studies, testimonials (when substantive)\n"
+        "- key facts that help sell/position the offering\n"
+        "\n"
+        "Output rules:\n"
+        "- Return ONLY cleaned markdown.\n"
+        "- No YAML frontmatter.\n"
+        "- No code fences.\n"
+        "- Keep headings/bullets when they carry meaning.\n"
+    )
+    user = f"URL: {url}\nTitle: {title}\n\nMARKDOWN:\n{md_in}"
+
+    try:
+        resp = await llm_client.chat(
+            messages=[{"role": "system", "content": system}, {"role": "user", "content": user}],
+            temperature=0.1,
+            max_tokens=1400,
+            model="gpt-4o-mini",
+        )
+        out = (resp["choices"][0]["message"]["content"] or "").strip()
+        # Strip accidental fences/frontmatter if the model disobeys
+        out = re.sub(r"(?s)^```.*?\n", "", out).strip()
+        out = re.sub(r"(?s)\n```$", "", out).strip()
+        out = re.sub(r"(?s)^---\n.*?\n---\n", "", out).strip()
+        # Final deterministic cleanup (removes any leftover links/images/CTAs)
+        return out
+    except Exception as e:
+        log("create.markdown_clean.error", {"error": str(e), "url": url})
+        return markdown
+
+
+async def _clean_pages_markdown_parallel(pages: List[Dict[str, Any]], max_concurrency: int = 6) -> List[Dict[str, Any]]:
+    """
+    Clean website markdown content after Firecrawl.
+    Uses deterministic pre-clean for all pages, and LLM clean only when the page is noisy.
+    """
+    sem = asyncio.Semaphore(max_concurrency)
+
+    async def _clean_one(p: Dict[str, Any]) -> Dict[str, Any]:
+        async with sem:
+            meta = p.get("metadata", {}) or {}
+            url = str(meta.get("sourceURL") or p.get("url") or "").strip()
+            title = str(meta.get("title") or "").strip()
+            raw = str(p.get("markdown") or p.get("text") or "").strip()
+            if not raw:
+                return p
+
+            # Always pre-clean
+            pre = _preclean_markdown_for_kb(raw)
+            if not pre:
+                p["markdown"] = ""
+                return p
+
+            # Heuristic: only spend LLM tokens on noisy pages
+            img_count = raw.count("![")
+            base64_count = raw.lower().count("base64-image-removed")
+            social_count = raw.lower().count("addtoany.com/add_to") + sum(raw.lower().count(x) for x in ["[facebook]", "[twitter]", "[linkedin]", "[email]"])
+            noisy = (img_count >= 10) or (base64_count >= 5) or (social_count >= 2) or (len(raw) >= 12_000)
+
+            cleaned = pre
+            if noisy:
+                cleaned = await _llm_clean_markdown_for_kb(url=url, title=title, markdown=pre)
+                cleaned = _preclean_markdown_for_kb(cleaned)
+
+            # Write back (this is what will be embedded + stored in Pinecone)
+            p["markdown"] = cleaned
+            return p
+
+    tasks = [_clean_one(p) for p in pages]
+    return await asyncio.gather(*tasks)
+
+
+def _clean_for_keywords(text: str) -> str:
+    """
+    Lightweight markdown/html cleanup for keyword extraction.
+    """
+    t = (text or "").strip()
+    if not t:
+        return ""
+    t = _MD_CODEBLOCK_RE.sub(" ", t)
+    t = _MD_IMAGE_RE.sub(" ", t)
+    t = _MD_LINK_RE.sub(r"\1", t)  # keep anchor text
+    t = _MD_HTML_TAG_RE.sub(" ", t)
+    # collapse whitespace
+    t = re.sub(r"\s+", " ", t).strip()
+    return t
+
+
+async def _extract_keywords_for_doc(title: str, body: str) -> List[str]:
+    """
+    Return 3-5 keywords/short phrases (string list). Flat only.
+    """
+    cleaned = _clean_for_keywords(body)
+    if not cleaned:
+        return []
+
+    # keep prompt small
+    cleaned = cleaned[:2500]
+    title = (title or "").strip()
+
+    system = (
+        "Extract 3-5 keywords or short keyphrases that best describe the document.\n"
+        "Rules:\n"
+        "- Return ONLY valid JSON.\n"
+        "- Preferred format: {\"keywords\": [\"...\"]}\n"
+        "- 3 to 5 items.\n"
+        "- Lowercase.\n"
+        "- No punctuation except hyphens.\n"
+        "- No nested structures.\n"
+        "- Avoid generic words (home, page, click, welcome).\n"
+    )
+    user = f"Title: {title}\n\nBody:\n{cleaned}"
+
+    try:
+        resp = await llm_client.chat(
+            messages=[{"role": "system", "content": system}, {"role": "user", "content": user}],
+            temperature=0.2,
+            max_tokens=120,
+            model="gpt-4o-mini",
+        )
+        raw = resp["choices"][0]["message"]["content"].strip()
+        # best-effort parse (LLMs often wrap JSON in prose)
+        parsed: Any = None
+        try:
+            parsed = json.loads(raw)
+        except Exception:
+            # Try to extract the first JSON array or object substring.
+            m = re.search(r"(\{[\s\S]*\}|\[[\s\S]*\])", raw)
+            if m:
+                parsed = json.loads(m.group(1))
+
+        items: List[str] = []
+        if isinstance(parsed, dict) and isinstance(parsed.get("keywords"), list):
+            items = [x for x in parsed.get("keywords") if isinstance(x, str)]
+        elif isinstance(parsed, list):
+            items = [x for x in parsed if isinstance(x, str)]
+
+        out: List[str] = []
+        for item in items:
+            s = item.strip().lower()
+            if s:
+                out.append(s)
+        return out[:5]
+    except Exception as e:
+        log("create.keywords.error", {"error": str(e)})
+    return []
+
 
 def _doc_id_from_url(raw_url: str) -> str:
     """Build a stable id from domain + path without a trailing slash."""
@@ -74,213 +314,247 @@ def _normalize_slug(raw: str) -> str:
     return safe.strip("-")
 
 
-async def _ingest_to_digitalocean(client_slug: str, documents: List[Dict[str, Any]]) -> tuple[Optional[str], bool]:
+async def _upload_to_storage(client_slug: str, documents: List[Dict[str, Any]]) -> Dict[str, Any]:
     """
-    Uploads documents to DigitalOcean Spaces and creates/updates a Knowledge Base.
-    Returns (kb_uuid, source_added_flag).
-    """
-    if not do_client.settings.digitalocean_token:
-        return None, False
-
-    kb_uuid = None
-    source_added = False
+    Upload documents to Supabase Storage as markdown files with YAML frontmatter.
     
-    # 1. Ensure directory structure exists in Spaces BEFORE creating KB
-    # This ensures the prefix exists when we try to add it as a data source.
-    if do_client.settings.digitalocean_spaces_bucket:
+    This is the data preparation phase - vectorization happens separately.
+    
+    If uploads fail, saves files locally as a backup.
+
+    Returns a small status object for UI/debugging.
+    """
+    # Get Supabase Storage client if configured
+    supabase_client = get_supabase_storage_client()
+    supabase_uploaded = 0
+    supabase_failed = 0
+    local_backup_dir = None
+    
+    if not supabase_client:
+        log("create.supabase.not_configured", {"reason": "SUPABASE_AGENT_URL or SUPABASE_AGENT_KEY not set"})
+        return {"uploaded_to_supabase": 0, "failed": 0, "success": False}
+    
+    # 1. Check if bucket exists and is ready for uploads
+    # Using single bucket "client-data-sources" for all clients
+    BUCKET_NAME = "client-data-sources"
+    bucket_ready = False
+    
+    try:
+        # Try to create folder structure for this client - this verifies bucket exists and is writable
+        for subfolder in ["website", "drive", "intake_form"]:
+            keep_path = f"{client_slug}/{subfolder}/.keep"
+            supabase_client.upload_bytes(
+                bucket=BUCKET_NAME,
+                path=keep_path,
+                data=b"# Folder placeholder\n",
+                content_type="text/plain; charset=utf-8",
+                upsert=True
+            )
+        # If we got here, bucket exists and uploads work!
+        bucket_ready = True
+        log("create.supabase.bucket_ready", {"client": client_slug, "bucket": BUCKET_NAME})
+    except Exception as e:
+        error_msg = str(e).lower()
+        if "bucket not found" in error_msg or "not found" in error_msg:
+            # Bucket doesn't exist - provide helpful message
+            log("create.supabase.bucket_missing", {
+                "bucket": BUCKET_NAME,
+                "error": str(e),
+                "hint": f"Create bucket via SQL: INSERT INTO storage.buckets (id, name, public, file_size_limit) VALUES ('{BUCKET_NAME}', '{BUCKET_NAME}', false, 104857600) ON CONFLICT (id) DO NOTHING;"
+            })
+        else:
+            # Some other error (connection, auth, etc.)
+            log("create.supabase.connection_error", {
+                "client": client_slug,
+                "bucket": BUCKET_NAME,
+                "error": str(e)
+            })
+    
+    # If bucket doesn't exist, prepare local backup directory
+    if not bucket_ready:
+        project_root = Path(__file__).parent.parent.parent.parent
+        local_backup_dir = project_root / "data" / "supabase_backup" / client_slug
+        local_backup_dir.mkdir(parents=True, exist_ok=True)
+        log("create.local_backup.initialized", {"client": client_slug, "path": str(local_backup_dir)})
+
+    # 2) Upload raw files to Supabase Storage
+    for doc in documents:
         try:
-            for subfolder in ["drive", "intake_form", "website"]:
-                # Upload empty object with trailing slash to create "folder"
-                folder_key = f"{client_slug}/{subfolder}/"
-                do_client.upload_file_content(b"", folder_key, content_type="application/x-directory")
-            log("create.do.folders_created", {"client": client_slug})
-        except Exception as e:
-            log("create.do.folder_error", {"error": str(e)})
-            # Continue anyway, as file uploads might still work or folder might exist
+            # Handle content being string or dict
+            content_field = doc.get("content")
+            if isinstance(content_field, str):
+                content = content_field
+            else:
+                content = (content_field or {}).get("text", "")
 
-    # Prepare initial data source if bucket is configured
-    initial_sources = []
-    if do_client.settings.digitalocean_spaces_bucket:
-        initial_sources.append({
-            "spaces_data_source": {
-                "bucket_name": do_client.settings.digitalocean_spaces_bucket,
-                "region": do_client.settings.digitalocean_spaces_region,
-                "item_path": f"{client_slug}/"
-            }
-        })
-        
-    # 2. Create or Get Knowledge Base
-    kb = await do_client.ensure_client_kb(slug=client_slug, data_sources=initial_sources)
-    if kb:
-        kb_uuid = kb.get("uuid")
-        log("create.do.kb_created", {"uuid": kb_uuid, "name": client_slug})
-        
-        # 3. Always verify/fix source to ensure correct prefix
-        if do_client.settings.digitalocean_spaces_bucket:
-             source_added, source_newly_created = await do_client.ensure_correct_spaces_source(
-                 kb_uuid, 
-                 do_client.settings.digitalocean_spaces_bucket, 
-                 f"{client_slug}/"
-             )
-    
-    if not kb_uuid:
-        log("create.do.error", {"message": "Failed to resolve Knowledge Base UUID"})
-        # We proceed to upload even if KB creation fails, so files are in Spaces
-        # but return None for UUID
-    
-    # Upload files to Spaces
-    uploaded_count = 0
-    if do_client.settings.digitalocean_spaces_bucket:
-        for doc in documents:
-            try:
-                # Handle content being string or dict
-                content_field = doc.get("content")
-                if isinstance(content_field, str):
-                    content = content_field
+            if not content and "markdown" in doc:
+                content = doc["markdown"]
+            
+            if not content:
+                continue
+            
+            # Determine document source first
+            doc_source_raw = doc.get("document_source", "unknown")
+            safe_source = _normalize_slug(doc_source_raw)
+            
+            # Check if it is a drive file (by ID or source)
+            is_drive_file = str(doc.get("id", "")).startswith("drive_") or safe_source in ["drive", "intake_form", "intake-form", "client_materials"]
+            
+            # Generate doc_id: {client_slug}_{document_source}_{domain}_{path_with_underscores}.md
+            meta = doc.get("metadata", {})
+            doc_url = meta.get("url", "")
+            
+            if is_drive_file:
+                # For drive files: {client_slug}_{document_source}_{safe_title}.md
+                title = doc.get("title", "untitled")
+                safe_title = _normalize_slug(title)
+                doc_id = f"{client_slug}_{safe_source}_{safe_title}.md"
+                
+                # Map sources to specific folders
+                if safe_source in ["intake_form", "intake-form"]:
+                    folder = "intake_form"
                 else:
-                    content = (content_field or {}).get("text", "")
-
-                if not content and "markdown" in doc:
-                    content = doc["markdown"]
+                    folder = "drive"
                 
-                if not content:
-                    continue
+                filename = f"{client_slug}/{folder}/{doc_id}"
+            elif doc_url:
+                # For website files: {client_slug}_{document_source}_{domain}_{path_with_underscores}.md
+                parsed = urlparse(doc_url)
+                domain = parsed.netloc.replace("www.", "")  # Remove www.
+                path = parsed.path.strip("/")  # Remove leading/trailing slashes
                 
-                # Sanitized filename
-                # User requested to strip 'www.' from the filename for Spaces
+                if path:
+                    # Replace slashes with underscores in path
+                    path_with_underscores = path.replace("/", "_")
+                    doc_id = f"{client_slug}_{safe_source}_{domain}_{path_with_underscores}.md"
+                else:
+                    # Homepage
+                    doc_id = f"{client_slug}_{safe_source}_{domain}_index.md"
+                
+                # Use doc_id as filename (no subfolders)
+                filename = f"{client_slug}/{safe_source}/{doc_id}"
+            else:
+                # Fallback for files without URL
                 raw_id = str(doc.get("id", "unknown"))
-                if raw_id.startswith("www."):
-                    raw_id = raw_id[4:]
-                
-                doc_id = raw_id.replace("/", "_")
-                
-                # Build Structured Path for Filtering
-                # {client_slug}/{document_source}/{filename}
-                doc_source_raw = doc.get("document_source", "unknown")
-                safe_source = _normalize_slug(doc_source_raw)
-                
-                # Check if it is a drive file (by ID or source)
-                is_drive_file = str(doc.get("id", "")).startswith("drive_") or safe_source in ["drive", "intake_form", "intake-form", "client_materials"]
-                
-                if is_drive_file:
-                     title = doc.get("title", "untitled")
-                     # Sanitize title
-                     safe_title = _normalize_slug(title)
-                     
-                     # Map sources to specific folders
-                     if safe_source in ["intake_form", "intake-form"]:
-                         folder = "intake_form" # Keep underscore for folder
-                     else:
-                         folder = "drive" # Map 'client_materials' and others to 'drive'
-                         
-                     filename = f"{client_slug}/{folder}/drive_{safe_title}.md"
-                else:
-                     filename = f"{client_slug}/{safe_source}/{doc_id}.md"
-                
-                # Add metadata header to markdown
-                meta = doc.get("metadata", {})
-                header_lines = ["---"]
-                header_lines.append(f"client_slug: {client_slug}") # Tag with client slug
-                if meta.get("url"):
-                    header_lines.append(f"url: {meta['url']}")
+                safe_id = raw_id.replace("/", "_")
+                doc_id = f"{client_slug}_{safe_source}_{safe_id}.md"
+                filename = f"{client_slug}/{safe_source}/{doc_id}"
+            
+            # Build comprehensive YAML frontmatter
+            header_lines = ["---"]
+            
+            # Core identifiers
+            header_lines.append(f"doc_id: \"{doc_id}\"")
+            header_lines.append(f"client_slug: \"{client_slug}\"")
+            header_lines.append(f"document_source: \"{doc.get('document_source', 'unknown')}\"")
+            
+            # URL and title
+            if doc_url:
+                header_lines.append(f"url: \"{doc_url}\"")
                 if meta.get("title"):
-                    header_lines.append(f"title: {meta['title']}")
-                
-                # Add document classification
-                if doc.get("content_type"):
-                    header_lines.append(f"content_type: {doc['content_type']}")
-                if doc.get("document_source"):
-                    header_lines.append(f"document_source: {doc['document_source']}")
-
-                header_lines.append("---\n\n")
-                
-                full_content = ("\n".join(header_lines) + content).encode("utf-8")
-                
-                res = do_client.upload_file_content(full_content, filename)
-                if res:
-                    uploaded_count += 1
-            except Exception as e:
-                log("create.do.upload_error", {"doc_id": doc.get("id"), "error": str(e)})
-        
-        # -------------------------------------------------------------------------
-        # Skip icon upload as user requested
-        # -------------------------------------------------------------------------
-        # We now rely on metadata.json favicon link
-        # 
-        # log("create.do.uploaded", {"count": uploaded_count, "client": client_slug})
-        # ... (removed icon upload logic)
-
-    else:
-        log("create.do.skipped_upload", {"reason": "No Spaces bucket configured"})
-
-    if not kb_uuid:
-        return None, False
-
-    # -------------------------------------------------------------------------
-    # 5. Save Metadata for UI (Indexes List)
-    # -------------------------------------------------------------------------
-    if do_client.settings.digitalocean_spaces_bucket:
-        try:
-            # Prepare metadata object
-            metadata_file = {
-                "url": url,
-                "client_slug": client_slug,
-                "pagesCrawled": len(pages) if 'pages' in locals() else 0,
-                "createdAt": time.strftime("%Y-%m-%dT%H:%M:%S.000Z"),
-                "metadata": {
-                    "title": pages_preview[0]["title"] if pages_preview else client_slug,
-                    "indexName": index_name
-                }
-            }
+                    # Escape quotes in title
+                    title_escaped = str(meta["title"]).replace('"', '\\"')
+                    header_lines.append(f"title: \"{title_escaped}\"")
             
-            # Find favicon/ogImage
-            for doc in final_documents:
-                meta = doc.get("metadata", {})
-                if meta.get("favicon"):
-                    metadata_file["metadata"]["favicon"] = meta["favicon"]
-                    break
-                if meta.get("ogImage"):
-                    metadata_file["metadata"]["ogImage"] = meta["ogImage"]
+            # Content classification
+            if doc.get("content_type"):
+                header_lines.append(f"content_type: \"{doc['content_type']}\"")
             
-            if "favicon" not in metadata_file["metadata"]:
-                 # Try to find it in homepage doc
-                 for doc in final_documents:
-                     if doc.get("content_type") in ["homepage", "home", "home page"]:
-                         f = doc.get("metadata", {}).get("favicon")
-                         if f: 
-                             metadata_file["metadata"]["favicon"] = f
-                             break
-
-            # Upload to Spaces
-            do_client.upload_file_content(
-                json.dumps(metadata_file), 
-                f"{client_slug}/metadata.json", 
-                content_type="application/json"
-            )
-            log("create.do.metadata_saved", {"client": client_slug})
-            logger.info(f"Metadata file: {metadata_file}")
+            # Keywords (if available)
+            keywords = doc.get("keywords", [])
+            if keywords and isinstance(keywords, list):
+                # YAML list format
+                header_lines.append("keywords:")
+                for kw in keywords:
+                    header_lines.append(f"  - \"{kw}\"")
+            
+            # Ingestion timestamp
+            ingested_at = time.strftime("%Y-%m-%dT%H:%M:%S.000000+00:00")
+            header_lines.append(f"ingested_at: \"{ingested_at}\"")
+            
+            # Calculate sizes
+            content_body_bytes = len(content.encode("utf-8"))
+            header_lines.append(f"content_body_size: {content_body_bytes}")
+            
+            # Build content to calculate total size
+            header_lines.append("---\n\n")
+            full_content_temp = ("\n".join(header_lines) + content).encode("utf-8")
+            total_file_size = len(full_content_temp)
+            
+            # Add size metadata (will be close to final size)
+            header_lines.insert(-1, f"size: {total_file_size}")
+            header_lines.insert(-1, f"content_length: {total_file_size}")
+            
+            # Rebuild final content
+            full_content = ("\n".join(header_lines) + content).encode("utf-8")
+            
+            # Try to upload to Supabase Storage (or save locally if bucket doesn't exist)
+            upload_success = False
+            
+            if bucket_ready:
+                try:
+                    supabase_client.upload_bytes(
+                        bucket=BUCKET_NAME,
+                        path=filename,
+                        data=full_content,
+                        content_type="text/markdown; charset=utf-8",
+                        upsert=True  # Always overwrite
+                    )
+                    supabase_uploaded += 1
+                    upload_success = True
+                    
+                    # Store doc_id and metadata for potential future use
+                    doc["doc_id"] = doc_id
+                    doc["_storage_path"] = filename
+                    doc["_content_body_size"] = content_body_bytes
+                    doc["_total_size"] = len(full_content)
+                except Exception as e:
+                    log("create.supabase.upload_error", {"doc_id": doc_id, "error": str(e)})
+                    supabase_failed += 1
+                    upload_success = False
+            
+            # If upload failed or bucket doesn't exist, save locally
+            if not upload_success and local_backup_dir:
+                try:
+                    local_file_path = local_backup_dir / filename
+                    local_file_path.parent.mkdir(parents=True, exist_ok=True)
+                    local_file_path.write_bytes(full_content)
+                    log("create.local_backup.saved", {"doc_id": doc_id, "path": str(local_file_path)})
+                except Exception as e:
+                    log("create.local_backup.error", {"doc_id": doc_id, "error": str(e)})
         except Exception as e:
-            log("create.do.metadata_error", {"error": str(e)})
-
-    # Re-index check
-    if source_added and not source_newly_created and uploaded_count > 0 and do_client.settings.digitalocean_spaces_bucket:
-        # Re-index if we added new files to an existing source
-        log("create.do.trigger_reindex", {"kb": kb_uuid, "client": client_slug})
-        reindex_success = await do_client.trigger_reindexing(
-            kb_uuid,
-            do_client.settings.digitalocean_spaces_bucket,
-            prefix=f"{client_slug}/"
-        )
-        if not reindex_success:
-            # If reindex failed (e.g. source not found), try adding the source
-            log("create.do.reindex_failed_adding", {"kb": kb_uuid})
-            await do_client.add_spaces_source(
-                kb_uuid, 
-                do_client.settings.digitalocean_spaces_bucket, 
-                prefix=f"{client_slug}/"
-            )
+            log("create.storage.upload_error", {"doc_id": doc.get("id", "unknown"), "error": str(e)})
+            supabase_failed += 1
+                    
+        except Exception as e:
+            log("create.storage.upload_error", {"doc_id": doc.get("id", "unknown"), "error": str(e)})
+            supabase_failed += 1
     
-    return kb_uuid, source_added
+    total_docs = len(documents)
+    success = supabase_uploaded == total_docs and supabase_failed == 0
+    
+    log("create.supabase.uploaded", {
+        "count": supabase_uploaded,
+        "failed": supabase_failed,
+        "total": total_docs,
+        "client": client_slug,
+        "success": success
+    })
+    
+    if local_backup_dir and supabase_failed > 0:
+        log("create.local_backup.complete", {
+            "client": client_slug,
+            "path": str(local_backup_dir),
+            "files_backed_up": supabase_failed
+        })
+
+    return {
+        "uploaded_to_supabase": supabase_uploaded,
+        "failed": supabase_failed,
+        "total": total_docs,
+        "success": success,
+        "local_backup_path": str(local_backup_dir) if local_backup_dir else None,
+    }
 
 
 async def _categorize_pages_parallel(pages: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
@@ -429,6 +703,12 @@ async def create_chatbot(payload: Dict[str, Any]) -> Dict[str, Any]:
         pages = await _categorize_pages_parallel(pages)
         log("create.categorize.done", {"count": len(pages)})
 
+        # Clean markdown after Firecrawl (before keyword extraction + Pinecone ingest)
+        if not bool(payload.get("skipMarkdownClean")):
+            log("create.markdown_clean.start", {"count": len(pages)})
+            pages = await _clean_pages_markdown_parallel(pages)
+            log("create.markdown_clean.done", {"count": len(pages)})
+
     pages_preview = [
         {"url": p.get("metadata", {}).get("sourceURL") or p.get("url"), "title": p.get("metadata", {}).get("title"), "category": p.get("metadata", {}).get("content_type")}
         for p in pages[:5]
@@ -549,94 +829,113 @@ async def create_chatbot(payload: Dict[str, Any]) -> Dict[str, Any]:
     log("create.prepare.summary", {"total_docs": len(final_documents)})
 
     # -------------------------------------------------------------------------
-    # 4. Ingest to DigitalOcean
+    # 3. Add per-file keywords (LLM) for Pinecone metadata filtering
     # -------------------------------------------------------------------------
-    do_kb_uuid = None
-    do_source_added = False
+    if final_documents:
+        # Keep this conservative to avoid cost spikes: 1 request per doc
+        keyword_tasks = []
+        for d in final_documents:
+            title = str(d.get("title") or (d.get("metadata") or {}).get("title") or "")
+            body = str(d.get("markdown") or d.get("content") or "")
+            keyword_tasks.append(_extract_keywords_for_doc(title=title, body=body))
+        keywords_list = await asyncio.gather(*keyword_tasks)
+        for d, kws in zip(final_documents, keywords_list):
+            if kws:
+                d["keywords"] = kws
+
+    # -------------------------------------------------------------------------
+    # 4. Ingest (Pinecone + optional Spaces raw store)
+    # -------------------------------------------------------------------------
+    storage_info: Dict[str, Any] = {}
     if final_documents:
         try:
-            do_kb_uuid, do_source_added = await _ingest_to_digitalocean(client_slug, final_documents)
+            storage_info = await _upload_to_storage(client_slug, final_documents)
             
             # -------------------------------------------------------------------------
             # 5. Save Metadata for UI (Indexes List)
             # -------------------------------------------------------------------------
-            if do_client.settings.digitalocean_spaces_bucket:
+            # Prefer Pinecone-based report (authoritative, post-ingest)
+            # Strategy: list_paginated -> fetch -> dedupe by file_key.
+            metadata_file: Dict[str, Any]
+            try:
+                metadata_file = pinecone_kb_client.build_onboarding_metadata_report(
+                    client_slug=client_slug,
+                    website_url=url,
+                    drive_url=drive_folder_input or "",
+                    wait_after_upsert_s=1.5,  # allow for eventual consistency right after upsert
+                )
+            except Exception as e:
+                # Fallback to pre-ingest counts if Pinecone enumeration fails
+                log("create.pinecone.report_error", {"error": str(e), "client": client_slug})
+
+                website_docs_list = [d for d in final_documents if d.get("document_source") == "website"]
+                drive_docs_list = [d for d in final_documents if d.get("document_source") in ["drive", "client_materials"]]
+                intake_form_docs = len([d for d in final_documents if d.get("document_source") in ["intake_form", "intake-form"]])
+
+                def _by_content_type(docs: List[Dict[str, Any]]) -> Dict[str, int]:
+                    counts: Dict[str, int] = {}
+                    for doc in docs:
+                        ct = doc.get("content_type") or doc.get("metadata", {}).get("content_type") or "other"
+                        counts[ct] = counts.get(ct, 0) + 1
+                    return counts
+
+                website_docs = {"total": len(website_docs_list), "by_content_type": _by_content_type(website_docs_list)}
+                drive_docs_count = {"total": len(drive_docs_list), "by_content_type": _by_content_type(drive_docs_list)}
+
+                homepage_doc = next(
+                    (
+                        d
+                        for d in website_docs_list
+                        if (d.get("content_type") or d.get("metadata", {}).get("content_type")) in ["homepage", "home", "home page"]
+                    ),
+                    None,
+                )
+                homepage_meta = homepage_doc.get("metadata", {}) if homepage_doc else {}
+                homepage_title = homepage_meta.get("title") or (homepage_doc or {}).get("title") or client_slug
+                homepage_favicon = homepage_meta.get("favicon") or homepage_meta.get("ogImage")
+
+                metadata_file = {
+                    "website_url": url,
+                    "drive_url": drive_folder_input or "",
+                    "client_slug": client_slug,
+                    "website_docs": website_docs,
+                    "intake_form_docs": intake_form_docs,
+                    "drive_docs": drive_docs_count,
+                    "createdAt": time.strftime("%Y-%m-%dT%H:%M:%S.000Z"),
+                    "metadata": {"title": homepage_title, **({"favicon": homepage_favicon} if homepage_favicon else {})},
+                }
+
+            # Upload metadata to Supabase Storage
+            supabase_client = get_supabase_storage_client()
+            BUCKET_NAME = "client-data-sources"
+            if supabase_client:
                 try:
-                    # Calculate document counts
-                    # Counts by content_type for website and drive
-                    website_docs_list = [d for d in final_documents if d.get("document_source") == "website"]
-                    drive_docs_list = [d for d in final_documents if d.get("document_source") in ["drive", "client_materials"]]
-                    intake_form_docs = len([d for d in final_documents if d.get("document_source") in ["intake_form", "intake-form"]])
-
-                    def _by_content_type(docs: List[Dict[str, Any]]) -> Dict[str, int]:
-                        counts: Dict[str, int] = {}
-                        for doc in docs:
-                            ct = doc.get("content_type") or doc.get("metadata", {}).get("content_type") or "other"
-                            counts[ct] = counts.get(ct, 0) + 1
-                        return counts
-
-                    website_docs = {
-                        "total": len(website_docs_list),
-                        "by_content_type": _by_content_type(website_docs_list)
-                    }
-                    drive_docs_count = {
-                        "total": len(drive_docs_list),
-                        "by_content_type": _by_content_type(drive_docs_list)
-                    }
-
-                    # Homepage doc for title + favicon
-                    homepage_doc = next(
-                        (
-                            d
-                            for d in website_docs_list
-                            if (d.get("content_type") or d.get("metadata", {}).get("content_type"))
-                            in ["homepage", "home", "home page"]
-                        ),
-                        None,
+                    supabase_client.upload_json(
+                        bucket=BUCKET_NAME,
+                        path=f"{client_slug}/metadata.json",
+                        payload=metadata_file,
+                        upsert=True
                     )
-                    homepage_meta = homepage_doc.get("metadata", {}) if homepage_doc else {}
-                    homepage_title = homepage_meta.get("title") or (homepage_doc or {}).get("title") or client_slug
-                    homepage_favicon = homepage_meta.get("favicon") or homepage_meta.get("ogImage")
-
-                    # Prepare metadata object
-                    metadata_file = {
-                        "website_url": url,
-                        "drive_url": drive_folder_input or "",
-                        "client_slug": client_slug,
-                        "website_docs": website_docs,
-                        "intake_form_docs": intake_form_docs,
-                        "drive_docs": drive_docs_count,
-                        "createdAt": time.strftime("%Y-%m-%dT%H:%M:%S.000Z"),
-                        "metadata": {
-                            "title": homepage_title,
-                        },
-                    }
-                    if homepage_favicon:
-                        metadata_file["metadata"]["favicon"] = homepage_favicon
-
-                    # Upload to Spaces
-                    do_client.upload_file_content(
-                        json.dumps(metadata_file), 
-                        f"{client_slug}/metadata.json", 
-                        content_type="application/json"
-                    )
-                    log("create.do.metadata_saved", {"client": client_slug})
+                    log("create.supabase.metadata_saved", {"client": client_slug, "bucket": BUCKET_NAME})
                 except Exception as e:
-                    log("create.do.metadata_error", {"error": str(e)})
+                    log("create.supabase.metadata_error", {"error": str(e), "client": client_slug})
+
+            # -------------------------------------------------------------------------
+            # 6. Store metadata in Supabase Storage (Pinecone vectorization is separate)
+            # -------------------------------------------------------------------------
 
         except Exception as e:
-            log("create.do.error", {"error": str(e)})
-            # Don't fail the request if DO fails, just log it
+            log("create.ingest.error", {"error": str(e)})
+            # Don't fail the request if ingestion fails, just log it
 
+    # Keep both keys for frontend compatibility
     return {
+        "success": True,
         "status": "success",
-        "index": index_name,
+        "index": get_settings().pinecone_kb_index_name,
         "namespace": namespace,
         "pages_processed": len(pages),
         "drive_docs_processed": len(drive_docs),
         "total_documents": len(final_documents),
-        "digital_ocean": {
-            "kb_uuid": do_kb_uuid,
-            "source_added": do_source_added
-        }
+        "storage": storage_info,
     }

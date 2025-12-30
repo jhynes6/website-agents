@@ -109,7 +109,7 @@ class FirecrawlClient:
             "url": url,
             "limit": limit,
             "scrapeOptions": {
-                "formats": ["markdown", "html"],
+                "formats": ["markdown"],
                 "maxAge": self.settings.crawling_cache_max_age_ms,
                 "onlyMainContent": True,
                 "removeBase64Images": True,

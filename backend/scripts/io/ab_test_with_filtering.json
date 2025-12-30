@@ -1,0 +1,340 @@
+{
+  "client_slug": "galactic-fed",
+  "test_date": "2025-12-28T05:05:32.538927+00:00",
+  "total_queries": 5,
+  "results": [
+    {
+      "query": "What can you do for me?",
+      "expected_intent": "MORE_INFO",
+      "expected_tags": [
+        "services_products",
+        "case_studies",
+        "about",
+        "capabilities_overview",
+        "pitch_decks"
+      ],
+      "single_agent": {
+        "success": true,
+        "latency": 7.672127962112427,
+        "response": "We offer a range of services designed to help businesses enhance their marketing efforts and achieve their goals. Here are some key areas where we can assist:\n\n- **SEO Services**: Improve your website's visibility and organic traffic through data-driven strategies, audits, and ongoing optimization.\n- **Paid Media Management**: Optimize your ad campaigns on platforms like Google Ads and Apple Search Ads to increase conversions and lower costs.\n- **Co-Marketing Opportunities**: Collaborate with non-competitive partners to expand your reach and generate leads through joint marketing efforts.\n- **Conversion Rate Optimization (CRO)**: Analyze user behavior and implement strategies to improve your website's conversion rates.\n- **Affiliate Marketing**: Develop and manage affiliate programs to leverage trusted content creators for promoting your products or services.\n\nWould you be available for a call in the next week or so to discuss how we can specifically help your business?",
+        "usage": {
+          "prompt_tokens": 5591,
+          "completion_tokens": 193,
+          "total_tokens": 5784
+        },
+        "model": "single-agent",
+        "matched_files": []
+      },
+      "hybrid_system": {
+        "success": true,
+        "latency": 10.248737812042236,
+        "triage_latency": 2.1643497943878174,
+        "retrieval_latency": 0.9579489231109619,
+        "response_latency": 7.126439094543457,
+        "response": "At Galactic Fed, we offer a range of services designed to enhance your marketing efforts and drive growth for your business. Here\u2019s what we can do for you:\n\n- **Tailored Marketing Strategies**: We analyze your unique goals and challenges to create a personalized roadmap for success.\n- **Expert Recommendations**: Our team provides actionable insights to optimize your marketing plan for maximum impact.\n- **Email Marketing**: We utilize data-driven strategies to engage customers, build trust, and increase conversion rates.\n- **SEO and Paid Media**: We help improve your online visibility and turn ad campaigns into revenue-generating engines.\n- **Social Media Marketing**: We enhance your brand presence and engagement across various platforms.\n\nWould you be available for a call in the next week or so to discuss how we can specifically help your business?",
+        "usage": {
+          "prompt_tokens": 6827,
+          "completion_tokens": 181,
+          "total_tokens": 7008
+        },
+        "triage_result": {
+          "intent": "MORE_INFO",
+          "kb_tags": [
+            "services",
+            "capabilities"
+          ],
+          "key_topics": [
+            "services",
+            "products"
+          ],
+          "suggested_doc_types": [
+            "homepage",
+            "intake_form",
+            "services_products",
+            "about"
+          ],
+          "requires_human": false,
+          "confidence": 0.9,
+          "urgency": "medium"
+        },
+        "chunks_retrieved": 5,
+        "model": "hybrid-2-agent",
+        "matched_files": [
+          "galacticfed.com_email-marketing-services.md",
+          "galacticfed.com_success.md",
+          "galacticfed.com_blog_apple-s-ios-14-update-what-it-means-for-you-and-your-ads.md",
+          "galacticfed.com_success-1.md",
+          "galacticfed.com.md"
+        ]
+      },
+      "timestamp": "2025-12-28T05:04:26.085830+00:00"
+    },
+    {
+      "query": "Do you have any case studies or success stories?",
+      "expected_intent": "CASE_STUDY_REQUEST",
+      "expected_tags": [
+        "case_studies",
+        "testimonials"
+      ],
+      "single_agent": {
+        "success": true,
+        "latency": 7.840196132659912,
+        "response": "Yes, we have over 100 case studies and success stories showcasing how our team has helped various companies grow. Here are a few highlights:\n\n- **Clinica VenArt**: Achieved a 225% increase in appointment bookings and 83% more chat engagements through a custom SEO strategy.\n- **Cruz Foam**: Experienced a first-page ranking with SEO strategy, leading to a significant increase in organic traffic.\n- **Multimodal**: Saw a 72% increase in non-branded clicks with an effective SEO strategy.\n- **Kayrros**: Attained a 106% increase in demo requests through a multichannel marketing strategy.\n\nYou can explore more success stories on our website. Would you be available for a call in the next week or so to discuss how we can help your business achieve similar results?",
+        "usage": {
+          "prompt_tokens": 5532,
+          "completion_tokens": 185,
+          "total_tokens": 5717
+        },
+        "model": "single-agent",
+        "matched_files": []
+      },
+      "hybrid_system": {
+        "success": true,
+        "latency": 10.84517502784729,
+        "triage_latency": 4.162477016448975,
+        "retrieval_latency": 0.462069034576416,
+        "response_latency": 6.220628976821899,
+        "response": "Yes, we have a variety of case studies and success stories showcasing how our strategies have helped different companies achieve significant growth. Here are a few highlights:\n\n- **hampr \u2013 Laundry App Service**\n  - 4x increase in organic traffic\n  - 256% increase in organic keywords ranking\n  - 440% increase in organic traffic [[C3]]\n\n- **CBD Company**\n  - 9316% increase in organic traffic\n  - 3442% increase in referring domains [[C2]]\n\n- **Kickfurther \u2013 Online Inventory Financing Platform**\n  - 110% increase in organic keywords ranking on the first page of Google\n  - 144% increase in non-branded clicks [[C4]]\n\n- **Clearview Social \u2013 AI-powered B2B SaaS**\n  - 111% increase in total organic sessions\n  - 18x increase in non-branded clicks [[C5]]\n\nIf you're interested in learning more about these case studies or how we can help your business, are you free for a call in the next week or so?",
+        "usage": {
+          "prompt_tokens": 5403,
+          "completion_tokens": 241,
+          "total_tokens": 5644
+        },
+        "triage_result": {
+          "intent": "CASE_STUDY_REQUEST",
+          "kb_tags": [
+            "case studies",
+            "success stories"
+          ],
+          "key_topics": [
+            "case studies",
+            "success stories"
+          ],
+          "suggested_doc_types": [
+            "case_studies"
+          ],
+          "requires_human": false,
+          "confidence": 0.95,
+          "urgency": "medium"
+        },
+        "chunks_retrieved": 5,
+        "model": "hybrid-2-agent",
+        "matched_files": [
+          "galacticfed.com_case-studies_hampr-seo.md",
+          "galacticfed.com_case-studies_earned-a-10-000-increase-in-backlinks-while-growing-organic-traffic-by-9-316.md",
+          "galacticfed.com_success-stories.md",
+          "galacticfed.com_case-studies_kickfurther.md",
+          "galacticfed.com_case-studies_clearview-social.md"
+        ]
+      },
+      "timestamp": "2025-12-28T05:04:47.773467+00:00"
+    },
+    {
+      "query": "How much does this cost?",
+      "expected_intent": "PRICING",
+      "expected_tags": [
+        "pricing",
+        "services_products"
+      ],
+      "single_agent": {
+        "success": true,
+        "latency": 3.8906731605529785,
+        "response": "Could you please specify which product or service you are inquiring about? Here are some examples of costs for lead generation tools we recommend:\n\n- **Ahrefs**: Plans start from $99 a month, with a $7 trial for a week.\n- **SEMrush**: $99.95 a month if billed annually, with a seven-day free trial available.\n- **MailChimp**: Offers a comprehensive free version for small-scale email marketing.\n\nIf you need more detailed information or have a specific service in mind, please let me know. Are you available for a call next week to discuss this further?",
+        "usage": {
+          "prompt_tokens": 6321,
+          "completion_tokens": 133,
+          "total_tokens": 6454
+        },
+        "model": "single-agent",
+        "matched_files": []
+      },
+      "hybrid_system": {
+        "success": true,
+        "latency": 8.39807391166687,
+        "triage_latency": 1.4791057109832764,
+        "retrieval_latency": 0.3906402587890625,
+        "response_latency": 6.528327941894531,
+        "response": "I can provide you with some pricing information for various SEO and backlink audit tools:\n\n- **Ahrefs**: Monthly subscription starts at $99 ($83 if paid annually). A free version is available through Ahrefs Webmaster Tools.\n- **Link Research Tools (LRT)**: Offers a week\u2019s trial for $17, then $599 per month for the lowest-tier plan.\n- **SEMrush**: Basic backlink checker is free; after a 7-day free trial, the Pro plan costs $119.95 per month.\n- **Moz**: Offers a 30-day free trial, with paid plans starting at $99 per month.\n- **Majestic**: Limited free account available; LITE plan costs $49.99 per month.\n\nIf you're interested in discussing which tool might be best for your needs, are you free for a call in the next week or so?",
+        "usage": {
+          "prompt_tokens": 7311,
+          "completion_tokens": 190,
+          "total_tokens": 7501
+        },
+        "triage_result": {
+          "intent": "PRICING",
+          "kb_tags": [
+            "pricing",
+            "cost",
+            "budget"
+          ],
+          "key_topics": [
+            "pricing",
+            "cost"
+          ],
+          "suggested_doc_types": [
+            "intake_form",
+            "services_products",
+            "about"
+          ],
+          "requires_human": false,
+          "confidence": 0.95,
+          "urgency": "high"
+        },
+        "chunks_retrieved": 5,
+        "model": "hybrid-2-agent",
+        "matched_files": [
+          "galacticfed.com_blog_the-definitive-guide-to-seo-keyword-research.md",
+          "galacticfed.com_blog_bridging-the-gap-an-interview-with-author-oliver-sandreuter.md",
+          "galacticfed.com_blog_content-marketing-for-b2b-saas-companies-everything-you-need-to-know.md",
+          "galacticfed.com_blog_a-website-spring-clean-to-help-get-that-coveted-top-spot-on-google.md",
+          "galacticfed.com_blog_category_artificial-intelligence.md"
+        ]
+      },
+      "timestamp": "2025-12-28T05:05:03.064627+00:00"
+    },
+    {
+      "query": "Have you worked with any similar companies?",
+      "expected_intent": "CASE_STUDY_REQUEST",
+      "expected_tags": [
+        "case_studies",
+        "testimonials",
+        "markets_industries",
+        "capabilities_overview",
+        "pitch_decks"
+      ],
+      "single_agent": {
+        "success": true,
+        "latency": 3.9315261840820312,
+        "response": "We have extensive experience working with over 600 companies across nearly every industry and vertical. Our team has likely helped a business similar to yours, and we tailor our strategies to be laser-focused on your revenue and ROI. \n\nWould you be available for a call in the next week or so to discuss how we can help your specific needs?",
+        "usage": {
+          "prompt_tokens": 5929,
+          "completion_tokens": 78,
+          "total_tokens": 6007
+        },
+        "model": "single-agent",
+        "matched_files": []
+      },
+      "hybrid_system": {
+        "success": true,
+        "latency": 5.799221754074097,
+        "triage_latency": 1.5371849536895752,
+        "retrieval_latency": 0.6564319133758545,
+        "response_latency": 3.605604887008667,
+        "response": "Yes, we have successfully partnered with over 600 companies across various industries and verticals, likely including businesses similar to yours. Our approach involves building a custom strategy tailored to your specific buyer persona, focusing on maximizing revenue and ROI.\n\nIf you're interested, I would love to discuss how we can help your company achieve its marketing goals. Are you available for a call in the next week or so?",
+        "usage": {
+          "prompt_tokens": 6239,
+          "completion_tokens": 96,
+          "total_tokens": 6335
+        },
+        "triage_result": {
+          "intent": "CASE_STUDY_REQUEST",
+          "kb_tags": [
+            "case studies",
+            "success stories",
+            "similar companies"
+          ],
+          "key_topics": [
+            "case studies",
+            "industry experience"
+          ],
+          "suggested_doc_types": [
+            "case_studies"
+          ],
+          "requires_human": false,
+          "confidence": 0.9,
+          "urgency": "medium"
+        },
+        "chunks_retrieved": 5,
+        "model": "hybrid-2-agent",
+        "matched_files": [
+          "galacticfed.com.md",
+          "galacticfed.com_home-v2.md",
+          "galacticfed.com_home-new-b-version.md",
+          "galacticfed.com_contact-us.md",
+          "galacticfed.com_home-v2-dark.md"
+        ]
+      },
+      "timestamp": "2025-12-28T05:05:15.798069+00:00"
+    },
+    {
+      "query": "Do also do other services?",
+      "expected_intent": "MORE_INFO",
+      "expected_tags": [
+        "services_products",
+        "case_studies",
+        "markets_industries",
+        "capabilities_overview",
+        "pitch_decks"
+      ],
+      "single_agent": {
+        "success": true,
+        "latency": 4.986447811126709,
+        "response": "Yes, we offer a range of services designed to help businesses grow. Our white label services include:\n\n- Paid Media\n- Email Marketing\n- Conversion Rate Optimization (CRO)\n- Search Engine Optimization (SEO)\n- Web Development & Design\n- Social Media Marketing\n\nThese services allow you to expand your offerings without the need to invest heavily in your own marketing infrastructure. Would you be available for a call in the next week or so to discuss how we can support your business?",
+        "usage": {
+          "prompt_tokens": 6192,
+          "completion_tokens": 107,
+          "total_tokens": 6299
+        },
+        "model": "single-agent",
+        "matched_files": []
+      },
+      "hybrid_system": {
+        "success": true,
+        "latency": 6.7506420612335205,
+        "triage_latency": 1.7968740463256836,
+        "retrieval_latency": 0.5791540145874023,
+        "response_latency": 4.374614000320435,
+        "response": "Yes, we offer a range of services beyond just one area. Here are some of the key services we provide:\n\n- **Paid Media**: Optimize your advertising strategies across various platforms.\n- **Email Marketing**: Create effective campaigns that drive engagement and conversions.\n- **Conversion Rate Optimization (CRO)**: Enhance your website's performance to increase sales.\n- **Search Engine Optimization (SEO)**: Improve your website's visibility on search engines.\n- **Web Development & Design**: Build and design websites that are user-friendly and effective.\n- **Social Media Marketing**: Engage with your audience and grow your brand on social platforms.\n\nThese services can help you expand your offerings and improve your overall marketing strategy. Are you available for a call in the next week or so to discuss how we can assist you further?",
+        "usage": {
+          "prompt_tokens": 7548,
+          "completion_tokens": 177,
+          "total_tokens": 7725
+        },
+        "triage_result": {
+          "intent": "MORE_INFO",
+          "kb_tags": [
+            "services",
+            "inquiry"
+          ],
+          "key_topics": [
+            "services",
+            "offerings"
+          ],
+          "suggested_doc_types": [
+            "homepage",
+            "intake_form",
+            "services_products",
+            "about"
+          ],
+          "requires_human": false,
+          "confidence": 0.9,
+          "urgency": "medium"
+        },
+        "chunks_retrieved": 5,
+        "model": "hybrid-2-agent",
+        "matched_files": [
+          "galacticfed.com_blog_shoppable-video-examples-6-brands-that-did-it-right.md",
+          "galacticfed.com_privacy-policy.md",
+          "galacticfed.com_case-studies_service_social-media-marketing.md",
+          "galacticfed.com_services.md",
+          "galacticfed.com_blog_4-industry-trends-that-are-affecting-the-way-we-use-facebook-ads.md"
+        ]
+      },
+      "timestamp": "2025-12-28T05:05:30.537626+00:00"
+    }
+  ],
+  "summary": {
+    "single_agent": {
+      "success_rate": 1.0,
+      "avg_latency": 5.664194250106812,
+      "total_tokens": 30261
+    },
+    "hybrid_system": {
+      "success_rate": 1.0,
+      "avg_latency": 8.408370113372802,
+      "avg_triage_latency": 2.2279983043670653,
+      "avg_response_latency": 5.5711229801177975,
+      "total_tokens": 34213
+    }
+  }
+}

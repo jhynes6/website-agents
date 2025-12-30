@@ -50,7 +50,7 @@ export default function IndexesPage() {
   useEffect(() => {
     const fetchResourceLinks = async () => {
       try {
-        const response = await fetch(getBackendUrl('/api/firestarter/resource-links'))
+        const response = await fetch(getBackendUrl('/api/mintagent/resource-links'))
         if (response.ok) {
           const links = await response.json()
           setResourceLinks(links)
@@ -66,7 +66,7 @@ export default function IndexesPage() {
   useEffect(() => {
     const fetchWarnings = async () => {
       try {
-        const response = await fetch(getBackendUrl('/api/firestarter/summary-warnings'))
+        const response = await fetch(getBackendUrl('/api/mintagent/summary-warnings'))
         if (response.ok) {
           const data = await response.json()
           setSummaryWarnings(data)
@@ -90,7 +90,7 @@ export default function IndexesPage() {
       fromIndex: true // Flag to indicate this is from the index list
     }
     
-    sessionStorage.setItem('firestarter_current_data', JSON.stringify(siteInfo))
+    sessionStorage.setItem('mintagent_current_data', JSON.stringify(siteInfo))
     
     // Navigate to the dashboard with clientSlug parameter
     router.push(`/dashboard?clientSlug=${index.clientSlug}`)
@@ -226,7 +226,7 @@ export default function IndexesPage() {
           <h3 className="text-xl font-semibold text-gray-700 mb-2">No Chatbots Yet</h3>
           <p className="text-gray-600 mb-6">You haven&apos;t created any chatbots yet.</p>
           <Button asChild variant="orange">
-            <Link href="/firestarter">
+            <Link href="/mintagent">
               Create Your First Chatbot
             </Link>
           </Button>

@@ -29,7 +29,7 @@ interface StorageAdapter {
 }
 
 class LocalStorageAdapter implements StorageAdapter {
-  private readonly STORAGE_KEY = 'firestarter_indexes'
+  private readonly STORAGE_KEY = 'mintagent_indexes'
 
   async getIndexes(): Promise<IndexMetadata[]> {
     if (typeof window === 'undefined') return []
@@ -90,8 +90,8 @@ class LocalStorageAdapter implements StorageAdapter {
 
 class RedisStorageAdapter implements StorageAdapter {
   private redis: Redis
-  private readonly INDEXES_KEY = 'firestarter:indexes'
-  private readonly INDEX_KEY_PREFIX = 'firestarter:index:'
+  private readonly INDEXES_KEY = 'mintagent:indexes'
+  private readonly INDEX_KEY_PREFIX = 'mintagent:index:'
   private readonly TIMEOUT_MS = 3000
 
   constructor() {

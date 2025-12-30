@@ -1,0 +1,341 @@
+{
+  "client_slug": "nextlevel-thinking",
+  "test_date": "2025-12-28T05:13:59.518207+00:00",
+  "total_queries": 5,
+  "results": [
+    {
+      "query": "What can you do for me?",
+      "expected_intent": "MORE_INFO",
+      "expected_tags": [
+        "services_products",
+        "case_studies",
+        "about",
+        "capabilities_overview",
+        "pitch_decks"
+      ],
+      "single_agent": {
+        "success": true,
+        "latency": 6.050112962722778,
+        "response": "We offer a range of services designed to help businesses grow and enhance their brand presence. Here are some key areas we focus on:\n\n- **Global Digital Marketing**: Insights and strategy development, persona and customer archetype creation, and customer journey mapping.\n- **Ecommerce Solutions**: Strategy, design, optimization, and development for platforms like Amazon and Shopify.\n- **Digital & Owned Media**: Web design, SEO, social media management, and content development.\n- **Traditional Marketing**: Strategic planning, consumer promotions, events, and media relations.\n- **Sales Representation**: Tailored sales strategies, market entry facilitation, and retail partnerships.\n\nOur goal is to help you achieve measurable growth and improve your market presence. Would you be available for a call in the next week or so to discuss how we can assist you further?",
+        "usage": {
+          "prompt_tokens": 4194,
+          "completion_tokens": 179,
+          "total_tokens": 4373
+        },
+        "model": "single-agent",
+        "matched_files": []
+      },
+      "hybrid_system": {
+        "success": true,
+        "latency": 8.3513662815094,
+        "triage_latency": 1.4231491088867188,
+        "retrieval_latency": 1.4730491638183594,
+        "response_latency": 5.455168008804321,
+        "response": "At Next Level Thinking, we offer a range of services designed to elevate your business and drive growth. Here\u2019s how we can assist you:\n\n- **Sales Representation**: We provide fractional, contract, and channel sales representation tailored to your specific needs, helping to ignite new business and build relationships.\n\n- **Data-Driven Insights**: Our analytics-driven approach helps inform strategies and optimize performance across various channels.\n\n- **Sales Coaching**: We offer tailored coaching and playbooks to enhance the performance of your sales teams.\n\n- **Strategic Market Entry**: We facilitate successful launches of new brands and products into the North American market.\n\n- **E-commerce Optimization**: We help grow sales and market share on major North American e-tail platforms through customized strategies.\n\n- **Retail Partnerships**: We build and nurture relationships with various retailers, including mass, big box, grocery, and specialty stores.\n\n- **Turnkey Sales Programs**: Our end-to-end services simplify the process of entering and succeeding in both e-tail and retail channels.\n\nWould you be available for a call in the next week or so to discuss how we can specifically support your business?",
+        "usage": {
+          "prompt_tokens": 6420,
+          "completion_tokens": 242,
+          "total_tokens": 6662
+        },
+        "triage_result": {
+          "intent": "MORE_INFO",
+          "kb_tags": [
+            "services",
+            "capabilities"
+          ],
+          "key_topics": [
+            "services",
+            "products"
+          ],
+          "suggested_doc_types": [
+            "homepage",
+            "intake_form",
+            "services_products",
+            "about"
+          ],
+          "requires_human": false,
+          "confidence": 0.9,
+          "urgency": "medium"
+        },
+        "chunks_retrieved": 5,
+        "model": "hybrid-2-agent",
+        "matched_files": [
+          "drive_client-intake-form-nextlevel-thinking.md",
+          "nextlevelthinking.ca_author_joshosgmarketing-com.md",
+          "nextlevelthinking.ca_area-item_footer-intro-page.md",
+          "nextlevelthinking.ca_portfolio_category_animal-health-wellness-b2b.md",
+          "nextlevelthinking.ca_portfolio_category_automotive-lifestyle-b2c.md"
+        ]
+      },
+      "timestamp": "2025-12-28T05:13:01.768621+00:00"
+    },
+    {
+      "query": "Do you have any case studies or success stories?",
+      "expected_intent": "CASE_STUDY_REQUEST",
+      "expected_tags": [
+        "case_studies",
+        "testimonials"
+      ],
+      "single_agent": {
+        "success": true,
+        "latency": 5.0382468700408936,
+        "response": "Yes, we have several case studies and success stories that highlight our work and the results we've achieved for various clients. Here are a few examples:\n\n- **Castrol Canada**: We transformed their B2B trade marketing model, leading to successful revenue growth and a significant increase in their consumer database [[C1]].\n  \n- **Planters**: We helped build their social brand awareness and drive new product awareness, resulting in significant audience growth and engagement in the snack food category [[C2]].\n\n- **Southshore**: We rebranded multiple assets and developed best-in-class investor presentations, which led to extended contracts and additional projects [[C5]].\n\nIf you're interested in learning more about these case studies, would you be available for a call in the next week or so to discuss?",
+        "usage": {
+          "prompt_tokens": 4522,
+          "completion_tokens": 181,
+          "total_tokens": 4703
+        },
+        "model": "single-agent",
+        "matched_files": []
+      },
+      "hybrid_system": {
+        "success": true,
+        "latency": 8.905373096466064,
+        "triage_latency": 3.1661880016326904,
+        "retrieval_latency": 0.452772855758667,
+        "response_latency": 5.286412239074707,
+        "response": "Yes, we have several case studies and success stories that showcase our work and results. Here are a few highlights:\n\n- **Southshore**: Focused on renewing communities with services like fractional CMO, brand development, and digital activations. \n- **Castrol Canada**: Implemented strategies to enhance B2B channel marketing and consumer engagement, resulting in significant growth.\n- **Planters**: Developed a comprehensive social media strategy that increased brand awareness and consumer engagement.\n- **Mr. Lube in Walmart**: Created targeted marketing initiatives that drove sales and brand visibility.\n\nYou can review more details on our case studies [here](https://nextlevelthinking.ca/case-studies/).\n\nAre you available for a call in the next week or so to discuss how we can help your business achieve similar results?",
+        "usage": {
+          "prompt_tokens": 5521,
+          "completion_tokens": 184,
+          "total_tokens": 5705
+        },
+        "triage_result": {
+          "intent": "CASE_STUDY_REQUEST",
+          "kb_tags": [
+            "case studies",
+            "success stories",
+            "proof"
+          ],
+          "key_topics": [
+            "case studies",
+            "success stories"
+          ],
+          "suggested_doc_types": [
+            "case_studies"
+          ],
+          "requires_human": false,
+          "confidence": 0.95,
+          "urgency": "medium"
+        },
+        "chunks_retrieved": 5,
+        "model": "hybrid-2-agent",
+        "matched_files": [
+          "nextlevelthinking.ca_case-studies.md",
+          "nextlevelthinking.ca_portfolio_ogena-solutions.md",
+          "nextlevelthinking.ca_portfolio_planters-cpg-salty-snacks.md",
+          "nextlevelthinking.ca_portfolio_southshore-asset-management.md",
+          "nextlevelthinking.ca_portfolio_auto-spa.md"
+        ]
+      },
+      "timestamp": "2025-12-28T05:13:18.714934+00:00"
+    },
+    {
+      "query": "How much does this cost?",
+      "expected_intent": "PRICING",
+      "expected_tags": [
+        "pricing",
+        "services_products"
+      ],
+      "single_agent": {
+        "success": true,
+        "latency": 2.883319139480591,
+        "response": "Our pricing varies based on the specific services and solutions tailored to your business needs. We offer a range of services, including:\n\n- Global Digital Marketing\n- Ecommerce Strategy and Development\n- Sales Representation and Coaching\n- Marketing Automation\n\nTo provide you with an accurate quote, it would be best to discuss your requirements in detail. Are you available for a call in the next week or so to explore this further?",
+        "usage": {
+          "prompt_tokens": 3312,
+          "completion_tokens": 93,
+          "total_tokens": 3405
+        },
+        "model": "single-agent",
+        "matched_files": []
+      },
+      "hybrid_system": {
+        "success": true,
+        "latency": 6.843428134918213,
+        "triage_latency": 1.5051562786102295,
+        "retrieval_latency": 0.35487985610961914,
+        "response_latency": 4.983392000198364,
+        "response": "Our pricing varies based on the specific services and engagement model you choose. Here are some options we offer:\n\n- **Fractional CMO Services**: Tailored to your business needs.\n- **Revenue Growth Consulting**: Pricing based on project scope.\n- **Ecommerce Strategy and Development**: Customized pricing depending on the complexity of the project.\n- **Sales Representation**: Flexible pricing based on the level of service required.\n\nFor a more accurate quote, it would be beneficial to discuss your specific needs and challenges. Are you available for a call in the next week or so to explore this further?",
+        "usage": {
+          "prompt_tokens": 5053,
+          "completion_tokens": 133,
+          "total_tokens": 5186
+        },
+        "triage_result": {
+          "intent": "PRICING",
+          "kb_tags": [
+            "pricing",
+            "cost",
+            "budget"
+          ],
+          "key_topics": [
+            "cost",
+            "packages"
+          ],
+          "suggested_doc_types": [
+            "intake_form",
+            "services_products",
+            "about"
+          ],
+          "requires_human": false,
+          "confidence": 0.95,
+          "urgency": "high"
+        },
+        "chunks_retrieved": 5,
+        "model": "hybrid-2-agent",
+        "matched_files": [
+          "nextlevelthinking.ca_about.md",
+          "nextlevelthinking.ca.md",
+          "nextlevelthinking.ca_portfolio_ogena-solutions.md",
+          "nextlevelthinking.ca_portfolio_cardinal-health.md",
+          "nextlevelthinking.ca_portfolio_planters-cpg-spreads.md"
+        ]
+      },
+      "timestamp": "2025-12-28T05:13:31.443641+00:00"
+    },
+    {
+      "query": "Have you worked with any similar companies?",
+      "expected_intent": "CASE_STUDY_REQUEST",
+      "expected_tags": [
+        "case_studies",
+        "testimonials",
+        "markets_industries",
+        "capabilities_overview",
+        "pitch_decks"
+      ],
+      "single_agent": {
+        "success": true,
+        "latency": 5.265169143676758,
+        "response": "Yes, we have worked with a variety of companies across different industries. Some notable examples include:\n\n- **Sardo Foods**: Focused on increasing brand awareness and consumer engagement in the food sector.\n- **Saputo**: A leader in the dairy industry, where we helped enhance their market presence.\n- **Planters**: Engaged in campaigns that amplified their brand visibility and consumer interaction.\n\nOur experience spans various sectors, allowing us to tailor our strategies to meet specific business needs. Would you be available for a call in the next week or so to discuss how we can assist your company?",
+        "usage": {
+          "prompt_tokens": 4277,
+          "completion_tokens": 133,
+          "total_tokens": 4410
+        },
+        "model": "single-agent",
+        "matched_files": []
+      },
+      "hybrid_system": {
+        "success": true,
+        "latency": 5.472082614898682,
+        "triage_latency": 1.318371057510376,
+        "retrieval_latency": 0.40544772148132324,
+        "response_latency": 3.7482638359069824,
+        "response": "Yes, we have worked with a variety of companies across different sectors. Here are some examples:\n\n- **Saputo**: Focused on enhancing brand visibility and market share.\n- **Sardo Foods**: Aimed at increasing awareness for olives and antipasti as nutritious snacks.\n- **Planters**: Engaged in campaigns like #WHATTEAM to boost brand engagement.\n- **Mr. Lube**: Collaborated with Walmart to enhance service visibility.\n\nIf you would like to discuss how we can help your company achieve similar results, are you available for a call in the next week or so?",
+        "usage": {
+          "prompt_tokens": 5132,
+          "completion_tokens": 142,
+          "total_tokens": 5274
+        },
+        "triage_result": {
+          "intent": "CASE_STUDY_REQUEST",
+          "kb_tags": [
+            "case studies",
+            "similar companies",
+            "success stories"
+          ],
+          "key_topics": [
+            "case studies",
+            "industry experience"
+          ],
+          "suggested_doc_types": [
+            "case_studies"
+          ],
+          "requires_human": false,
+          "confidence": 0.9,
+          "urgency": "medium"
+        },
+        "chunks_retrieved": 5,
+        "model": "hybrid-2-agent",
+        "matched_files": [
+          "nextlevelthinking.ca_case-studies.md",
+          "nextlevelthinking.ca_portfolio_sardo-foods.md",
+          "nextlevelthinking.ca_portfolio_branded-content-expertise.md",
+          "nextlevelthinking.ca_portfolio_ticketmaster-live-nation-canada.md",
+          "nextlevelthinking.ca_portfolio_chill-after-5-weekends.md"
+        ]
+      },
+      "timestamp": "2025-12-28T05:13:45.182531+00:00"
+    },
+    {
+      "query": "Do also do other services?",
+      "expected_intent": "MORE_INFO",
+      "expected_tags": [
+        "services_products",
+        "case_studies",
+        "markets_industries",
+        "capabilities_overview",
+        "pitch_decks"
+      ],
+      "single_agent": {
+        "success": true,
+        "latency": 3.7620599269866943,
+        "response": "Yes, we offer a wide range of services, including:\n\n- **Global Digital Marketing**: Insights & strategy, storytelling & design, eCommerce, digital & owned media, and traditional marketing.\n- **Sales Representation**: Fractional, contract, and channel sales representation tailored to your needs.\n- **Market Entry**: Assistance with launching new brands and products into the North American market.\n- **Promotional Planning**: Development and execution of marketing campaigns that resonate with consumers.\n\nIf you're interested in learning more about how our services can benefit your business, are you free for a call in the next week or so?",
+        "usage": {
+          "prompt_tokens": 3824,
+          "completion_tokens": 135,
+          "total_tokens": 3959
+        },
+        "model": "single-agent",
+        "matched_files": []
+      },
+      "hybrid_system": {
+        "success": true,
+        "latency": 5.569374084472656,
+        "triage_latency": 1.512603998184204,
+        "retrieval_latency": 0.4286510944366455,
+        "response_latency": 3.6281189918518066,
+        "response": "Yes, we offer a variety of services tailored to meet different business needs, including:\n\n- **Fractional CMO & CRO Services**: Leadership and strategic guidance.\n- **Growth Planning and Strategy**: Developing actionable plans for business expansion.\n- **B2B Channel Marketing**: Strategies to enhance business-to-business relationships.\n- **Digital and Experiential Activations**: Engaging marketing campaigns across various platforms.\n- **Retail Partnerships and Sales Representation**: Building and nurturing relationships with retailers.\n\nIf you would like to learn more about how these services can benefit your business, are you available for a call in the next week or so?",
+        "usage": {
+          "prompt_tokens": 4917,
+          "completion_tokens": 141,
+          "total_tokens": 5058
+        },
+        "triage_result": {
+          "intent": "MORE_INFO",
+          "kb_tags": [
+            "services",
+            "inquiry"
+          ],
+          "key_topics": [
+            "services",
+            "offerings"
+          ],
+          "suggested_doc_types": [
+            "homepage",
+            "intake_form",
+            "services_products",
+            "about"
+          ],
+          "requires_human": false,
+          "confidence": 0.9,
+          "urgency": "medium"
+        },
+        "chunks_retrieved": 5,
+        "model": "hybrid-2-agent",
+        "matched_files": [
+          "drive_client-intake-form-nextlevel-thinking.md",
+          "metadata.json",
+          "nextlevelthinking.ca_area-item_footer-intro-page.md",
+          "drive_nextlevel-thinking-booked-calls.md",
+          "nextlevelthinking.ca_author_joshosgmarketing-com.md"
+        ]
+      },
+      "timestamp": "2025-12-28T05:13:57.516324+00:00"
+    }
+  ],
+  "summary": {
+    "single_agent": {
+      "success_rate": 1.0,
+      "avg_latency": 4.599781608581543,
+      "total_tokens": 20850
+    },
+    "hybrid_system": {
+      "success_rate": 1.0,
+      "avg_latency": 7.028324842453003,
+      "avg_triage_latency": 1.7850936889648437,
+      "avg_response_latency": 4.620271015167236,
+      "total_tokens": 27885
+    }
+  }
+}

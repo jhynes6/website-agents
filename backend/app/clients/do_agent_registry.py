@@ -125,11 +125,11 @@ class AgentRegistry:
         try:
             serializable = {slug: rec.to_dict() for slug, rec in self._data.items()}
             self.s3_client.put_object(
-                Bucket=self.bucket,
-                Key=self.registry_key,
-                Body=json.dumps(serializable, indent=2, sort_keys=True).encode('utf-8'),
-                ContentType='application/json'
-            )
+                    Bucket=self.bucket,
+                    Key=self.registry_key,
+                    Body=json.dumps(serializable, indent=2, sort_keys=True).encode('utf-8'),
+                    ContentType='application/json'
+                )
             logger.info(f"Persisted {len(self._data)} agents to Spaces registry")
         except Exception as exc:
             logger.error(f"Failed to persist agent registry to Spaces: {exc}")

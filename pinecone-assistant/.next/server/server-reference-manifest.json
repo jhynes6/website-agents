@@ -1,0 +1,14 @@
+{
+  "node": {
+    "e70fb06a713e1ef1b7023a09f16bf3ee150fc1b0": {
+      "workers": {
+        "app/page": "(action-browser)/./node_modules/next/dist/build/webpack/loaders/next-flight-action-entry-loader.js?actions=%5B%5B%22%2FUsers%2Fhynes%2Fdev%2Fwebsite-agents%2Fpinecone-assistant%2Fsrc%2Fapp%2Factions.ts%22%2C%5B%22chat%22%5D%5D%5D&__client_imported__=true!"
+      },
+      "layer": {
+        "app/page": "action-browser"
+      }
+    }
+  },
+  "edge": {},
+  "encryptionKey": "TZSoDy0b1Sevj0oyHmUiCuQ8+dSjttS088+kqxb2yFE="
+}

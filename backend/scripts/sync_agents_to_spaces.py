@@ -105,7 +105,7 @@ async def sync_agents_to_spaces():
         registry[slug] = {
             "agent_uuid": agent_uuid,
             "agent_name": agent_name,
-            "slug": slug,
+            "client_slug": slug,
             "endpoint_url": endpoint_url,
             "api_key": api_key,  # Will need to be populated separately
             "region": agent.get('region'),

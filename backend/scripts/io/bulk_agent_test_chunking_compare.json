@@ -1,0 +1,213 @@
+{
+  "test_queries": [
+    "what does your company do?",
+    "tell me what you sell",
+    "what do you sell and what industries have you worked with?",
+    "do you have any case studies?"
+  ],
+  "results": [
+    {
+      "agent_name": "inbox-manager-nextlevel-thinking-heirchical",
+      "client_slug": "nextlevel-thinking-heirchical",
+      "endpoint_url": "https://suodhdhrjmidic3f2xk3363b.agents.do-ai.run",
+      "has_api_key": true,
+      "tested_at": "2025-12-28T12:14:49.815641+00:00",
+      "queries": [
+        {
+          "query": "what does your company do?",
+          "response": "Next Level Thinking is dedicated to helping businesses and brands achieve growth through a variety of services, including:\n\n- **Insights & Strategy**: Developing customer personas, mapping customer journeys, and conducting market research.\n- **Storytelling & Design**: Creating engaging content across different formats and designing brand presentations.\n- **Ecommerce Solutions**: Optimizing ecommerce strategies and developing online stores on platforms like Shopify.\n- **Digital & Owned Media**: Offering web design, SEO, social media management, and digital media planning.\n- **Traditional Marketing**: Focusing on PR, events, and media relations.\n- **Automation**: Implementing marketing and sales automation, lead nurturing, and CRM solutions.\n\nOur approach is to create tailored solutions that drive measurable results for our clients. We emphasize storytelling to differentiate brands and amplify sales.\n\nWould you be available for a call in the next week or so to discuss how we can help your business?",
+          "error": null,
+          "duration_ms": 11301.9,
+          "status": "success",
+          "tokens": {
+            "prompt": 5079,
+            "completion": 195,
+            "total": 5274
+          }
+        },
+        {
+          "query": "tell me what you sell",
+          "response": "At Next Level Thinking, we offer a range of services designed to drive sales and growth for businesses across various sectors. Here\u2019s a brief overview of what we sell:\n\n- **Fractional CMO & CRO Services:** Strategic leadership on a flexible basis.\n- **Revenue Growth Consulting:** Tailored strategies to increase revenue.\n- **Strategy & Ideation:** Crafting innovative plans to elevate business performance.\n- **Master Content Planning:** Developing and managing effective content strategies.\n- **Geo-targeted Digital Activations:** Engaging campaigns focused on specific geographic areas.\n- **Sponsorship & Partnership Representation:** Building and managing key relationships to enhance brand presence.\n- **Promotion Activation:** Implementing targeted promotions to boost sales.\n\nWe specialize in creating customized playbooks and integrated campaigns to optimize growth and drive both B2B and B2C engagement. Would you be open to a call in the next week or so to discuss how we can help your business?",
+          "error": null,
+          "duration_ms": 4949.65,
+          "status": "success",
+          "tokens": {
+            "prompt": 5257,
+            "completion": 195,
+            "total": 5452
+          }
+        },
+        {
+          "query": "what do you sell and what industries have you worked with?",
+          "response": "We provide a range of services focused on driving sales and growth for businesses, including:\n\n- **Digital Marketing**: SEO, PPC, social media management, content development\n- **Ecommerce Solutions**: Strategy, design, optimization, and advertising on platforms like Amazon and Shopify\n- **Brand Development**: Storytelling, graphic design, and brand guidelines\n- **Marketing Automation**: CRM implementation and lead nurturing\n- **Traditional Marketing**: Events, media relations, and promotions\n\nWe've successfully worked across various industries, including:\n\n- Consumer Packaged Goods (CPG)\n- Automotive\n- Financial services\n- Lifestyle and Food & Beverage\n- Health & Beauty\n- Sports and Recreation\n- Media and Entertainment\n\nIf you're interested in exploring how we can support your business, are you available for a call in the next week or so?",
+          "error": null,
+          "duration_ms": 7441.83,
+          "status": "success",
+          "tokens": {
+            "prompt": 5238,
+            "completion": 187,
+            "total": 5425
+          }
+        },
+        {
+          "query": "do you have any case studies?",
+          "response": "Yes, we have several case studies that highlight our successful partnerships and the results we achieved for various clients. Here are a few examples:\n\n- **The Beer Store**: We generated $24 million in incremental revenue and saved over $16 million in shopper marketing costs, achieving an 85% partner renewal rate.\n- **Castrol Canada**: Focused on improving brand visibility and market share, leading to significant growth metrics.\n- **Mr. Lube in Walmart**: Enhanced sales through strategic partnership and marketing efforts, increasing foot traffic and conversion rates.\n\nThese case studies illustrate our ability to drive results through tailored strategies and execution. Would you be free in the next week or so for a call to discuss how we can achieve similar results for your business?",
+          "error": null,
+          "duration_ms": 6237.93,
+          "status": "success",
+          "tokens": {
+            "prompt": 4481,
+            "completion": 166,
+            "total": 4647
+          }
+        }
+      ],
+      "summary": {
+        "total_queries": 4,
+        "successful": 4,
+        "errors": 0,
+        "timeouts": 0,
+        "success_rate": 100.0,
+        "avg_duration_ms": 7482.83
+      }
+    },
+    {
+      "agent_name": "inbox-manager-nextlevel-thinking-section",
+      "client_slug": "nextlevel-thinking-section",
+      "endpoint_url": "https://z2f3ft3opvtyqh3iz3uscgsv.agents.do-ai.run",
+      "has_api_key": true,
+      "tested_at": "2025-12-28T12:15:22.251033+00:00",
+      "queries": [
+        {
+          "query": "what does your company do?",
+          "response": "Our company, Next Level Thinking, specializes in a variety of services designed to enhance business growth and market presence. Here\u2019s a brief overview of what we offer:\n\n- **North American Sales Representation**: We provide expert sales representation tailored to your brand, product, or service needs, helping to ignite new business and drive measurable growth.\n  \n- **Sales Coaching**: We ignite sales reps and teams through tailored multichannel playbooks and strategies.\n\n- **E-commerce and Digital Marketing**: We focus on optimizing e-commerce strategies, web design, SEO, and marketing automation to boost online sales.\n\n- **Retail Partnerships**: We build and nurture relationships with various retailers, enhancing product visibility and sales.\n\n- **Promotional Planning**: We develop and execute marketing campaigns to resonate with consumers and drive sales.\n\n- **Market Entry**: We facilitate the successful launch of new brands and products into the North American market.\n\nOur services are backed by case studies demonstrating measurable results, such as generating over $4 million in new revenue for Ticketmaster through strategic partnerships and campaigns [[C4]].\n\nAre you free in the next week or so for a call to discuss how we can help your business?",
+          "error": null,
+          "duration_ms": 9121.59,
+          "status": "success",
+          "tokens": {
+            "prompt": 3133,
+            "completion": 246,
+            "total": 3379
+          }
+        },
+        {
+          "query": "tell me what you sell",
+          "response": "We offer a range of services designed to drive growth and enhance brand presence across various channels. Our key offerings include:\n\n- **Global Digital Marketing**: Strategy, data analysis, content creation, SEO, social media management, and paid media.\n- **Ecommerce Solutions**: Strategy, design, optimization, and advertising for platforms like Amazon and Shopify.\n- **Traditional Marketing**: Strategic planning, PR, consumer promotions, and media buying.\n- **Sales Representation**: Tailored sales strategies, market entry support, and retail partnerships.\n- **Transformation and Optimization**: Transitioning from traditional to digital, optimizing customer journeys, and enhancing conversion rates.\n- **Automation**: Marketing and sales automation, CRM implementation, and lead nurturing.\n\nOur goal is to create measurable growth for businesses through tailored strategies. Would you be available for a call in the next week to discuss how we can support your business?",
+          "error": null,
+          "duration_ms": 5231.22,
+          "status": "success",
+          "tokens": {
+            "prompt": 3316,
+            "completion": 186,
+            "total": 3502
+          }
+        },
+        {
+          "query": "what do you sell and what industries have you worked with?",
+          "response": "We offer a range of services focused on enhancing business performance through various marketing and sales strategies. Our key offerings include:\n\n- **Global Digital Marketing**: Insights & strategy, storytelling & design, eCommerce, digital & owned media, traditional marketing.\n- **Sales Representation**: Fractional, contract, and channel sales representation, strategic market entry, and retail partnerships.\n- **Transform & Optimize**: Conversion optimization and journey optimization.\n- **Automation**: Marketing and sales automation, lead nurturing, and CRM implementation.\n\nWe have successfully worked with various industries, including:\n\n- Food & Beverage (e.g., Saputo, Sardo Foods, Planters)\n- Automotive (e.g., Castrol Canada, Mr. Lube)\n- Consumer Goods (e.g., The Beer Store)\n- Events & Experiential Marketing (e.g., Canadian International Auto Show)\n\nOur focus is on driving measurable growth and market expansion. Are you available for a call next week to discuss how we can assist your business?",
+          "error": null,
+          "duration_ms": 7216.54,
+          "status": "success",
+          "tokens": {
+            "prompt": 3532,
+            "completion": 217,
+            "total": 3749
+          }
+        },
+        {
+          "query": "do you have any case studies?",
+          "response": "Yes, we have several case studies showcasing the results we've achieved for our clients. Here are a few notable examples:\n\n- **Enersavings Inc.**: \n  - Generated $84 million in new market qualified lead (MQL) revenue over a 2-year contract.\n  - Achieved 2.5 billion targeted impressions with $2.1 million in earned media on a micro-budget.\n\n- **Saputo** and **Sardo Foods**: \n  - Implemented tailored marketing strategies that elevated brand visibility and sales performance.\n\n- **Planters**: \n  - Developed integrated campaigns that significantly increased brand engagement and market reach.\n\nWould you like to discuss how we can achieve similar results for your business? Are you free for a call in the next week or so?",
+          "error": null,
+          "duration_ms": 6728.03,
+          "status": "success",
+          "tokens": {
+            "prompt": 3426,
+            "completion": 174,
+            "total": 3600
+          }
+        }
+      ],
+      "summary": {
+        "total_queries": 4,
+        "successful": 4,
+        "errors": 0,
+        "timeouts": 0,
+        "success_rate": 100.0,
+        "avg_duration_ms": 7074.35
+      }
+    },
+    {
+      "agent_name": "inbox-manager-nextlevel-thinking-semantic",
+      "client_slug": "nextlevel-thinking-semantic",
+      "endpoint_url": "https://bkriznyma7hltgglv7mfpbod.agents.do-ai.run",
+      "has_api_key": true,
+      "tested_at": "2025-12-28T12:15:53.052966+00:00",
+      "queries": [
+        {
+          "query": "what does your company do?",
+          "response": "Our company, NextLevel Thinking, specializes in:\n\n- **Market Share Expansion**: Implementing proven tactics to increase visibility and sales for existing brands and products.\n- **Channel Management**: Providing dedicated support to manage channel and retail relationships for ongoing success.\n- **Cross-Channel Management**: Aligning efforts between Etail and Retail to create a cohesive market presence and maximize reach.\n- **Promotional Planning**: Developing and executing marketing campaigns that resonate with consumers and drive sales.\n\nWe focus on enhancing brand awareness and increasing ROI for our clients. Would you be free in the next week or so for a call to discuss how we can support your business?",
+          "error": null,
+          "duration_ms": 6361.56,
+          "status": "success",
+          "tokens": {
+            "prompt": 1298,
+            "completion": 141,
+            "total": 1439
+          }
+        },
+        {
+          "query": "tell me what you sell",
+          "response": "We offer a range of services designed to help businesses successfully enter and thrive in retail and e-commerce channels. Our main offerings include:\n\n- **Turnkey Sales Programs**: End-to-end services for entering and succeeding in Etail and Retail channels.\n- **Retail Acceleration**: Initiatives to drive product adoption among retailers and boost consumer purchases.\n- **Strategic Market Entry**: Assistance with launching new brands and products in the North American market.\n- **Etail Optimization**: Tailored strategies to grow sales and market share on major North American Etail platforms.\n- **Retail Partnerships**: Building and nurturing relationships with various types of retailers.\n\nWould you be available for a call in the next week or so to discuss how we can support your business goals?",
+          "error": null,
+          "duration_ms": 6170.03,
+          "status": "success",
+          "tokens": {
+            "prompt": 1063,
+            "completion": 165,
+            "total": 1228
+          }
+        },
+        {
+          "query": "what do you sell and what industries have you worked with?",
+          "response": "We offer a range of services in global digital marketing, including:\n\n- Insights & Strategy: Persona and customer archetype development, customer journey mapping, category-specific market research, and data analysis.\n- Storytelling & Design: Creation of engaging content in various formats (long, short, snackable, video, digital, and print) tailored to specific archetypes or channels.\n\nWe have experience working across various industries, focusing on enhancing market share and sales through effective channel management, promotional planning, and cross-channel strategies.\n\nWould you be available for a call in the next week or so to discuss how our services can benefit your business?",
+          "error": null,
+          "duration_ms": 3662.77,
+          "status": "success",
+          "tokens": {
+            "prompt": 1015,
+            "completion": 142,
+            "total": 1157
+          }
+        },
+        {
+          "query": "do you have any case studies?",
+          "response": "Yes, we have several case studies showcasing our successful partnerships. Here are a few highlights:\n\n- **Saputo**: This case study outlines how we enhanced sales representation and market reach for this major client.\n- **Fractional Investment**: We served startups and SMEs, providing tailored solutions that led to significant growth.\n\nThese examples demonstrate the ROI and effectiveness of our services. Would you like to discuss this further in a call? Are you available next week?",
+          "error": null,
+          "duration_ms": 5099.47,
+          "status": "success",
+          "tokens": {
+            "prompt": 836,
+            "completion": 107,
+            "total": 943
+          }
+        }
+      ],
+      "summary": {
+        "total_queries": 4,
+        "successful": 4,
+        "errors": 0,
+        "timeouts": 0,
+        "success_rate": 100.0,
+        "avg_duration_ms": 5323.46
+      }
+    }
+  ],
+  "summary": {
+    "total_agents_tested": 3,
+    "agents_with_results": 3,
+    "total_queries_sent": 12,
+    "successful_queries": 12,
+    "overall_success_rate": 100.0,
+    "tested_at": "2025-12-28T12:16:15.850256+00:00"
+  }
+}

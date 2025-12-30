@@ -4,7 +4,7 @@
     "data_sources": [],
     "kb_uuid": "4579e84e-e339-11f0-b074-4e013e2ddde4",
     "region": "tor1",
-    "slug": "a-perfect-promotion",
+    "client_slug": "a-perfect-promotion",
     "tags": [
       "client-docs",
       "a-perfect-promotion"
@@ -16,7 +16,7 @@
     "data_sources": [],
     "kb_uuid": "60b6d348-e33a-11f0-b074-4e013e2ddde4",
     "region": "tor1",
-    "slug": "abundantly",
+    "client_slug": "abundantly",
     "tags": [
       "client-docs",
       "abundantly"
@@ -28,7 +28,7 @@
     "data_sources": [],
     "kb_uuid": "7e6bcd49-e33a-11f0-b074-4e013e2ddde4",
     "region": "tor1",
-    "slug": "american-ethanol",
+    "client_slug": "american-ethanol",
     "tags": [
       "client-docs",
       "american-ethanol"
@@ -40,7 +40,7 @@
     "data_sources": [],
     "kb_uuid": "0c82bfaf-e33a-11f0-b074-4e013e2ddde4",
     "region": "tor1",
-    "slug": "archway-learning-solutions",
+    "client_slug": "archway-learning-solutions",
     "tags": [
       "client-docs",
       "archway-learning-solutions"
@@ -52,7 +52,7 @@
     "data_sources": [],
     "kb_uuid": "9abb788e-e33a-11f0-b074-4e013e2ddde4",
     "region": "tor1",
-    "slug": "atrenet",
+    "client_slug": "atrenet",
     "tags": [
       "client-docs",
       "atrenet"
@@ -64,7 +64,7 @@
     "data_sources": [],
     "kb_uuid": "3e2b357a-e322-11f0-b074-4e013e2ddde4",
     "region": "tor1",
-    "slug": "beistle",
+    "client_slug": "beistle",
     "tags": [
       "client-docs",
       "beistle"
@@ -76,7 +76,7 @@
     "data_sources": [],
     "kb_uuid": "ddd6c82a-e33a-11f0-b074-4e013e2ddde4",
     "region": "tor1",
-    "slug": "bucklandco",
+    "client_slug": "bucklandco",
     "tags": [
       "client-docs",
       "bucklandco"
@@ -88,7 +88,7 @@
     "data_sources": [],
     "kb_uuid": "108a996a-e33b-11f0-b074-4e013e2ddde4",
     "region": "tor1",
-    "slug": "cas-severn",
+    "client_slug": "cas-severn",
     "tags": [
       "client-docs",
       "cas-severn"
@@ -100,7 +100,7 @@
     "data_sources": [],
     "kb_uuid": "4cfdff79-e33b-11f0-b074-4e013e2ddde4",
     "region": "tor1",
-    "slug": "clarke-consulting",
+    "client_slug": "clarke-consulting",
     "tags": [
       "client-docs",
       "clarke-consulting"
@@ -112,7 +112,7 @@
     "data_sources": [],
     "kb_uuid": "6f40d250-e33b-11f0-b074-4e013e2ddde4",
     "region": "tor1",
-    "slug": "clearfield-group",
+    "client_slug": "clearfield-group",
     "tags": [
       "client-docs",
       "clearfield-group"
@@ -124,7 +124,7 @@
     "data_sources": [],
     "kb_uuid": "870b6e31-e33b-11f0-b074-4e013e2ddde4",
     "region": "tor1",
-    "slug": "cogent-consulting",
+    "client_slug": "cogent-consulting",
     "tags": [
       "client-docs",
       "cogent-consulting"
@@ -136,7 +136,7 @@
     "data_sources": [],
     "kb_uuid": "380edf98-e33b-11f0-b074-4e013e2ddde4",
     "region": "tor1",
-    "slug": "conneqt",
+    "client_slug": "conneqt",
     "tags": [
       "client-docs",
       "conneqt"
@@ -148,7 +148,7 @@
     "data_sources": [],
     "kb_uuid": "97d569cd-e33b-11f0-b074-4e013e2ddde4",
     "region": "tor1",
-    "slug": "d2-creative",
+    "client_slug": "d2-creative",
     "tags": [
       "client-docs",
       "d2-creative"
@@ -160,7 +160,7 @@
     "data_sources": [],
     "kb_uuid": "b11c8f36-e33b-11f0-b074-4e013e2ddde4",
     "region": "tor1",
-    "slug": "dodeka-digital",
+    "client_slug": "dodeka-digital",
     "tags": [
       "client-docs",
       "dodeka-digital"
@@ -172,7 +172,7 @@
     "data_sources": [],
     "kb_uuid": "fea0c23d-e33b-11f0-b074-4e013e2ddde4",
     "region": "tor1",
-    "slug": "evenbound",
+    "client_slug": "evenbound",
     "tags": [
       "client-docs",
       "evenbound"
@@ -184,7 +184,7 @@
     "data_sources": [],
     "kb_uuid": "1f558351-e33c-11f0-b074-4e013e2ddde4",
     "region": "tor1",
-    "slug": "f1-cloud-solutions",
+    "client_slug": "f1-cloud-solutions",
     "tags": [
       "client-docs",
       "f1-cloud-solutions"
@@ -196,7 +196,7 @@
     "data_sources": [],
     "kb_uuid": "4bb5cb88-e33c-11f0-b074-4e013e2ddde4",
     "region": "tor1",
-    "slug": "forge-apollo",
+    "client_slug": "forge-apollo",
     "tags": [
       "client-docs",
       "forge-apollo"
@@ -208,7 +208,7 @@
     "data_sources": [],
     "kb_uuid": "85e606ea-e33c-11f0-b074-4e013e2ddde4",
     "region": "tor1",
-    "slug": "galactic-fed",
+    "client_slug": "galactic-fed",
     "tags": [
       "client-docs",
       "galactic-fed"
@@ -220,7 +220,7 @@
     "data_sources": [],
     "kb_uuid": "c10bf3c1-e33c-11f0-b074-4e013e2ddde4",
     "region": "tor1",
-    "slug": "incyte-media",
+    "client_slug": "incyte-media",
     "tags": [
       "client-docs",
       "incyte-media"
@@ -232,7 +232,7 @@
     "data_sources": [],
     "kb_uuid": "d53783a4-e33c-11f0-b074-4e013e2ddde4",
     "region": "tor1",
-    "slug": "integrity-professionals",
+    "client_slug": "integrity-professionals",
     "tags": [
       "client-docs",
       "integrity-professionals"
@@ -244,7 +244,7 @@
     "data_sources": [],
     "kb_uuid": "0061c1bf-e33d-11f0-b074-4e013e2ddde4",
     "region": "tor1",
-    "slug": "klickrr",
+    "client_slug": "klickrr",
     "tags": [
       "client-docs",
       "klickrr"
@@ -256,7 +256,7 @@
     "data_sources": [],
     "kb_uuid": "10ececb5-e33d-11f0-b074-4e013e2ddde4",
     "region": "tor1",
-    "slug": "lib-consulting-group",
+    "client_slug": "lib-consulting-group",
     "tags": [
       "client-docs",
       "lib-consulting-group"
@@ -268,7 +268,7 @@
     "data_sources": [],
     "kb_uuid": "2b5341cf-e33d-11f0-b074-4e013e2ddde4",
     "region": "tor1",
-    "slug": "lithyem",
+    "client_slug": "lithyem",
     "tags": [
       "client-docs",
       "lithyem"
@@ -280,7 +280,7 @@
     "data_sources": [],
     "kb_uuid": "d50fd26f-e33d-11f0-b074-4e013e2ddde4",
     "region": "tor1",
-    "slug": "makers-garments",
+    "client_slug": "makers-garments",
     "tags": [
       "client-docs",
       "makers-garments"
@@ -292,7 +292,7 @@
     "data_sources": [],
     "kb_uuid": "fd0590cb-e33d-11f0-b074-4e013e2ddde4",
     "region": "tor1",
-    "slug": "manufacturing-geeks",
+    "client_slug": "manufacturing-geeks",
     "tags": [
       "client-docs",
       "manufacturing-geeks"
@@ -304,31 +304,79 @@
     "data_sources": [],
     "kb_uuid": "2830e08b-e33e-11f0-b074-4e013e2ddde4",
     "region": "tor1",
-    "slug": "mintleads",
+    "client_slug": "mintleads",
     "tags": [
       "client-docs",
       "mintleads"
     ],
-    "updated_at": "2025-12-27T16:07:38.873197+00:00"
+    "updated_at": "2025-12-28T08:13:03.909171+00:00"
   },
   "nextlevel-thinking": {
-    "created_at": "2025-12-27T16:08:53Z",
+    "created_at": "2025-12-28T08:54:47Z",
     "data_sources": [],
-    "kb_uuid": "57259466-e33e-11f0-b074-4e013e2ddde4",
+    "kb_uuid": "dcdf59e9-e3ca-11f0-b074-4e013e2ddde4",
     "region": "tor1",
-    "slug": "nextlevel-thinking",
+    "client_slug": "nextlevel-thinking",
     "tags": [
       "client-docs",
       "nextlevel-thinking"
     ],
-    "updated_at": "2025-12-28T00:56:48.857439+00:00"
+    "updated_at": "2025-12-28T08:54:54.800037+00:00"
+  },
+  "nextlevel-thinking-heirarchal": {
+    "created_at": "2025-12-28T09:04:14Z",
+    "data_sources": [],
+    "kb_uuid": "2e6e19dd-e3cc-11f0-b074-4e013e2ddde4",
+    "region": "tor1",
+    "client_slug": "nextlevel-thinking-heirarchal",
+    "tags": [
+      "client-docs",
+      "nextlevel-thinking-heirarchal"
+    ],
+    "updated_at": "2025-12-28T09:04:21.447740+00:00"
+  },
+  "nextlevel-thinking-heirchical": {
+    "created_at": "2025-12-28T09:29:38Z",
+    "data_sources": [],
+    "kb_uuid": "bb24ce3d-e3cf-11f0-b074-4e013e2ddde4",
+    "region": "tor1",
+    "client_slug": "nextlevel-thinking-heirchical",
+    "tags": [
+      "client-docs",
+      "nextlevel-thinking-heirchical"
+    ],
+    "updated_at": "2025-12-28T15:51:39.303219+00:00"
+  },
+  "nextlevel-thinking-section": {
+    "created_at": "2025-12-28T09:04:14Z",
+    "data_sources": [],
+    "kb_uuid": "2e6e19dd-e3cc-11f0-b074-4e013e2ddde4",
+    "region": "tor1",
+    "client_slug": "nextlevel-thinking-section",
+    "tags": [
+      "client-docs",
+      "nextlevel-thinking-section"
+    ],
+    "updated_at": "2025-12-28T12:06:58.176273+00:00"
+  },
+  "nextlevel-thinking-semantic": {
+    "created_at": "2025-12-28T09:00:58Z",
+    "data_sources": [],
+    "kb_uuid": "ba18b0e0-e3cb-11f0-b074-4e013e2ddde4",
+    "region": "tor1",
+    "client_slug": "nextlevel-thinking-semantic",
+    "tags": [
+      "client-docs",
+      "nextlevel-thinking-semantic"
+    ],
+    "updated_at": "2025-12-28T15:51:36.131305+00:00"
   },
   "nga-healthcare": {
     "created_at": "2025-12-27T16:08:05Z",
     "data_sources": [],
     "kb_uuid": "3a5e908d-e33e-11f0-b074-4e013e2ddde4",
     "region": "tor1",
-    "slug": "nga-healthcare",
+    "client_slug": "nga-healthcare",
     "tags": [
       "client-docs",
       "nga-healthcare"
@@ -340,7 +388,7 @@
     "data_sources": [],
     "kb_uuid": "6d522636-e33e-11f0-b074-4e013e2ddde4",
     "region": "tor1",
-    "slug": "nutramarketers",
+    "client_slug": "nutramarketers",
     "tags": [
       "client-docs",
       "nutramarketers"
@@ -352,7 +400,7 @@
     "data_sources": [],
     "kb_uuid": "92f10193-e33e-11f0-b074-4e013e2ddde4",
     "region": "tor1",
-    "slug": "on-the-marc-media",
+    "client_slug": "on-the-marc-media",
     "tags": [
       "client-docs",
       "on-the-marc-media"
@@ -364,7 +412,7 @@
     "data_sources": [],
     "kb_uuid": "a4b2a275-e33e-11f0-b074-4e013e2ddde4",
     "region": "tor1",
-    "slug": "peachtree-va",
+    "client_slug": "peachtree-va",
     "tags": [
       "client-docs",
       "peachtree-va"
@@ -376,19 +424,19 @@
     "data_sources": [],
     "kb_uuid": "7130339a-e343-11f0-b074-4e013e2ddde4",
     "region": "tor1",
-    "slug": "pi-lit",
+    "client_slug": "pi-lit",
     "tags": [
       "client-docs",
       "pi-lit"
     ],
-    "updated_at": "2025-12-28T01:20:13.831669+00:00"
+    "updated_at": "2025-12-28T07:50:03.401918+00:00"
   },
   "pipefy": {
     "created_at": "2025-12-27T16:12:10Z",
     "data_sources": [],
     "kb_uuid": "cc56baa7-e33e-11f0-b074-4e013e2ddde4",
     "region": "tor1",
-    "slug": "pipefy",
+    "client_slug": "pipefy",
     "tags": [
       "client-docs",
       "pipefy"
@@ -400,7 +448,7 @@
     "data_sources": [],
     "kb_uuid": "ee17f8c5-e33e-11f0-b074-4e013e2ddde4",
     "region": "tor1",
-    "slug": "push-analytics",
+    "client_slug": "push-analytics",
     "tags": [
       "client-docs",
       "push-analytics"
@@ -412,7 +460,7 @@
     "data_sources": [],
     "kb_uuid": "2f98a559-e33f-11f0-b074-4e013e2ddde4",
     "region": "tor1",
-    "slug": "quintessa-marketing",
+    "client_slug": "quintessa-marketing",
     "tags": [
       "client-docs",
       "quintessa-marketing"
@@ -424,7 +472,7 @@
     "data_sources": [],
     "kb_uuid": "58a6cb68-e33f-11f0-b074-4e013e2ddde4",
     "region": "tor1",
-    "slug": "reach-marketing",
+    "client_slug": "reach-marketing",
     "tags": [
       "client-docs",
       "reach-marketing"
@@ -436,7 +484,7 @@
     "data_sources": [],
     "kb_uuid": "84418f99-e33f-11f0-b074-4e013e2ddde4",
     "region": "tor1",
-    "slug": "revdrive",
+    "client_slug": "revdrive",
     "tags": [
       "client-docs",
       "revdrive"
@@ -448,19 +496,31 @@
     "data_sources": [],
     "kb_uuid": "ab367101-e33f-11f0-b074-4e013e2ddde4",
     "region": "tor1",
-    "slug": "revolttek",
+    "client_slug": "revolttek",
     "tags": [
       "client-docs",
       "revolttek"
     ],
     "updated_at": "2025-12-27T16:18:31.009959+00:00"
   },
+  "sidecar-test": {
+    "created_at": "2025-12-28T12:33:22Z",
+    "data_sources": [],
+    "kb_uuid": "65fdb4ca-e3e9-11f0-b074-4e013e2ddde4",
+    "region": "tor1",
+    "client_slug": "sidecar-test",
+    "tags": [
+      "client-docs",
+      "sidecar-test"
+    ],
+    "updated_at": "2025-12-28T12:33:29.462747+00:00"
+  },
   "simple-machines": {
     "created_at": "2025-12-27T16:20:17Z",
     "data_sources": [],
     "kb_uuid": "eeb34136-e33f-11f0-b074-4e013e2ddde4",
     "region": "tor1",
-    "slug": "simple-machines",
+    "client_slug": "simple-machines",
     "tags": [
       "client-docs",
       "simple-machines"
@@ -472,7 +532,7 @@
     "data_sources": [],
     "kb_uuid": "1a767590-e340-11f0-b074-4e013e2ddde4",
     "region": "tor1",
-    "slug": "skayle-360",
+    "client_slug": "skayle-360",
     "tags": [
       "client-docs",
       "skayle-360"
@@ -484,7 +544,7 @@
     "data_sources": [],
     "kb_uuid": "3690e9b9-e340-11f0-b074-4e013e2ddde4",
     "region": "tor1",
-    "slug": "slice-communications",
+    "client_slug": "slice-communications",
     "tags": [
       "client-docs",
       "slice-communications"
@@ -496,7 +556,7 @@
     "data_sources": [],
     "kb_uuid": "6a7f50df-e340-11f0-b074-4e013e2ddde4",
     "region": "tor1",
-    "slug": "slingshot",
+    "client_slug": "slingshot",
     "tags": [
       "client-docs",
       "slingshot"
@@ -508,7 +568,7 @@
     "data_sources": [],
     "kb_uuid": "a89af903-e340-11f0-b074-4e013e2ddde4",
     "region": "tor1",
-    "slug": "sock-fancy",
+    "client_slug": "sock-fancy",
     "tags": [
       "client-docs",
       "sock-fancy"
@@ -520,7 +580,7 @@
     "data_sources": [],
     "kb_uuid": "b6d69708-e340-11f0-b074-4e013e2ddde4",
     "region": "tor1",
-    "slug": "terra-collective",
+    "client_slug": "terra-collective",
     "tags": [
       "client-docs",
       "terra-collective"
@@ -532,7 +592,7 @@
     "data_sources": [],
     "kb_uuid": "d87777c6-e340-11f0-b074-4e013e2ddde4",
     "region": "tor1",
-    "slug": "ubiq-education",
+    "client_slug": "ubiq-education",
     "tags": [
       "client-docs",
       "ubiq-education"
@@ -544,7 +604,7 @@
     "data_sources": [],
     "kb_uuid": "ee965ba9-e340-11f0-b074-4e013e2ddde4",
     "region": "tor1",
-    "slug": "vew-media",
+    "client_slug": "vew-media",
     "tags": [
       "client-docs",
       "vew-media"
@@ -556,7 +616,7 @@
     "data_sources": [],
     "kb_uuid": "0d970d8f-e341-11f0-b074-4e013e2ddde4",
     "region": "tor1",
-    "slug": "wendt-partners",
+    "client_slug": "wendt-partners",
     "tags": [
       "client-docs",
       "wendt-partners"
@@ -568,7 +628,7 @@
     "data_sources": [],
     "kb_uuid": "4967c2a1-e341-11f0-b074-4e013e2ddde4",
     "region": "tor1",
-    "slug": "white-label-digital",
+    "client_slug": "white-label-digital",
     "tags": [
       "client-docs",
       "white-label-digital"
@@ -580,7 +640,7 @@
     "data_sources": [],
     "kb_uuid": "1b5875a9-e342-11f0-b074-4e013e2ddde4",
     "region": "tor1",
-    "slug": "x-agency",
+    "client_slug": "x-agency",
     "tags": [
       "client-docs",
       "x-agency"
@@ -592,7 +652,7 @@
     "data_sources": [],
     "kb_uuid": "2389fcce-e343-11f0-b074-4e013e2ddde4",
     "region": "tor1",
-    "slug": "zoomgrants",
+    "client_slug": "zoomgrants",
     "tags": [
       "client-docs",
       "zoomgrants"

@@ -262,10 +262,6 @@ function DashboardContent() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     if (!input.trim() || !siteData) return
-    if (!agentReady) {
-      toast.message(agentEnsuring ? 'Preparing agent…' : 'Agent not ready yet')
-      return
-    }
 
     let processedInput = input.trim()
     
@@ -285,7 +281,7 @@ function DashboardContent() {
       const indexName = siteData.index || siteData.metadata?.indexName || 
         (siteData.clientSlug ? siteData.clientSlug.replace(/-\d+$/, '') : undefined)
       
-      const response = await fetch(getBackendUrl('/api/firestarter/query'), {
+      const response = await fetch(getBackendUrl('/api/mintagent/query'), {
         method: 'POST',
         headers: buildApiHeaders(),
         body: JSON.stringify({
@@ -413,9 +409,10 @@ function DashboardContent() {
           console.log(`[Dashboard] Fetch success:`, data)
           if (data.index) {
             setSiteData(data.index)
-            sessionStorage.setItem('firestarter_current_data', JSON.stringify(data.index))
+            sessionStorage.setItem('mintagent_current_data', JSON.stringify(data.index))
             setMessages([])
-            setAgentReady(false)
+            // Pinecone-backed: no per-client DO agent is required to query.
+            setAgentReady(true)
             
             // Extract index from clientSlug if not provided
             const indexName = data.index.index || data.index.metadata?.indexName || 
@@ -424,28 +421,6 @@ function DashboardContent() {
             // Fetch stats for this clientSlug
             fetchStats(data.index.clientSlug, indexName)
 
-            // Ensure per-client agent exists so chat is ready immediately
-            setAgentEnsuring(true)
-            fetch(getBackendUrl('/api/firestarter/ensure-agent'), {
-              method: 'POST',
-              headers: buildApiHeaders(),
-              body: JSON.stringify({ clientSlug: data.index.clientSlug, agentType: agentTypeParam })
-            })
-              .then(async (res) => {
-                if (!res.ok) {
-                  const text = await res.text()
-                  throw new Error(text || 'ensure-agent failed')
-                }
-                return res.json()
-              })
-              .then(() => setAgentReady(true))
-              .catch((err) => {
-                console.error('[Dashboard] ensure-agent failed:', err)
-                const msg = err instanceof Error ? err.message : String(err)
-                toast.error(`Failed to prepare agent: ${msg.slice(0, 140)}`)
-                setAgentReady(false)
-              })
-              .finally(() => setAgentEnsuring(false))
             return
           } else {
             throw new Error('Index not found in API response')
@@ -455,7 +430,7 @@ function DashboardContent() {
           console.error('[Dashboard] API fetch failed, falling back to localStorage:', err)
           
           // Fallback to localStorage (for when Redis isn't configured)
-          const storedIndexes = localStorage.getItem('firestarter_indexes')
+          const storedIndexes = localStorage.getItem('mintagent_indexes')
           if (storedIndexes) {
             const indexes = JSON.parse(storedIndexes)
             const matchingIndex = indexes.find((idx: { clientSlug: string, namespace?: string }) => 
@@ -464,9 +439,9 @@ function DashboardContent() {
             if (matchingIndex) {
               console.log('[Dashboard] Found in localStorage:', matchingIndex)
               setSiteData(matchingIndex)
-              sessionStorage.setItem('firestarter_current_data', JSON.stringify(matchingIndex))
+              sessionStorage.setItem('mintagent_current_data', JSON.stringify(matchingIndex))
               setMessages([])
-              setAgentReady(false)
+              setAgentReady(true)
               
               const indexName = matchingIndex.index || matchingIndex.metadata?.indexName || 
                 (matchingIndex.clientSlug ? matchingIndex.clientSlug.replace(/-\d+$/, '') : undefined)
@@ -474,28 +449,6 @@ function DashboardContent() {
               // Fetch stats for this clientSlug
               fetchStats(matchingIndex.clientSlug || matchingIndex.namespace, indexName)
 
-              // Ensure per-client agent exists so chat is ready immediately
-              setAgentEnsuring(true)
-              fetch(getBackendUrl('/api/firestarter/ensure-agent'), {
-                method: 'POST',
-                headers: buildApiHeaders(),
-                body: JSON.stringify({ clientSlug: matchingIndex.clientSlug || matchingIndex.namespace, agentType: agentTypeParam })
-              })
-                .then(async (res) => {
-                  if (!res.ok) {
-                    const text = await res.text()
-                    throw new Error(text || 'ensure-agent failed')
-                  }
-                  return res.json()
-                })
-                .then(() => setAgentReady(true))
-                .catch((err) => {
-                  console.error('[Dashboard] ensure-agent failed:', err)
-                  const msg = err instanceof Error ? err.message : String(err)
-                  toast.error(`Failed to prepare agent: ${msg.slice(0, 140)}`)
-                  setAgentReady(false)
-                })
-                .finally(() => setAgentEnsuring(false))
               return
             }
           }
@@ -513,7 +466,7 @@ function DashboardContent() {
   const fetchStats = async (namespace: string, indexName?: string) => {
     try {
       console.log('[Dashboard] Fetching stats for namespace:', namespace, 'index:', indexName)
-      const response = await fetch(getBackendUrl('/api/firestarter/stats'), {
+      const response = await fetch(getBackendUrl('/api/mintagent/stats'), {
         method: 'POST',
         headers: buildApiHeaders(),
         body: JSON.stringify({ namespace, index: indexName })
@@ -535,7 +488,7 @@ function DashboardContent() {
   const fetchClientDetails = async (clientSlug: string) => {
     try {
       console.log('[Dashboard] Fetching client details for:', clientSlug)
-      const response = await fetch(getBackendUrl(`/api/firestarter/client-details/${clientSlug}`))
+      const response = await fetch(getBackendUrl(`/api/mintagent/client-details/${clientSlug}`))
       
       if (response.ok) {
         const data = await response.json()
@@ -567,14 +520,14 @@ function DashboardContent() {
 
   const handleDelete = () => {
     // Remove from localStorage
-    const storedIndexes = localStorage.getItem('firestarter_indexes')
+    const storedIndexes = localStorage.getItem('mintagent_indexes')
     if (storedIndexes && siteData) {
       const indexes = JSON.parse(storedIndexes)
       const updatedIndexes = indexes.filter((idx: { clientSlug: string }) => idx.clientSlug !== siteData.clientSlug)
-      localStorage.setItem('firestarter_indexes', JSON.stringify(updatedIndexes))
+      localStorage.setItem('mintagent_indexes', JSON.stringify(updatedIndexes))
     }
     
-    sessionStorage.removeItem('firestarter_current_data')
+    sessionStorage.removeItem('mintagent_current_data')
     router.push('/indexes')
   }
 
@@ -601,7 +554,7 @@ function DashboardContent() {
   
   const apiKeyPlaceholder = siteData.agent?.hasApiKey 
     ? 'YOUR_AGENT_API_KEY' 
-    : 'YOUR_FIRESTARTER_API_KEY'
+    : 'YOUR_MINTAGENT_API_KEY'
   
   const curlCommand = `# Standard request
 curl ${agentApiUrl} \\

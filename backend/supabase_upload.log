@@ -1,0 +1,158 @@
+2025-12-29 19:25:15,447 - supabase_upload - INFO - ================================================================================
+2025-12-29 19:25:15,448 - supabase_upload - INFO - Supabase Client Upload Script
+2025-12-29 19:25:15,448 - supabase_upload - INFO - ================================================================================
+2025-12-29 19:25:15,448 - supabase_upload - INFO - Project root: /Users/hynes/dev/website-agents
+2025-12-29 19:25:15,448 - supabase_upload - INFO - Loading environment from: /Users/hynes/dev/website-agents/backend/.env
+2025-12-29 19:25:15,459 - supabase_upload - INFO - Supabase Agent URL: https://tauelcoqhukoumpisgbb.supabase.co/
+2025-12-29 19:25:15,459 - supabase_upload - INFO - Supabase Agent Key: ***configured***
+2025-12-29 19:25:15,922 - httpx - INFO - HTTP Request: GET https://tauelcoqhukoumpisgbb.supabase.co/storage/v1/bucket "HTTP/1.1 200 OK"
+2025-12-29 19:25:15,924 - supabase_upload - INFO - Connected to Supabase. Found 0 buckets:
+2025-12-29 19:25:15,924 - supabase_upload - INFO - 
+Reading clients from: /Users/hynes/dev/website-agents/backend/scripts/io/bulk_onboarding_run_file.csv
+2025-12-29 19:25:15,925 - supabase_upload - INFO - Found 53 clients in CSV
+
+2025-12-29 19:25:15,925 - supabase_upload - INFO - ================================================================================
+2025-12-29 19:25:15,925 - supabase_upload - INFO - Processing FIRST CLIENT ONLY (test mode)
+2025-12-29 19:25:15,925 - supabase_upload - INFO - ================================================================================
+2025-12-29 19:25:15,925 - supabase_upload - INFO - Preparing data for client: a-perfect-promotion
+2025-12-29 19:25:15,926 - supabase_upload - INFO -   Website: https://aperfectpromotion.com
+2025-12-29 19:25:15,926 - supabase_upload - INFO -   Drive ID: 1vKv7hXOxc2-Z9lOhQrqhNKCRqzPNrEED
+2025-12-29 19:25:15,926 - supabase_upload - INFO -   Upload path: client-onboarding/a-perfect-promotion/data.json
+2025-12-29 19:25:16,259 - httpx - INFO - HTTP Request: GET https://tauelcoqhukoumpisgbb.supabase.co/storage/v1/bucket/client-onboarding "HTTP/1.1 400 Bad Request"
+2025-12-29 19:25:16,611 - httpx - INFO - HTTP Request: POST https://tauelcoqhukoumpisgbb.supabase.co/storage/v1/bucket "HTTP/1.1 400 Bad Request"
+2025-12-29 19:25:16,612 - supabase_upload - WARNING - Could not ensure bucket (may already exist): Supabase Storage create bucket error 400: {"statusCode":"403","error":"Unauthorized","message":"new row violates row-level security policy"}
+2025-12-29 19:25:16,873 - httpx - INFO - HTTP Request: POST https://tauelcoqhukoumpisgbb.supabase.co/storage/v1/object/client-onboarding/a-perfect-promotion/data.json "HTTP/1.1 400 Bad Request"
+2025-12-29 19:25:16,874 - supabase_upload - ERROR - 
+❌ FAILED: Supabase Storage upload error 400: {"statusCode":"404","error":"Bucket not found","message":"Bucket not found"}
+Traceback (most recent call last):
+  File "/Users/hynes/dev/website-agents/backend/scripts/upload_client_to_supabase.py", line 254, in main
+    result = await upload_client(storage_client, first_client)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/hynes/dev/website-agents/backend/scripts/upload_client_to_supabase.py", line 197, in upload_client
+    result = client.upload_json(
+        bucket=bucket,
+        path=object_path,
+        payload=client_data
+    )
+  File "/Users/hynes/dev/website-agents/backend/app/clients/supabase_agent_storage_client.py", line 135, in upload_json
+    return self.upload_bytes(bucket=bucket, path=path, data=data, content_type="application/json; charset=utf-8")
+           ~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/hynes/dev/website-agents/backend/app/clients/supabase_agent_storage_client.py", line 126, in upload_bytes
+    raise RuntimeError(f"Supabase Storage upload error {resp.status_code}: {resp.text}")
+RuntimeError: Supabase Storage upload error 400: {"statusCode":"404","error":"Bucket not found","message":"Bucket not found"}
+2025-12-29 19:25:16,876 - supabase_upload - INFO - 
+================================================================================
+2025-12-29 19:25:16,876 - supabase_upload - INFO - Script complete. Check supabase_upload.log for details.
+2025-12-29 19:25:16,876 - supabase_upload - INFO - ================================================================================
+2025-12-29 19:26:39,687 - supabase_upload - INFO - ================================================================================
+2025-12-29 19:26:39,687 - supabase_upload - INFO - Supabase Client Upload Script
+2025-12-29 19:26:39,687 - supabase_upload - INFO - ================================================================================
+2025-12-29 19:26:39,687 - supabase_upload - INFO - Project root: /Users/hynes/dev/website-agents
+2025-12-29 19:26:39,687 - supabase_upload - INFO - Loading environment from: /Users/hynes/dev/website-agents/backend/.env
+2025-12-29 19:26:39,699 - supabase_upload - INFO - Supabase Agent URL: https://tauelcoqhukoumpisgbb.supabase.co/
+2025-12-29 19:26:39,699 - supabase_upload - INFO - Supabase Agent Key: ***configured***
+2025-12-29 19:26:39,968 - httpx - INFO - HTTP Request: GET https://tauelcoqhukoumpisgbb.supabase.co/storage/v1/bucket "HTTP/1.1 200 OK"
+2025-12-29 19:26:39,969 - supabase_upload - INFO - Connected to Supabase. Found 0 buckets:
+2025-12-29 19:26:39,969 - supabase_upload - INFO - 
+Reading clients from: /Users/hynes/dev/website-agents/backend/scripts/io/bulk_onboarding_run_file.csv
+2025-12-29 19:26:39,969 - supabase_upload - INFO - Found 53 clients in CSV
+
+2025-12-29 19:26:39,969 - supabase_upload - INFO - ================================================================================
+2025-12-29 19:26:39,969 - supabase_upload - INFO - Processing FIRST CLIENT ONLY (test mode)
+2025-12-29 19:26:39,969 - supabase_upload - INFO - ================================================================================
+2025-12-29 19:26:39,969 - supabase_upload - INFO - Preparing data for client: a-perfect-promotion
+2025-12-29 19:26:39,969 - supabase_upload - INFO -   Website: https://aperfectpromotion.com
+2025-12-29 19:26:39,969 - supabase_upload - INFO -   Drive ID: 1vKv7hXOxc2-Z9lOhQrqhNKCRqzPNrEED
+2025-12-29 19:26:39,969 - supabase_upload - INFO -   Upload path: client-onboarding/a-perfect-promotion/data.json
+2025-12-29 19:26:40,242 - httpx - INFO - HTTP Request: GET https://tauelcoqhukoumpisgbb.supabase.co/storage/v1/bucket/client-onboarding "HTTP/1.1 400 Bad Request"
+2025-12-29 19:26:40,530 - httpx - INFO - HTTP Request: POST https://tauelcoqhukoumpisgbb.supabase.co/storage/v1/bucket "HTTP/1.1 400 Bad Request"
+2025-12-29 19:26:40,531 - supabase_upload - WARNING - Could not ensure bucket (may already exist): Supabase Storage create bucket error 400: {"statusCode":"403","error":"Unauthorized","message":"new row violates row-level security policy"}
+2025-12-29 19:26:40,888 - httpx - INFO - HTTP Request: POST https://tauelcoqhukoumpisgbb.supabase.co/storage/v1/object/client-onboarding/a-perfect-promotion/data.json "HTTP/1.1 200 OK"
+2025-12-29 19:26:40,890 - supabase_upload - INFO - ✓ Uploaded: client-onboarding/a-perfect-promotion/data.json
+2025-12-29 19:26:40,890 - supabase_upload - INFO - 
+✅ SUCCESS!
+2025-12-29 19:26:40,890 - supabase_upload - INFO - Client: a-perfect-promotion
+2025-12-29 19:26:40,890 - supabase_upload - INFO - Upload Key: client-onboarding/a-perfect-promotion/data.json
+2025-12-29 19:26:40,890 - supabase_upload - INFO - 
+Uploaded data:
+2025-12-29 19:26:40,890 - supabase_upload - INFO - {
+  "client_slug": "a-perfect-promotion",
+  "website": "https://aperfectpromotion.com",
+  "drive_folder_id": "1vKv7hXOxc2-Z9lOhQrqhNKCRqzPNrEED",
+  "drive_folder_url": "https://drive.google.com/drive/folders/1vKv7hXOxc2-Z9lOhQrqhNKCRqzPNrEED",
+  "status": "pending",
+  "uploaded_at": "2025-12-30T00:26:39.969890+00:00",
+  "source": "bulk_onboarding_csv",
+  "metadata": {
+    "csv_row": {
+      "client-slug": "a-perfect-promotion",
+      "drive-folder": "https://drive.google.com/drive/folders/1vKv7hXOxc2-Z9lOhQrqhNKCRqzPNrEED",
+      "client-website": "aperfectpromotion.com"
+    }
+  }
+}
+2025-12-29 19:26:40,891 - supabase_upload - INFO - 
+================================================================================
+2025-12-29 19:26:40,891 - supabase_upload - INFO - Script complete. Check supabase_upload.log for details.
+2025-12-29 19:26:40,891 - supabase_upload - INFO - ================================================================================
+2025-12-29 19:31:09,603 - supabase_upload - INFO - ================================================================================
+2025-12-29 19:31:09,603 - supabase_upload - INFO - Supabase Client Upload Script
+2025-12-29 19:31:09,603 - supabase_upload - INFO - ================================================================================
+2025-12-29 19:31:09,603 - supabase_upload - INFO - Project root: /Users/hynes/dev/website-agents
+2025-12-29 19:31:09,603 - supabase_upload - INFO - Loading environment from: /Users/hynes/dev/website-agents/backend/.env
+2025-12-29 19:31:09,615 - supabase_upload - INFO - Supabase Agent URL: https://tauelcoqhukoumpisgbb.supabase.co/
+2025-12-29 19:31:09,615 - supabase_upload - INFO - Supabase Agent Key: ***configured***
+2025-12-29 19:31:09,872 - httpx - INFO - HTTP Request: GET https://tauelcoqhukoumpisgbb.supabase.co/storage/v1/bucket "HTTP/1.1 200 OK"
+2025-12-29 19:31:09,872 - supabase_upload - INFO - Connected to Supabase. Found 0 buckets:
+2025-12-29 19:31:09,872 - supabase_upload - INFO - 
+Reading clients from: /Users/hynes/dev/website-agents/backend/scripts/io/bulk_onboarding_run_file.csv
+2025-12-29 19:31:09,873 - supabase_upload - INFO - Found 53 clients in CSV
+
+2025-12-29 19:31:09,873 - supabase_upload - INFO - ================================================================================
+2025-12-29 19:31:09,873 - supabase_upload - INFO - Processing FIRST CLIENT ONLY (test mode)
+2025-12-29 19:31:09,873 - supabase_upload - INFO - ================================================================================
+2025-12-29 19:31:09,873 - supabase_upload - INFO - Setting up bucket for client: a-perfect-promotion
+2025-12-29 19:31:09,873 - supabase_upload - INFO -   Website: aperfectpromotion.com
+2025-12-29 19:31:09,873 - supabase_upload - INFO -   Drive: https://drive.google.com/drive/folders/1vKv7hXOxc2-Z9lOhQrqhNKCRqzPNrEED
+2025-12-29 19:31:09,873 - supabase_upload - INFO -   Creating bucket: a-perfect-promotion
+2025-12-29 19:31:10,682 - httpx - INFO - HTTP Request: GET https://tauelcoqhukoumpisgbb.supabase.co/storage/v1/bucket/a-perfect-promotion "HTTP/1.1 400 Bad Request"
+2025-12-29 19:31:10,990 - httpx - INFO - HTTP Request: POST https://tauelcoqhukoumpisgbb.supabase.co/storage/v1/bucket "HTTP/1.1 400 Bad Request"
+2025-12-29 19:31:10,991 - supabase_upload - WARNING -   Could not create bucket (may already exist): Supabase Storage create bucket error 400: {"statusCode":"403","error":"Unauthorized","message":"new row violates row-level security policy"}
+2025-12-29 19:31:11,359 - httpx - INFO - HTTP Request: POST https://tauelcoqhukoumpisgbb.supabase.co/storage/v1/object/a-perfect-promotion/website/.keep "HTTP/1.1 200 OK"
+2025-12-29 19:31:11,359 - supabase_upload - INFO -   ✓ Created folder: website/
+2025-12-29 19:31:11,759 - httpx - INFO - HTTP Request: POST https://tauelcoqhukoumpisgbb.supabase.co/storage/v1/object/a-perfect-promotion/drive/.keep "HTTP/1.1 200 OK"
+2025-12-29 19:31:11,760 - supabase_upload - INFO -   ✓ Created folder: drive/
+2025-12-29 19:31:12,071 - httpx - INFO - HTTP Request: POST https://tauelcoqhukoumpisgbb.supabase.co/storage/v1/object/a-perfect-promotion/intake_form/.keep "HTTP/1.1 200 OK"
+2025-12-29 19:31:12,071 - supabase_upload - INFO -   ✓ Created folder: intake_form/
+2025-12-29 19:31:12,577 - httpx - INFO - HTTP Request: POST https://tauelcoqhukoumpisgbb.supabase.co/storage/v1/object/a-perfect-promotion/metadata.json "HTTP/1.1 200 OK"
+2025-12-29 19:31:12,584 - supabase_upload - INFO -   ✓ Uploaded: metadata.json
+2025-12-29 19:31:12,584 - supabase_upload - INFO - ✅ Client 'a-perfect-promotion' bucket setup complete!
+2025-12-29 19:31:12,584 - supabase_upload - INFO - 
+✅ SUCCESS!
+2025-12-29 19:31:12,584 - supabase_upload - INFO - Client: a-perfect-promotion
+2025-12-29 19:31:12,585 - supabase_upload - INFO - Bucket: a-perfect-promotion
+2025-12-29 19:31:12,585 - supabase_upload - INFO - Folders: website, drive, intake_form
+2025-12-29 19:31:12,585 - supabase_upload - INFO - 
+Metadata:
+2025-12-29 19:31:12,585 - supabase_upload - INFO - {
+  "client_slug": "a-perfect-promotion",
+  "website_url": "https://aperfectpromotion.com",
+  "drive_url": "https://drive.google.com/drive/folders/1vKv7hXOxc2-Z9lOhQrqhNKCRqzPNrEED",
+  "website_docs": {
+    "total": 0,
+    "by_content_type": {}
+  },
+  "drive_docs": {
+    "total": 0,
+    "by_content_type": {}
+  },
+  "intake_form_docs": 0,
+  "page_breakdowns": {},
+  "created_at": "2025-12-30T00:31:09.873499+00:00",
+  "status": "initialized",
+  "metadata": {}
+}
+2025-12-29 19:31:12,585 - supabase_upload - INFO - 
+================================================================================
+2025-12-29 19:31:12,585 - supabase_upload - INFO - Script complete. Check supabase_upload.log for details.
+2025-12-29 19:31:12,585 - supabase_upload - INFO - ================================================================================

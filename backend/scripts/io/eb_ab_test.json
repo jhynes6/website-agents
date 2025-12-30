@@ -1,0 +1,299 @@
+{
+  "client_slug": "evenbound",
+  "test_date": "2025-12-28T04:53:19.422414+00:00",
+  "total_queries": 5,
+  "results": [
+    {
+      "query": "What can you do for me?",
+      "expected_intent": "MORE_INFO",
+      "expected_tags": [
+        "services_products",
+        "case_studies",
+        "about",
+        "capabilities_overview",
+        "pitch_decks"
+      ],
+      "single_agent": {
+        "success": true,
+        "latency": 7.647448778152466,
+        "response": "We specialize in helping businesses grow through tailored marketing strategies and effective use of tools like HubSpot. Here\u2019s how we can assist you:\n\n- **B2B Growth Strategies**: We help set SMART goals to ensure your marketing efforts are focused and measurable.\n- **HubSpot Onboarding**: We can guide you through the HubSpot onboarding process, whether you choose direct onboarding or partner agency support.\n- **Data-Driven Marketing**: We leverage analytics to track performance and optimize your marketing strategies.\n- **Content Marketing**: We create high-value educational content to establish your brand as a thought leader and nurture leads.\n- **Automation Solutions**: We implement marketing automation to streamline processes and improve efficiency.\n\nWould you be available for a call in the next week or so to discuss how we can specifically support your business needs?",
+        "usage": {
+          "prompt_tokens": 5779,
+          "completion_tokens": 177,
+          "total_tokens": 5956
+        },
+        "model": "single-agent"
+      },
+      "hybrid_system": {
+        "success": true,
+        "latency": 8.88984751701355,
+        "triage_latency": 1.8317089080810547,
+        "retrieval_latency": 1.3288908004760742,
+        "response_latency": 5.729247808456421,
+        "response": "At Evenbound, we specialize in helping businesses grow through effective marketing strategies tailored to your unique needs. Here\u2019s what we can do for you:\n\n- **Growth Marketing Strategies**: We develop customized growth strategies that align with your business goals, utilizing methods like SMART goals to ensure measurable success.\n  \n- **Targeted Lead Generation**: We focus on generating high-quality leads through targeted campaigns, ensuring that your outreach resonates with the right audience.\n  \n- **B2B SaaS Marketing**: If you're in the SaaS space, we offer specialized strategies to navigate long sales cycles and complex decision-making processes.\n  \n- **AI Integration**: We help integrate AI into your marketing efforts, enhancing efficiency and personalization in your campaigns.\n  \n- **Content Creation**: Our team creates high-value content that positions your brand as a thought leader and nurtures leads through the sales funnel.\n\nWould you be available for a call in the next week or so to discuss how we can specifically support your business?",
+        "usage": {
+          "prompt_tokens": 6907,
+          "completion_tokens": 215,
+          "total_tokens": 7122
+        },
+        "triage_result": {
+          "intent": "MORE_INFO",
+          "kb_tags": [
+            "services",
+            "products",
+            "capabilities"
+          ],
+          "key_topics": [
+            "services",
+            "solutions"
+          ],
+          "suggested_doc_types": [
+            "homepage",
+            "intake_form",
+            "services_products"
+          ],
+          "requires_human": false,
+          "confidence": 0.9,
+          "urgency": "medium"
+        },
+        "chunks_retrieved": 5,
+        "model": "hybrid-2-agent"
+      },
+      "timestamp": "2025-12-28T04:52:20.558548+00:00"
+    },
+    {
+      "query": "Do you have any case studies or success stories?",
+      "expected_intent": "CASE_STUDY_REQUEST",
+      "expected_tags": [
+        "case_studies",
+        "testimonials"
+      ],
+      "single_agent": {
+        "success": true,
+        "latency": 4.261291027069092,
+        "response": "Yes, we have several case studies showcasing our success in helping clients achieve significant growth. Here are a few highlights:\n\n- **Paris Gourmet**: Achieved a 135% growth in organic leads through a digital transformation.\n- **Seal Bond**: Drove $2.6 million in revenue by modernizing their sales and marketing approach with HubSpot.\n- **LidWorks**: Unified sales processes and unlocked 800% growth with a HubSpot CRM implementation.\n- **Mixlab**: Reached over 10,000 marketing qualified leads in one year by scaling their marketing on HubSpot.\n\nThese examples illustrate our ability to drive results for various industries. Would you be available for a call in the next week or so to discuss how we can help your business achieve similar success?",
+        "usage": {
+          "prompt_tokens": 6339,
+          "completion_tokens": 175,
+          "total_tokens": 6514
+        },
+        "model": "single-agent"
+      },
+      "hybrid_system": {
+        "success": true,
+        "latency": 7.861891984939575,
+        "triage_latency": 1.6404378414154053,
+        "retrieval_latency": 0.47124314308166504,
+        "response_latency": 5.750211000442505,
+        "response": "Yes, we have a variety of case studies and success stories that showcase how our strategies have helped clients achieve their goals. Here are some key benefits of leveraging case studies:\n\n- **Builds Trust**: They provide real-world examples of how our solutions have worked for other businesses.\n- **Demonstrates Effectiveness**: Case studies highlight specific results and metrics achieved, making it easier for potential clients to see the value.\n- **Resonates with Prospects**: Success stories often reflect challenges similar to those faced by potential clients, making them relatable.\n\nIf you're interested, I would love to discuss our case studies in more detail during a call. Are you available in the next week or so?",
+        "usage": {
+          "prompt_tokens": 6945,
+          "completion_tokens": 157,
+          "total_tokens": 7102
+        },
+        "triage_result": {
+          "intent": "CASE_STUDY_REQUEST",
+          "kb_tags": [
+            "case studies",
+            "success stories",
+            "proof"
+          ],
+          "key_topics": [
+            "case studies",
+            "success stories"
+          ],
+          "suggested_doc_types": [
+            "case_studies"
+          ],
+          "requires_human": false,
+          "confidence": 0.95,
+          "urgency": "medium"
+        },
+        "chunks_retrieved": 5,
+        "model": "hybrid-2-agent"
+      },
+      "timestamp": "2025-12-28T04:52:35.684876+00:00"
+    },
+    {
+      "query": "How much does this cost?",
+      "expected_intent": "PRICING",
+      "expected_tags": [
+        "pricing",
+        "services_products"
+      ],
+      "single_agent": {
+        "success": true,
+        "latency": 4.885831832885742,
+        "response": "Our pricing varies based on the specific services you are interested in. We offer a range of solutions, including:\n\n- Inbound Marketing\n- Outbound Marketing\n- Website Design\n- HubSpot Services\n\nFor a detailed quote tailored to your needs, I recommend scheduling an introductory call. This will allow us to discuss your goals and how we can best support you. Are you available for a call in the next week or so?",
+        "usage": {
+          "prompt_tokens": 6573,
+          "completion_tokens": 95,
+          "total_tokens": 6668
+        },
+        "model": "single-agent"
+      },
+      "hybrid_system": {
+        "success": true,
+        "latency": 8.320204734802246,
+        "triage_latency": 2.260908842086792,
+        "retrieval_latency": 0.5307009220123291,
+        "response_latency": 5.528594970703125,
+        "response": "HubSpot pricing varies based on the specific Hubs you choose and the tier you select. Here are the key points:\n\n- Each Hub (Marketing, Sales, Service, Content Hub, Data Hub, and the Smart CRM) is available in four tiers: Free, Starter, Professional, and Enterprise.\n- Costs can range from $0 for the free tools to several thousand dollars per month for enterprise-level capabilities.\n\nFor a clearer understanding of how HubSpot would impact your organization financially, I recommend trying our free HubSpot ROI Calculator.\n\nAre you available for a call in the next week or so to discuss your specific needs and how HubSpot can fit into your budget?",
+        "usage": {
+          "prompt_tokens": 6994,
+          "completion_tokens": 176,
+          "total_tokens": 7170
+        },
+        "triage_result": {
+          "intent": "PRICING",
+          "kb_tags": [
+            "cost",
+            "pricing",
+            "budget"
+          ],
+          "key_topics": [
+            "pricing",
+            "cost"
+          ],
+          "suggested_doc_types": [
+            "intake_form",
+            "services_products"
+          ],
+          "requires_human": false,
+          "confidence": 0.95,
+          "urgency": "high"
+        },
+        "chunks_retrieved": 5,
+        "model": "hybrid-2-agent"
+      },
+      "timestamp": "2025-12-28T04:52:51.893579+00:00"
+    },
+    {
+      "query": "Have you worked with any similar companies?",
+      "expected_intent": "CASE_STUDY_REQUEST",
+      "expected_tags": [
+        "case_studies",
+        "testimonials",
+        "markets_industries",
+        "capabilities_overview",
+        "pitch_decks"
+      ],
+      "single_agent": {
+        "success": true,
+        "latency": 4.9134790897369385,
+        "response": "Yes, we have successfully worked with companies in the construction and building supply industries. Here are some highlights:\n\n- **Client Size**: We have partnered with companies that have over 15,000 employees.\n- **Location**: Our clients have included businesses based in Atlanta, GA, with nationwide service areas.\n- **Results**: \n  - Increased website traffic to over 10,000 monthly visits.\n  - Generated more than 3,000 new contacts.\n  - Achieved an email open rate exceeding 50%.\n\nIf you're interested in learning more about how we can help your company achieve similar results, are you free for a call in the next week or so?",
+        "usage": {
+          "prompt_tokens": 5715,
+          "completion_tokens": 146,
+          "total_tokens": 5861
+        },
+        "model": "single-agent"
+      },
+      "hybrid_system": {
+        "success": true,
+        "latency": 5.2066261768341064,
+        "triage_latency": 1.2544569969177246,
+        "retrieval_latency": 0.4268341064453125,
+        "response_latency": 3.5253350734710693,
+        "response": "Yes, we have extensive experience working with various companies, particularly in the B2B SaaS and industrial sectors. Here are a few examples:\n\n- **Real Estate Developers**: We have helped clients in this sector achieve significant results through tailored content marketing strategies, including the development of content calendars. You can check out our case studies for detailed insights.\n  \n- **Construction Companies**: Our inbound marketing strategies have proven effective for construction firms, focusing on lead generation and optimizing marketing efforts for better results.\n\nIf you're interested, I would love to discuss how we can assist your company specifically. Are you free for a call in the next week or so?",
+        "usage": {
+          "prompt_tokens": 5875,
+          "completion_tokens": 147,
+          "total_tokens": 6022
+        },
+        "triage_result": {
+          "intent": "CASE_STUDY_REQUEST",
+          "kb_tags": [
+            "case studies",
+            "similar companies",
+            "success stories"
+          ],
+          "key_topics": [
+            "case studies",
+            "industry experience"
+          ],
+          "suggested_doc_types": [
+            "case_studies"
+          ],
+          "requires_human": false,
+          "confidence": 0.9,
+          "urgency": "medium"
+        },
+        "chunks_retrieved": 5,
+        "model": "hybrid-2-agent"
+      },
+      "timestamp": "2025-12-28T04:53:05.016347+00:00"
+    },
+    {
+      "query": "Do also do other services?",
+      "expected_intent": "MORE_INFO",
+      "expected_tags": [
+        "services_products",
+        "case_studies",
+        "markets_industries",
+        "capabilities_overview",
+        "pitch_decks"
+      ],
+      "single_agent": {
+        "success": true,
+        "latency": 3.306879997253418,
+        "response": "Yes, we offer a range of services beyond HubSpot implementation and onboarding. Here are some of the additional services we provide:\n\n- **Website Projects**: Design and development services tailored to your needs.\n- **Marketing Services**: Inbound marketing strategies to enhance your brand presence.\n- **Strategic Planning**: Consulting to help align your business goals with effective strategies.\n- **AI / RevOps Services**: Solutions that leverage AI for revenue operations.\n\nIf you're interested in learning more about any specific service, I would love to schedule a call to discuss how we can assist you. Are you free in the next week or so for a chat?",
+        "usage": {
+          "prompt_tokens": 5376,
+          "completion_tokens": 141,
+          "total_tokens": 5517
+        },
+        "model": "single-agent"
+      },
+      "hybrid_system": {
+        "success": true,
+        "latency": 6.094701766967773,
+        "triage_latency": 1.2247209548950195,
+        "retrieval_latency": 0.42062997817993164,
+        "response_latency": 4.449350833892822,
+        "response": "Yes, we offer a variety of services beyond our core offerings. Here are some key areas we specialize in:\n\n- **Digital Marketing**: Strategies to enhance your online presence and attract qualified traffic.\n- **Content Creation**: Professional photography, blog writing, and other content services to engage your audience.\n- **SEO Services**: Optimizing your website to improve search engine rankings and visibility.\n- **Website Development**: Building and maintaining user-friendly websites that align with your business goals.\n- **HubSpot Services**: Implementation and support for HubSpot tools to streamline your marketing efforts.\n\nIf you're interested in learning more about any specific service, I would love to schedule a call to discuss how we can assist you further. Are you free in the next week or so for a conversation?",
+        "usage": {
+          "prompt_tokens": 7336,
+          "completion_tokens": 169,
+          "total_tokens": 7505
+        },
+        "triage_result": {
+          "intent": "MORE_INFO",
+          "kb_tags": [
+            "services",
+            "inquiry"
+          ],
+          "key_topics": [
+            "services",
+            "offerings"
+          ],
+          "suggested_doc_types": [
+            "homepage",
+            "intake_form",
+            "services_products"
+          ],
+          "requires_human": false,
+          "confidence": 0.9,
+          "urgency": "medium"
+        },
+        "chunks_retrieved": 5,
+        "model": "hybrid-2-agent"
+      },
+      "timestamp": "2025-12-28T04:53:17.420674+00:00"
+    }
+  ],
+  "summary": {
+    "single_agent": {
+      "success_rate": 1.0,
+      "avg_latency": 5.002986145019531,
+      "total_tokens": 30516
+    },
+    "hybrid_system": {
+      "success_rate": 1.0,
+      "avg_latency": 7.27465443611145,
+      "avg_triage_latency": 1.6424467086791992,
+      "avg_response_latency": 4.9965479373931885,
+      "total_tokens": 34921
+    }
+  }
+}

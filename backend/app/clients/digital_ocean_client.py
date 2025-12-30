@@ -272,6 +272,7 @@ class DigitalOceanClient:
         # Get model UUID from settings
         model_uuid = self.settings.digitalocean_agent_model_uuid
 
+
         payload = {
             "name": name,
             "model_uuid": model_uuid,
@@ -435,7 +436,7 @@ class DigitalOceanClient:
                         await asyncio.sleep(5)
                     else:
                         return None
-                        
+
                 except httpx.HTTPStatusError as e:
                     if e.response.status_code == 400 and attempt < max_retries:
                         logger.warning(f"[DO] Endpoint request failed (attempt {attempt}/{max_retries}), waiting 5s...")
@@ -527,7 +528,11 @@ class DigitalOceanClient:
                             return None
                 except Exception as e:
                     logger.error(f"[DO] Failed to create agent API key (attempt {attempt}): {e}")
-                return None
+                    if attempt < max_retries:
+                        await asyncio.sleep(5)
+                    else:
+                        return None
+        return None
 
 
     async def get_knowledge_base_by_name(self, name: str) -> Optional[Dict[str, Any]]:
@@ -630,7 +635,26 @@ class DigitalOceanClient:
         if pid:
             payload["project_id"] = str(pid)
             
-        # Data Sources
+        # Data Sources (required by API)
+        # If caller didn't provide datasources, default to this client's folder in Spaces so KB creation succeeds.
+        if not data_sources:
+            if self.settings.digitalocean_spaces_bucket:
+                default_prefix = f"{name.strip().strip('/')}/"
+                data_sources = [
+                    {
+                        "spaces_data_source": {
+                            "bucket_name": self.settings.digitalocean_spaces_bucket,
+                            "region": self.settings.digitalocean_spaces_region,
+                            "item_path": default_prefix,
+                        }
+                    }
+                ]
+                logger.info("[DO] No datasources provided; defaulting KB '%s' to Spaces %s/%s",
+                            name, self.settings.digitalocean_spaces_bucket, default_prefix)
+            else:
+                logger.error("[DO] datasources are required but DIGITALOCEAN_SPACES_BUCKET is not configured.")
+                return None
+
         # API requires datasources; when provided, inject chunking fields if enabled.
         if data_sources:
             processed_sources: List[Dict[str, Any]] = []

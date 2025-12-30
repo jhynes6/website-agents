@@ -1,0 +1,140 @@
+{
+  "client_slug": "galactic-fed",
+  "test_date": "2025-12-28T04:23:25.337291+00:00",
+  "total_queries": 5,
+  "results": [
+    {
+      "query": "What can you do for me?",
+      "expected_intent": "MORE_INFO",
+      "expected_tags": [
+        "services_products",
+        "case_studies",
+        "about",
+        "capabilities_overview",
+        "pitch_decks"
+      ],
+      "single_agent": {
+        "success": false,
+        "error": "Status 401",
+        "latency": 0.34190797805786133
+      },
+      "hybrid_system": {
+        "success": false,
+        "error": "Status 401",
+        "latency": 533.8806247711182,
+        "triage_latency": 7.703484773635864,
+        "retrieval_latency": 466.6809630393982,
+        "response_latency": 59.496176958084106
+      },
+      "timestamp": "2025-12-28T04:19:47.319495+00:00"
+    },
+    {
+      "query": "Do you have any case studies or success stories?",
+      "expected_intent": "CASE_STUDY_REQUEST",
+      "expected_tags": [
+        "case_studies",
+        "testimonials"
+      ],
+      "single_agent": {
+        "success": false,
+        "error": "Status 401",
+        "latency": 0.23195695877075195
+      },
+      "hybrid_system": {
+        "success": false,
+        "error": "Status 401",
+        "latency": 14.02348518371582,
+        "triage_latency": 6.048199892044067,
+        "retrieval_latency": 5.697260141372681,
+        "response_latency": 2.2780251502990723
+      },
+      "timestamp": "2025-12-28T04:20:04.577930+00:00"
+    },
+    {
+      "query": "How much does this cost?",
+      "expected_intent": "PRICING",
+      "expected_tags": [
+        "pricing",
+        "services_products"
+      ],
+      "single_agent": {
+        "success": false,
+        "error": "Status 401",
+        "latency": 0.29746484756469727
+      },
+      "hybrid_system": {
+        "success": false,
+        "error": "Status 401",
+        "latency": 22.953449249267578,
+        "triage_latency": 5.725028991699219,
+        "retrieval_latency": 13.28089427947998,
+        "response_latency": 3.947525978088379
+      },
+      "timestamp": "2025-12-28T04:20:30.831903+00:00"
+    },
+    {
+      "query": "Have you worked with any similar companies?",
+      "expected_intent": "CASE_STUDY_REQUEST",
+      "expected_tags": [
+        "case_studies",
+        "testimonials",
+        "markets_industries",
+        "capabilities_overview",
+        "pitch_decks"
+      ],
+      "single_agent": {
+        "success": false,
+        "error": "Status 401",
+        "latency": 0.21984291076660156
+      },
+      "hybrid_system": {
+        "success": false,
+        "error": "Status 401",
+        "latency": 157.70468425750732,
+        "triage_latency": 13.470129251480103,
+        "retrieval_latency": 143.93635511398315,
+        "response_latency": 0.2981998920440674
+      },
+      "timestamp": "2025-12-28T04:23:11.759560+00:00"
+    },
+    {
+      "query": "Do also do other services?",
+      "expected_intent": "MORE_INFO",
+      "expected_tags": [
+        "services_products",
+        "case_studies",
+        "markets_industries",
+        "capabilities_overview",
+        "pitch_decks"
+      ],
+      "single_agent": {
+        "success": false,
+        "error": "Status 401",
+        "latency": 0.2693209648132324
+      },
+      "hybrid_system": {
+        "success": false,
+        "error": "Status 401",
+        "latency": 8.303795099258423,
+        "triage_latency": 7.37816309928894,
+        "retrieval_latency": 0.42656803131103516,
+        "response_latency": 0.49906396865844727
+      },
+      "timestamp": "2025-12-28T04:23:23.335715+00:00"
+    }
+  ],
+  "summary": {
+    "single_agent": {
+      "success_rate": 0.0,
+      "avg_latency": 0,
+      "total_tokens": 0
+    },
+    "hybrid_system": {
+      "success_rate": 0.0,
+      "avg_latency": 0,
+      "avg_triage_latency": 0,
+      "avg_response_latency": 0,
+      "total_tokens": 0
+    }
+  }
+}

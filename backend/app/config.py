@@ -9,13 +9,22 @@ from pydantic_settings import BaseSettings, SettingsConfigDict
 
 class Settings(BaseSettings):
     model_config = SettingsConfigDict(
-        env_file=[".env", ".env.local", "../.env", "../.env.local"], 
+        # Prefer backend/.env so running from repo root still picks up backend env.
+        # Keep fallbacks for existing workflows.
+        env_file=[
+            "backend/.env",
+            "backend/.env.local",
+            ".env",
+            ".env.local",
+            "../.env",
+            "../.env.local",
+        ],
         env_file_encoding="utf-8", 
         extra="ignore"
     )
 
     # API
-    firestarter_api_key: Optional[str] = Field(default=None, alias="FIRESTARTER_API_KEY")
+    mintagent_api_key: Optional[str] = Field(default=None, alias="MINTAGENT_API_KEY")
 
     # Firecrawl
     firecrawl_api_key: str = Field(..., alias="FIRECRAWL_API_KEY")
@@ -27,7 +36,7 @@ class Settings(BaseSettings):
     # Upstash (deprecated - DO-only path). Keep optional for backwards compatibility.
     upstash_search_rest_url: Optional[HttpUrl] = Field(None, alias="UPSTASH_SEARCH_REST_URL")
     upstash_search_rest_token: Optional[str] = Field(None, alias="UPSTASH_SEARCH_REST_TOKEN")
-    upstash_search_index: str = Field("firestarter", alias="UPSTASH_SEARCH_INDEX")
+    upstash_search_index: str = Field("mintagent", alias="UPSTASH_SEARCH_INDEX")
 
     # Redis (deprecated - DO-only path). Keep optional for backwards compatibility.
     upstash_redis_rest_url: Optional[HttpUrl] = Field(None, alias="UPSTASH_REDIS_REST_URL")
@@ -140,6 +149,53 @@ class Settings(BaseSettings):
     # Crawling defaults (parity with TS config)
     crawling_default_limit: int = Field(10, alias="CRAWLING_DEFAULT_LIMIT")
     crawling_cache_max_age_ms: int = Field(1_209_600_000, alias="CRAWLING_CACHE_MAX_AGE_MS")
+
+    # Supabase Agent Project (MCP managed agents database)
+    supabase_agent_url: Optional[HttpUrl] = Field(None, alias="SUPABASE_AGENT_URL")
+    supabase_agent_key: Optional[str] = Field(None, alias="SUPABASE_AGENT_KEY")
+    supabase_agent_publishable_key: Optional[str] = Field(None, alias="SUPABASE_AGENT_PUBLISHABLE_KEY")
+
+    # Supabase (Email Bison workspace -> client slug mapping)
+    # New (preferred): Bison-specific Supabase env vars (matches context/supabase_client.py)
+    bison_supabase_project_url: Optional[HttpUrl] = Field(None, alias="BISON_SUPABASE_PROJECT_URL")
+    bison_supabase_anon_key: Optional[str] = Field(None, alias="BISON_SUPABASE_ANON_KEY")
+    # Optional: direct Postgres connection URL/creds (may be used later for non-PostgREST access)
+    bison_supabase_bison_db_url: Optional[str] = Field(None, alias="BISON_SUPABASE_BISON_DB_URL")
+    bison_user: Optional[str] = Field(None, alias="BISON_user")
+    bison_password: Optional[str] = Field(None, alias="BISON_password")
+    bison_host: Optional[str] = Field(None, alias="BISON_host")
+    bison_port: Optional[int] = Field(None, alias="BISON_port")
+    bison_dbname: Optional[str] = Field(None, alias="BISON_dbname")
+
+    # Back-compat: generic Supabase env vars (supported, but BISON_* takes precedence)
+    supabase_url: Optional[HttpUrl] = Field(None, alias="SUPABASE_URL")
+    supabase_service_role_key: Optional[str] = Field(None, alias="SUPABASE_SERVICE_ROLE_KEY")
+    # Optional schema override (default public)
+    supabase_schema: str = Field("public", alias="SUPABASE_SCHEMA")
+
+    # Email Bison API
+    bison_api_key: Optional[str] = Field(None, alias="BISON_API_KEY")
+
+    # Pinecone (DB + Assistant)
+    pinecone_api_key: Optional[str] = Field(None, alias="PINECONE_API_KEY")
+    # Optional default assistant names (Pinecone Assistant API)
+    pinecone_inbox_manager_assistant_name: Optional[str] = Field(
+        None, alias="PINECONE_INBOX_MANAGER_ASSISTANT_NAME"
+    )
+    # Defaults for migration scripts / infra
+    pinecone_cloud: str = Field("aws", alias="PINECONE_CLOUD")
+    pinecone_region: str = Field("us-east-1", alias="PINECONE_REGION")
+    pinecone_kb_index_name: str = Field("client-knowledge-bases", alias="PINECONE_KB_INDEX")
+    pinecone_agent_index_name: str = Field("agents", alias="PINECONE_AGENT_INDEX")
+    # Report indexes (structured JSON “cards” + summaries for UI)
+    # User-provided env var names:
+    # - CLIENT_KB_REPORTS: Pinecone index name for client KB report docs
+    # - AGENT_REPORTS: Pinecone index name for agent report docs
+    pinecone_client_kb_reports_index_name: str = Field("client-knowledge-bases", alias="CLIENT_KB_REPORTS")
+    pinecone_agent_reports_index_name: str = Field("agents", alias="AGENT_REPORTS")
+    # Namespaces within those report indexes
+    pinecone_client_kb_reports_namespace: str = Field("REPORTING", alias="CLIENT_KB_REPORTS_NAMESPACE")
+    pinecone_agent_reports_namespace: str = Field("REPORTING", alias="AGENT_REPORTS_NAMESPACE")
 
 
 @lru_cache(maxsize=1)

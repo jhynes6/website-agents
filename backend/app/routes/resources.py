@@ -6,9 +6,37 @@ from app.clients.digital_ocean_client import do_client
 from botocore.client import Config
 import json
 import logging
+from typing import Any, Dict
+
+from ..config import get_settings
 
 logger = logging.getLogger(__name__)
 router = APIRouter()
+
+
+def _pinecone_fetch_report_doc(*, index_name: str, namespace: str, doc_id: str) -> Dict[str, Any]:
+    """
+    Fetch a report doc from Pinecone by ID and parse JSON from the stored `text` field.
+
+    Our report sync stores compact JSON in the mapped `text` field, which Pinecone returns
+    inside vector metadata as `text`.
+    """
+    from pinecone import Pinecone
+
+    settings = get_settings()
+    if not settings.pinecone_api_key:
+        raise HTTPException(status_code=500, detail="PINECONE_API_KEY not configured")
+
+    pc = Pinecone(api_key=settings.pinecone_api_key)
+    desc = pc.describe_index(index_name)
+    idx = pc.Index(host=desc.host)
+
+    resp = idx.fetch(ids=[doc_id], namespace=namespace)
+    vec = resp.vectors.get(doc_id) if hasattr(resp, "vectors") else None
+    if not vec:
+        raise HTTPException(status_code=404, detail=f"Report doc not found: {doc_id}")
+    raw = (vec.metadata or {}).get("text") or ""
+    return json.loads(raw)
 
 
 @router.get("/resource-links")
@@ -87,11 +115,12 @@ async def get_summary_warnings():
         dict: Contains top_warnings array from summary.json
     """
     try:
-        response = do_client.s3_client.get_object(
-            Bucket='mintleads-clients-kb',
-            Key='_client_kb_master/summary.json'
+        settings = get_settings()
+        summary_data = _pinecone_fetch_report_doc(
+            index_name=settings.pinecone_client_kb_reports_index_name,
+            namespace=settings.pinecone_client_kb_reports_namespace,
+            doc_id="_client_kb_master/summary.json",
         )
-        summary_data = json.loads(response['Body'].read().decode('utf-8'))
         
         return {
             "warnings": summary_data.get("top_warnings", []),
@@ -114,6 +143,7 @@ async def get_client_details(client_slug: str):
         dict: Contains kb_data and agent_data for the client
     """
     try:
+        settings = get_settings()
         result = {
             "client_slug": client_slug,
             "kb_data": None,
@@ -122,21 +152,21 @@ async def get_client_details(client_slug: str):
         
         # Fetch KB/Client data
         try:
-            kb_response = do_client.s3_client.get_object(
-                Bucket='mintleads-clients-kb',
-                Key=f'_client_kb_master/clients/{client_slug}.json'
+            result["kb_data"] = _pinecone_fetch_report_doc(
+                index_name=settings.pinecone_client_kb_reports_index_name,
+                namespace=settings.pinecone_client_kb_reports_namespace,
+                doc_id=f"_client_kb_master/clients/{client_slug}.json",
             )
-            result["kb_data"] = json.loads(kb_response['Body'].read().decode('utf-8'))
         except Exception as e:
             logger.warning(f"Could not fetch KB data for {client_slug}: {e}")
         
         # Fetch Agent data
         try:
-            agent_response = do_client.s3_client.get_object(
-                Bucket='mintleads-agents-store',
-                Key=f'agents/inbox_manager_{client_slug}.json'
+            result["agent_data"] = _pinecone_fetch_report_doc(
+                index_name=settings.pinecone_agent_reports_index_name,
+                namespace=settings.pinecone_agent_reports_namespace,
+                doc_id=f"agents/inbox_manager_{client_slug}.json",
             )
-            result["agent_data"] = json.loads(agent_response['Body'].read().decode('utf-8'))
         except Exception as e:
             logger.warning(f"Could not fetch agent data for {client_slug}: {e}")
         

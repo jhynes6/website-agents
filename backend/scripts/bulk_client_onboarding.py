@@ -25,6 +25,55 @@ logging.basicConfig(
 )
 logger = logging.getLogger("bulk_onboarding")
 
+def _ensure_project_root_cwd() -> Path:
+    """
+    Make relative paths deterministic.
+
+    Why:
+    - `get_settings()` loads env files like `backend/.env` relative to CWD.
+    - The create flow looks for `service_account.json` at repo root.
+    """
+    project_root = backend_dir.parent  # repo root
+    try:
+        os.chdir(project_root)
+    except Exception:
+        # If we can't chdir for some reason, keep going; but env resolution may break.
+        pass
+    return project_root
+
+
+def _verify_pinecone_connection() -> Dict[str, Any]:
+    """
+    Validate Pinecone settings and print the resolved target indexes/hosts.
+    """
+    s = get_settings()
+    if not s.pinecone_api_key:
+        raise RuntimeError("PINECONE_API_KEY is not configured (check backend/.env)")
+
+    from pinecone import Pinecone
+
+    pc = Pinecone(api_key=s.pinecone_api_key)
+
+    kb_desc = pc.describe_index(s.pinecone_kb_index_name)
+    reports_desc = pc.describe_index(s.pinecone_client_kb_reports_index_name)
+
+    info = {
+        "kb_index": s.pinecone_kb_index_name,
+        "kb_host": kb_desc.host,
+        "reports_index": s.pinecone_client_kb_reports_index_name,
+        "reports_host": reports_desc.host,
+        "reporting_namespace": s.pinecone_client_kb_reports_namespace,
+    }
+    logger.info(
+        "Pinecone target verified: kb_index=%s reports_index=%s reporting_namespace=%s",
+        info["kb_index"],
+        info["reports_index"],
+        info["reporting_namespace"],
+    )
+    logger.info("Pinecone hosts: kb_host=%s reports_host=%s", info["kb_host"], info["reports_host"])
+    return info
+
+
 async def process_client(row: Dict[str, str]):
     client_slug = row.get("client-slug")
     drive_id = row.get("drive-folder")
@@ -69,6 +118,10 @@ async def process_client(row: Dict[str, str]):
         logger.error(f"Failed to onboard {client_slug}: {str(e)}", exc_info=True)
 
 async def main():
+    project_root = _ensure_project_root_cwd()
+    logger.info("Running bulk onboarding from project root: %s", project_root)
+    _verify_pinecone_connection()
+
     # Path to CSV file (in root of project, two levels up from scripts/)
     csv_path = backend_dir.parent / "backend/scripts/io/bulk_onboarding_run_file.csv"
 

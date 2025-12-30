@@ -3,7 +3,7 @@ from typing import Any, Dict, Optional
 
 
 def setup_logger() -> logging.Logger:
-    logger = logging.getLogger("firestarter")
+    logger = logging.getLogger("mintagent")
     if not logger.handlers:
         handler = logging.StreamHandler()
         formatter = logging.Formatter("[%(levelname)s] %(message)s")

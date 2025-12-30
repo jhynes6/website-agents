@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { serverConfig as config } from '@/firestarter.config'
+import { serverConfig as config } from '@/mintagent.config'
 
 // CORS headers for API access
 export async function OPTIONS() {
@@ -231,7 +231,7 @@ export async function POST(request: NextRequest) {
 
     // Handle streaming for firecrawl models
     if (stream) {
-      const contextResponse = await fetch(`${request.nextUrl.origin}/api/firestarter/query`, {
+      const contextResponse = await fetch(`${request.nextUrl.origin}/api/mintagent/query`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ 
@@ -317,7 +317,7 @@ export async function POST(request: NextRequest) {
     }
     
     // Non-streaming response
-    const contextResponse = await fetch(`${request.nextUrl.origin}/api/firestarter/query`, {
+    const contextResponse = await fetch(`${request.nextUrl.origin}/api/mintagent/query`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ 

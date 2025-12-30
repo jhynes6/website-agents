@@ -49,11 +49,11 @@ class RedisClient:
         index_metadata["clientSlug"] = client_slug
         
         try:
-            key = f"firestarter:index:{client_slug}"
+            key = f"mintagent:index:{client_slug}"
             logger.info(f"[Redis] Saving index for client '{client_slug}' to key '{key}'")
             self.redis.set(key, index_metadata)
             
-            indexes_key = "firestarter:indexes"
+            indexes_key = "mintagent:indexes"
             indexes = self.redis.get(indexes_key) or []
             if not isinstance(indexes, list):
                 indexes = []

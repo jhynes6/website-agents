@@ -1,2 +1,2 @@
-"""Firestarter Python backend package."""
+"""MintAgent Python backend package."""
 

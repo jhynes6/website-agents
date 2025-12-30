@@ -8,7 +8,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useStorage } from "@/hooks/useStorage";
 import { buildApiHeaders, getBackendUrl } from "@/lib/backend";
-import { clientConfig as config } from "@/firestarter.config";
+import { clientConfig as config } from "@/mintagent.config";
 import { 
   Globe, 
   ArrowRight, 
@@ -34,7 +34,7 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 
-export default function FirestarterPage() {
+export default function MintagentPage() {
   const router = useRouter();
   const searchParams = new URLSearchParams(typeof window !== 'undefined' ? window.location.search : '');
   const urlParam = searchParams.get('url');
@@ -183,7 +183,7 @@ export default function FirestarterPage() {
           pagesScraped: 0
         });
         
-        const mapResp = await fetch(getBackendUrl('/api/firestarter/map'), {
+        const mapResp = await fetch(getBackendUrl('/api/mintagent/map'), {
           method: 'POST',
           headers: buildApiHeaders(),
           body: JSON.stringify({ url: normalizedUrl, limit: 5000, index: slug || undefined, clientSlug: slug })
@@ -212,7 +212,7 @@ export default function FirestarterPage() {
           pagesScraped: 0
         });
         
-        const scrapeResp = await fetch(getBackendUrl('/api/firestarter/scrape'), {
+        const scrapeResp = await fetch(getBackendUrl('/api/mintagent/scrape'), {
           method: 'POST',
           headers: buildApiHeaders(),
           body: JSON.stringify({ urls: urlsToScrape, index: slug || undefined, clientSlug: slug })
@@ -267,7 +267,7 @@ export default function FirestarterPage() {
           }
         };
         
-        sessionStorage.setItem('firestarter_current_data', JSON.stringify(siteInfo));
+        sessionStorage.setItem('mintagent_current_data', JSON.stringify(siteInfo));
         
         await saveIndex({
           url: normalizedUrl,
@@ -318,7 +318,7 @@ export default function FirestarterPage() {
         });
       }, 300);
       
-      const response = await fetch(getBackendUrl('/api/firestarter/create'), {
+      const response = await fetch(getBackendUrl('/api/mintagent/create'), {
         method: 'POST',
         headers: buildApiHeaders(),
         body: JSON.stringify({ 
@@ -386,7 +386,7 @@ export default function FirestarterPage() {
           }
         };
         
-        sessionStorage.setItem('firestarter_current_data', JSON.stringify(siteInfo));
+        sessionStorage.setItem('mintagent_current_data', JSON.stringify(siteInfo));
         
         await saveIndex({
           url: effectiveUrl,
@@ -434,7 +434,7 @@ export default function FirestarterPage() {
     }
     setIsScrapingSelected(true);
     try {
-      const resp = await fetch(getBackendUrl('/api/firestarter/scrape'), {
+      const resp = await fetch(getBackendUrl('/api/mintagent/scrape'), {
         method: 'POST',
         headers: buildApiHeaders(),
         body: JSON.stringify({ urls: chosen, index: indexName || undefined }),
@@ -469,7 +469,7 @@ export default function FirestarterPage() {
         },
       };
 
-      sessionStorage.setItem('firestarter_current_data', JSON.stringify(siteInfo));
+      sessionStorage.setItem('mintagent_current_data', JSON.stringify(siteInfo));
       await saveIndex({
         url: url,
         namespace: result.namespace,

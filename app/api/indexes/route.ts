@@ -1,10 +1,10 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { getBackendUrl, buildApiHeaders } from '@/lib/backend'
 
-// Proxy to Python backend's /api/firestarter/indexes
+// Proxy to Python backend's /api/mintagent/indexes
 export async function GET(request: NextRequest) {
   try {
-    const backendUrl = getBackendUrl('/api/firestarter/indexes') + request.nextUrl.search
+    const backendUrl = getBackendUrl('/api/mintagent/indexes') + request.nextUrl.search
     
     const response = await fetch(backendUrl, {
       method: 'GET',

@@ -6,17 +6,17 @@ const searchClient = new Search({
   token: process.env.UPSTASH_SEARCH_REST_TOKEN!,
 })
 
-// Create a search index for firestarter documents
-export const searchIndex = searchClient.index<FirestarterContent>('firestarter')
+// Create a search index for mintagent documents
+export const searchIndex = searchClient.index<MintagentContent>('mintagent')
 
-export interface FirestarterContent {
+export interface MintagentContent {
   text: string
   url: string
   title: string
   [key: string]: unknown // Add index signature for Upstash type compatibility
 }
 
-export interface FirestarterIndex {
+export interface MintagentIndex {
   namespace: string
   url: string
   pagesCrawled: number

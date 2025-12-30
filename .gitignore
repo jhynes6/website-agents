@@ -30,11 +30,12 @@ yarn-debug.log*
 yarn-error.log*
 .pnpm-debug.log*
 
-# env files
+# env files (keep secrets out of git)
 .env
 .env.local
 .env.*
 backend/.env
+backend/.env.local
 
 # vercel
 .vercel
@@ -51,3 +52,12 @@ backend/venv/
 
 # secrets
 service_account.json
+
+# local data backups
+data/supabase_backup/
+
+.agents/pinecone-agents-ref
+
+# Large files
+backend/lawson_case_study_2023.pdf
+pinecone-assistant/node_modules/

@@ -12,8 +12,13 @@ router = APIRouter()
 @router.post("/ensure-agent")
 async def ensure_agent(payload: Dict[str, Any]) -> Dict[str, Any]:
     """
-    Ensure a per-client DO inbox-manager agent exists and is ready for chat.
-    Returns agent UUID + endpoint + access key for the UI to use (or cache).
+    Back-compat endpoint.
+
+    The UI used to require a per-client DigitalOcean agent to be provisioned before chat.
+    With Pinecone-backed retrieval + direct LLM answering, the UI no longer needs this.
+
+    If DIGITALOCEAN_TOKEN is configured, we still support ensuring the DO agent.
+    Otherwise we return a non-fatal stub response so callers can proceed.
     """
     settings = get_settings()
     client_slug = payload.get("clientSlug") or payload.get("client_slug") or payload.get("namespace")
@@ -21,7 +26,15 @@ async def ensure_agent(payload: Dict[str, Any]) -> Dict[str, Any]:
     if not client_slug:
         raise HTTPException(status_code=400, detail="clientSlug is required")
     if not settings.digitalocean_token:
-        raise HTTPException(status_code=500, detail="DIGITALOCEAN_TOKEN not configured")
+        return {
+            "clientSlug": client_slug,
+            "agentType": agent_type,
+            "agent_uuid": None,
+            "agent_endpoint": None,
+            "agent_key": None,
+            "status": "skipped",
+            "reason": "DIGITALOCEAN_TOKEN not configured (Pinecone-backed chat does not require a DO agent).",
+        }
 
     try:
         rec = await ensure_do_agent(client_slug, agent_type=str(agent_type))

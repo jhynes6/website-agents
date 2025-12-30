@@ -84,9 +84,7 @@ def load_env_files() -> None:
     Priority: backend/.env.local -> backend/.env -> repo/.env.local -> repo/.env
     """
     candidates = [
-        ROOT / ".env.local",
         ROOT / ".env",
-        ROOT.parent / ".env.local",
         ROOT.parent / ".env",
     ]
 

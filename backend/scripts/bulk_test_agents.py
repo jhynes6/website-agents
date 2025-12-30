@@ -6,6 +6,8 @@ Usage:
     python backend/scripts/bulk_test_agents.py
     python backend/scripts/bulk_test_agents.py --limit 5
     python backend/scripts/bulk_test_agents.py --client pi-lit
+    python backend/scripts/bulk_test_agents.py --agent-uuid <uuid> --agent-uuid <uuid>
+    python backend/scripts/bulk_test_agents.py --agent-uuids <uuid1,uuid2,uuid3>
     python backend/scripts/bulk_test_agents.py --output results.json
 """
 
@@ -215,6 +217,7 @@ async def test_agent(
 
 async def bulk_test_agents(
     client_slug: Optional[str] = None,
+    agent_uuids: Optional[List[str]] = None,
     limit: Optional[int] = None,
     queries: List[str] = TEST_QUERIES,
     delay_between_agents: float = 2.0,
@@ -241,13 +244,24 @@ async def bulk_test_agents(
     registry = AgentRegistry()
     all_agents = registry.list_all()
     
-    # Filter to inbox-manager agents
+    # Filter to inbox-manager agents (default behavior)
     inbox_agents = {
-        slug: agent for slug, agent in all_agents.items()
+        slug: agent
+        for slug, agent in all_agents.items()
         if agent.agent_name and "inbox-manager" in agent.agent_name
     }
     
     print(f"\nFound {len(inbox_agents)} inbox-manager agents")
+    
+    # If explicit agent UUIDs provided, select those instead (still supports inbox-manager naming)
+    if agent_uuids:
+        wanted = {u.strip() for u in agent_uuids if u and u.strip()}
+        inbox_agents = {
+            slug: agent
+            for slug, agent in inbox_agents.items()
+            if agent.agent_uuid and agent.agent_uuid in wanted
+        }
+        print(f"Filtered to {len(inbox_agents)} agents by UUIDs")
     
     # Filter by client slug if specified
     if client_slug:
@@ -364,6 +378,17 @@ def save_results(results: Dict[str, Any], output_file: str):
 async def main():
     parser = argparse.ArgumentParser(description="Bulk test inbox-manager agents")
     parser.add_argument("--client", type=str, help="Only test this specific client slug")
+    parser.add_argument(
+        "--agent-uuid",
+        action="append",
+        dest="agent_uuid",
+        help="Agent UUID to test (repeatable). Example: --agent-uuid <uuid>",
+    )
+    parser.add_argument(
+        "--agent-uuids",
+        type=str,
+        help="Comma-separated list of agent UUIDs to test. Example: --agent-uuids uuid1,uuid2,uuid3",
+    )
     parser.add_argument("--limit", type=int, help="Limit number of agents to test")
     parser.add_argument("--output", type=str, default="backend/scripts/io/bulk_agent_test_results.json", help="Output file path")
     parser.add_argument("--delay-agents", type=float, default=2.0, help="Seconds to wait between agents")
@@ -371,9 +396,17 @@ async def main():
     
     args = parser.parse_args()
     
+    # Normalize agent UUID inputs
+    agent_uuids: List[str] = []
+    if args.agent_uuid:
+        agent_uuids.extend(args.agent_uuid)
+    if args.agent_uuids:
+        agent_uuids.extend([p.strip() for p in args.agent_uuids.split(",") if p.strip()])
+    
     # Run bulk test
     results = await bulk_test_agents(
         client_slug=args.client,
+        agent_uuids=agent_uuids if agent_uuids else None,
         limit=args.limit,
         queries=TEST_QUERIES,
         delay_between_agents=args.delay_agents,

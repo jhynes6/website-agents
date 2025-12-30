@@ -44,9 +44,9 @@ Migrated the agent registry from local JSON files to DigitalOcean Spaces (`mintl
   "inbox_manager:pi-lit": {
     "agent_uuid": "1582641c-e362-11f0-b074-4e013e2ddde4",
     "agent_name": "inbox-manager-pi-lit",
-    "slug": "inbox_manager:pi-lit",
-    "endpoint_url": "https://...",
-    "api_key": "...",
+    "client_slug": "inbox_manager:pi-lit",
+    "client_endpoint_url": "https://...",
+    "client_api_key": "...",
     "region": "tor1",
     "model": "openai-gpt-5",
     "knowledge_base_uuids": ["..."],
@@ -69,6 +69,9 @@ source venv/bin/activate
 python scripts/sync_agents_to_spaces.py
 ```
 
+
+
+
 Run this script whenever:
 - New agents are created in DigitalOcean
 - Agent configuration changes
@@ -81,7 +84,7 @@ from app.clients.do_agent_registry import AgentRegistry
 registry = AgentRegistry()
 
 # Get agent by composite slug
-agent = registry.get('inbox_manager:pi-lit')
+agent = registry.get('inbox_manager_pi-lit')
 
 # Get agent by client + type
 agent = registry.get_for('pi-lit', 'inbox_manager')

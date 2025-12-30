@@ -133,5 +133,27 @@ class LLMClient:
             logger.error(f"❌ Error categorizing {url}: {e}")
             return 'other'
 
+    async def chat(
+        self, 
+        messages: List[Dict[str, str]], 
+        temperature: float = 0.7,
+        max_tokens: int = 1000,
+        model: str = "gpt-4o-mini"
+    ) -> Dict:
+        """Generic chat completion method"""
+        response = await self.client.chat.completions.create(
+            model=model,
+            messages=messages,
+            temperature=temperature,
+            max_tokens=max_tokens
+        )
+        return {
+            "choices": [{
+                "message": {
+                    "content": response.choices[0].message.content
+                }
+            }]
+        }
+
 
 llm_client = LLMClient()

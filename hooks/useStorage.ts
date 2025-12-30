@@ -22,7 +22,7 @@ export function useStorage() {
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to fetch indexes')
       // Fallback to localStorage
-      const stored = typeof window !== 'undefined' ? localStorage.getItem('firestarter_indexes') : null
+      const stored = typeof window !== 'undefined' ? localStorage.getItem('mintagent_indexes') : null
       setIndexes(stored ? JSON.parse(stored) : [])
     } finally {
       setLoading(false)
@@ -56,7 +56,7 @@ export function useStorage() {
         // Keep only the last 50 indexes
         const limitedIndexes = currentIndexes.slice(0, 50)
       if (typeof window !== 'undefined') {
-        localStorage.setItem('firestarter_indexes', JSON.stringify(limitedIndexes))
+        localStorage.setItem('mintagent_indexes', JSON.stringify(limitedIndexes))
       }
       setIndexes(limitedIndexes)
     }
@@ -77,7 +77,7 @@ export function useStorage() {
         // Delete from localStorage
         const filteredIndexes = indexes.filter(i => i.namespace !== namespace)
       if (typeof window !== 'undefined') {
-        localStorage.setItem('firestarter_indexes', JSON.stringify(filteredIndexes))
+        localStorage.setItem('mintagent_indexes', JSON.stringify(filteredIndexes))
       }
       setIndexes(filteredIndexes)
     }

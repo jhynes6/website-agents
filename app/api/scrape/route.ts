@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import FirecrawlApp from '@mendable/firecrawl-js';
-import { serverConfig as config } from '@/firestarter.config';
+import { serverConfig as config } from '@/mintagent.config';
 
 interface ScrapeRequestBody {
   url?: string;

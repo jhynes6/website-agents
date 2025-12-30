@@ -15,7 +15,7 @@ export default function DebugPage() {
   const runDebug = async () => {
     setLoading(true)
     try {
-      const response = await fetch(`/api/firestarter/debug?namespace=${namespace}`)
+      const response = await fetch(`/api/mintagent/debug?namespace=${namespace}`)
       const data = await response.json()
       setResults(data)
     } catch (error) {
@@ -28,7 +28,7 @@ export default function DebugPage() {
   return (
     <div className="min-h-screen bg-[#FBFAF9] p-8">
       <div className="max-w-4xl mx-auto">
-        <h1 className="text-2xl font-bold mb-6">Firestarter Debug</h1>
+        <h1 className="text-2xl font-bold mb-6">MintAgent Debug</h1>
         
         <div className="bg-white rounded-lg p-6 shadow-sm">
           <div className="space-y-4">

@@ -26,8 +26,16 @@ logging.basicConfig(
 logger = logging.getLogger("test_retrieval")
 
 
-def test_retrieval(kb_uuid: str, query: str, num_results: int = 5):
-    """Test document retrieval from a Knowledge Base."""
+def test_retrieval(
+    kb_uuid: str, 
+    query: str, 
+    num_results: int = 5,
+    content_type: str = None,
+    document_source: str = None,
+    alpha: float = None,
+    custom_filters: dict = None
+):
+    """Test document retrieval from a Knowledge Base with optional metadata filters."""
     from gradient import Gradient
     
     settings = get_settings()
@@ -43,17 +51,73 @@ def test_retrieval(kb_uuid: str, query: str, num_results: int = 5):
     print(f"KB UUID: {kb_uuid}")
     print(f"Query: {query}")
     print(f"Num Results: {num_results}")
+    if alpha is not None:
+        print(f"Alpha (hybrid search): {alpha}")
+    if content_type:
+        print(f"Filter - Content Type: {content_type}")
+    if document_source:
+        print(f"Filter - Document Source: {document_source}")
+    if custom_filters:
+        print(f"Custom Filters: {json.dumps(custom_filters, indent=2)}")
     print(f"{'='*80}\n")
     
     try:
         # Initialize Gradient client with access token
         client = Gradient(access_token=settings.digitalocean_token)
         
-        response = client.retrieve.documents(
-            knowledge_base_id=kb_uuid,
-            num_results=num_results,
-            query=query,
-        )
+        # Build filters dictionary
+        filters = None
+        if content_type or document_source or custom_filters:
+            # The filters parameter expects a dict with 'must', 'must_not', 'should' arrays
+            # But we need to check if the SDK serializes this correctly
+            filters_list = []
+            
+            if content_type:
+                filters_list.append({
+                    "field": "content_type",
+                    "operator": "eq",
+                    "value": content_type
+                })
+            
+            if document_source:
+                filters_list.append({
+                    "field": "document_source",
+                    "operator": "eq",
+                    "value": document_source
+                })
+            
+            # Try passing filters as a list for 'must' conditions
+            if filters_list:
+                filters = {"must": filters_list}
+            
+            # Merge custom filters if provided
+            if custom_filters:
+                if not filters:
+                    filters = {}
+                for key, filter_list in custom_filters.items():
+                    if key in ["must", "must_not", "should"]:
+                        if key not in filters:
+                            filters[key] = []
+                        filters[key].extend(filter_list)
+        
+        # Build request parameters
+        params = {
+            "knowledge_base_id": kb_uuid,
+            "num_results": num_results,
+            "query": query,
+        }
+        
+        if filters:
+            params["filters"] = filters
+        
+        if alpha is not None:
+            params["alpha"] = alpha
+        
+        print(f"📤 Request parameters:")
+        print(json.dumps(params, indent=2))
+        print()
+        
+        response = client.retrieve.documents(**params)
         
         print(f"✓ Successfully retrieved {len(response.results)} results\n")
         
@@ -128,25 +192,32 @@ def interactive_mode():
         print("\nOptions:")
         print("  1. Test retrieval by client slug")
         print("  2. Test retrieval by KB UUID")
-        print("  3. List all KBs")
+        print("  3. Test with metadata filters")
+        print("  4. List all KBs")
         print("  q. Quit")
         
         choice = input("\nChoice: ").strip().lower()
         
         if choice == 'q':
             break
-        elif choice == '3':
+        elif choice == '4':
             list_available_kbs()
             continue
-        elif choice in ['1', '2']:
+        elif choice in ['1', '2', '3']:
             if choice == '1':
                 slug = input("Client slug: ").strip()
                 if slug not in kbs:
                     print(f"✗ Client '{slug}' not found in registry")
                     continue
                 kb_uuid = kbs[slug].kb_uuid
-            else:
+            elif choice == '2':
                 kb_uuid = input("KB UUID: ").strip()
+            else:  # choice == '3'
+                slug = input("Client slug (for KB lookup): ").strip()
+                if slug not in kbs:
+                    print(f"✗ Client '{slug}' not found in registry")
+                    continue
+                kb_uuid = kbs[slug].kb_uuid
             
             query = input("Query: ").strip()
             if not query:
@@ -156,7 +227,31 @@ def interactive_mode():
             num_results = input("Number of results [5]: ").strip()
             num_results = int(num_results) if num_results else 5
             
-            test_retrieval(kb_uuid, query, num_results)
+            # Metadata filters (only for choice 3)
+            content_type = None
+            document_source = None
+            alpha = None
+            
+            if choice == '3':
+                print("\nMetadata Filters (press Enter to skip):")
+                print("Common content_types: case_studies, services_products, about, blogs_resources, pricing, homepage")
+                content_type = input("  content_type: ").strip() or None
+                
+                print("Common document_sources: website, intake_form, google_drive")
+                document_source = input("  document_source: ").strip() or None
+                
+                alpha_input = input("  alpha (0=keyword, 1=vector, 0.5=hybrid) [1]: ").strip()
+                if alpha_input:
+                    alpha = float(alpha_input)
+            
+            test_retrieval(
+                kb_uuid, 
+                query, 
+                num_results,
+                content_type=content_type,
+                document_source=document_source,
+                alpha=alpha
+            )
         else:
             print("Invalid choice")
 
@@ -175,6 +270,21 @@ Examples:
   # Quick test with client slug
   python test_kb_retrieval.py --client pi-lit --query "What services do you offer?"
   
+  # Filter by content_type (case studies only)
+  python test_kb_retrieval.py --client x-agency --query "success stories" --content-type case_studies
+  
+  # Filter by document_source (website only)
+  python test_kb_retrieval.py --client x-agency --query "services" --document-source website
+  
+  # Hybrid search (50% keyword + 50% vector)
+  python test_kb_retrieval.py --client x-agency --query "pricing" --alpha 0.5
+  
+  # Pure keyword search (BM25)
+  python test_kb_retrieval.py --client x-agency --query "pricing" --alpha 0
+  
+  # Custom filters (must be valid JSON)
+  python test_kb_retrieval.py --client x-agency --query "pricing" --filters '{"should": [{"field": "content_type", "operator": "in", "value": ["pricing", "services_products"]}]}'
+  
   # Test with KB UUID
   python test_kb_retrieval.py --kb-uuid 550e8400-e29b-41d4-a716-446655440000 --query "pricing"
   
@@ -188,6 +298,12 @@ Examples:
     parser.add_argument("--query", help="Query to test", type=str)
     parser.add_argument("--num-results", "-n", help="Number of results to retrieve (default: 5)", type=int, default=5)
     parser.add_argument("--list", help="List all available KBs and exit", action="store_true")
+    
+    # Metadata filtering options
+    parser.add_argument("--content-type", help="Filter by content_type metadata (e.g., case_studies, services_products)", type=str)
+    parser.add_argument("--document-source", help="Filter by document_source metadata (e.g., website, intake_form)", type=str)
+    parser.add_argument("--alpha", help="Hybrid search weight: 0=keyword (BM25), 1=vector (default), 0.5=hybrid", type=float)
+    parser.add_argument("--filters", help="Custom filters as JSON", type=str)
     
     args = parser.parse_args()
     
@@ -214,7 +330,24 @@ Examples:
         else:
             kb_uuid = args.kb_uuid
         
-        test_retrieval(kb_uuid, args.query, args.num_results)
+        # Parse custom filters if provided
+        custom_filters = None
+        if args.filters:
+            try:
+                custom_filters = json.loads(args.filters)
+            except json.JSONDecodeError as e:
+                print(f"✗ Error: Invalid JSON for --filters: {e}")
+                return
+        
+        test_retrieval(
+            kb_uuid, 
+            args.query, 
+            args.num_results,
+            content_type=args.content_type,
+            document_source=args.document_source,
+            alpha=args.alpha,
+            custom_filters=custom_filters
+        )
     
     # Interactive mode (default)
     else:
