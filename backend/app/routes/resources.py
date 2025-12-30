@@ -1,9 +1,7 @@
 """
 Resource links endpoint - generates presigned URLs for key JSON reports
 """
-from fastapi import APIRouter, HTTPException
-from app.clients.digital_ocean_client import do_client
-from botocore.client import Config
+from fastapi import APIRouter, HTTPException, Request
 import json
 import logging
 from typing import Any, Dict
@@ -40,9 +38,13 @@ def _pinecone_fetch_report_doc(*, index_name: str, namespace: str, doc_id: str) 
 
 
 @router.get("/resource-links")
-async def get_resource_links():
+async def get_resource_links(request: Request):
     """
-    Generate presigned URLs for key resource files in DigitalOcean Spaces
+    Return links to key reporting artifacts.
+
+    Historically these were presigned URLs into DigitalOcean Spaces. Now that we’re
+    Supabase + Pinecone, we expose these artifacts via API endpoints backed by
+    Pinecone report indexes.
     
     Returns:
         dict: Dictionary containing presigned URLs for:
@@ -50,60 +52,13 @@ async def get_resource_links():
             - client_kb_data: Detailed KB audit results
             - agent_directory: Complete agent registry
     """
-    try:
-        # URLs expire in 1 hour (3600 seconds)
-        expiration = 3600
-        
-        links = {}
-        
-        # 1. Client Data (summary.json)
-        try:
-            links["client_data"] = do_client.s3_client.generate_presigned_url(
-                'get_object',
-                Params={
-                    'Bucket': 'mintleads-clients-kb',
-                    'Key': '_client_kb_master/summary.json'
-                },
-                ExpiresIn=expiration
-            )
-        except Exception as e:
-            logger.warning(f"Failed to generate link for client_data: {e}")
-            links["client_data"] = None
-        
-        # 2. Client KB Data (client_audit_results.json)
-        try:
-            links["client_kb_data"] = do_client.s3_client.generate_presigned_url(
-                'get_object',
-                Params={
-                    'Bucket': 'mintleads-clients-kb',
-                    'Key': '_client_kb_master/reports/client_audit_results.json'
-                },
-                ExpiresIn=expiration
-            )
-        except Exception as e:
-            logger.warning(f"Failed to generate link for client_kb_data: {e}")
-            links["client_kb_data"] = None
-        
-        # 3. Agent Directory (agent_registry.json)
-        try:
-            links["agent_directory"] = do_client.s3_client.generate_presigned_url(
-                'get_object',
-                Params={
-                    'Bucket': 'mintleads-agents-store',
-                    'Key': 'agent_registry.json'
-                },
-                ExpiresIn=expiration
-            )
-        except Exception as e:
-            logger.warning(f"Failed to generate link for agent_directory: {e}")
-            links["agent_directory"] = None
-        
-        logger.info("Successfully generated resource links")
-        return links
-        
-    except Exception as e:
-        logger.error(f"Error generating resource links: {e}")
-        raise HTTPException(status_code=500, detail=f"Failed to generate resource links: {str(e)}")
+    base = str(request.base_url).rstrip("/")
+    # These are API-backed links (openable in a browser tab).
+    return {
+        "client_data": f"{base}/api/mintagent/report/_client_kb_master/summary.json",
+        "client_kb_data": f"{base}/api/mintagent/report/_client_kb_master/reports/client_audit_results.json",
+        "agent_directory": f"{base}/api/mintagent/report/agent-registry.json",
+    }
 
 
 @router.get("/summary-warnings")
@@ -175,4 +130,28 @@ async def get_client_details(client_slug: str):
     except Exception as e:
         logger.error(f"Error fetching client details for {client_slug}: {e}")
         raise HTTPException(status_code=500, detail=f"Failed to fetch client details: {str(e)}")
+
+
+@router.get("/report/{doc_id:path}")
+async def get_report(doc_id: str):
+    """
+    Fetch an arbitrary report JSON blob (by doc_id) from Pinecone report indexes.
+
+    This replaces the old “presigned Spaces URL” model with a simple API fetch.
+    """
+    settings = get_settings()
+
+    # Heuristic: agent registry and agent docs live in AGENT_REPORTS; everything else is KB_REPORTS.
+    if doc_id in ("agent-registry.json", "agent-api-tokens.json") or doc_id.startswith("agents/"):
+        return _pinecone_fetch_report_doc(
+            index_name=settings.pinecone_agent_reports_index_name,
+            namespace=settings.pinecone_agent_reports_namespace,
+            doc_id=doc_id,
+        )
+
+    return _pinecone_fetch_report_doc(
+        index_name=settings.pinecone_client_kb_reports_index_name,
+        namespace=settings.pinecone_client_kb_reports_namespace,
+        doc_id=doc_id,
+    )
 

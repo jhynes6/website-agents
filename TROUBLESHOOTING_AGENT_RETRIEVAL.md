@@ -102,7 +102,7 @@ asyncio.run(reindex())
 ## Wait Time
 After reindexing, wait **2-5 minutes** for the indexing job to complete before testing retrieval again.
 
-## Monitoring Index Status
+## Monitoring Index Status  
 ```bash
 # Check index job status
 cd backend && source venv/bin/activate

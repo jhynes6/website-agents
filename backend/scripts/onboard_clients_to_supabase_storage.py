@@ -50,7 +50,14 @@ def _candidate_client_files() -> List[Path]:
     return files
 
 
-async def _run_one(client_slug: str, *, website_limit: int, website_max_depth: Optional[int]) -> Dict[str, Any]:
+async def _run_one(
+    client_slug: str,
+    *,
+    website_limit: int,
+    website_max_depth: Optional[int],
+    skip_website: bool,
+    skip_drive: bool,
+) -> Dict[str, Any]:
     # locate file by slug
     files = _candidate_client_files()
     match = None
@@ -73,6 +80,8 @@ async def _run_one(client_slug: str, *, website_limit: int, website_max_depth: O
         intake_form_url=rec.get("intake_form_url"),
         website_limit=website_limit,
         website_max_depth=website_max_depth,
+        skip_website=skip_website,
+        skip_drive=skip_drive,
     )
     return {
         "client_slug": result.client_slug,
@@ -84,7 +93,14 @@ async def _run_one(client_slug: str, *, website_limit: int, website_max_depth: O
     }
 
 
-async def _run_all(*, website_limit: int, website_max_depth: Optional[int], limit_clients: Optional[int]) -> List[Dict[str, Any]]:
+async def _run_all(
+    *,
+    website_limit: int,
+    website_max_depth: Optional[int],
+    limit_clients: Optional[int],
+    skip_website: bool,
+    skip_drive: bool,
+) -> List[Dict[str, Any]]:
     out: List[Dict[str, Any]] = []
     files = _candidate_client_files()
     if limit_clients:
@@ -104,6 +120,8 @@ async def _run_all(*, website_limit: int, website_max_depth: Optional[int], limi
                 intake_form_url=rec.get("intake_form_url"),
                 website_limit=website_limit,
                 website_max_depth=website_max_depth,
+                skip_website=skip_website,
+                skip_drive=skip_drive,
             )
             out.append(
                 {
@@ -128,6 +146,8 @@ def main() -> int:
     parser.add_argument("--limit-clients", type=int, default=None, help="When using --all, stop after this many clients.")
     parser.add_argument("--website-limit", type=int, default=500, help="Max website pages to crawl.")
     parser.add_argument("--website-max-depth", type=int, default=None, help="Optional crawl max depth.")
+    parser.add_argument("--skip-website", action="store_true", help="Skip website crawl/upload (storage-only or drive-only run).")
+    parser.add_argument("--skip-drive", action="store_true", help="Skip drive ingest/upload (storage-only or website-only run).")
 
     args = parser.parse_args()
 
@@ -137,12 +157,26 @@ def main() -> int:
         raise SystemExit("Use either --client-slug or --all (not both)")
 
     if args.client_slug:
-        res = asyncio.run(_run_one(args.client_slug, website_limit=args.website_limit, website_max_depth=args.website_max_depth))
+        res = asyncio.run(
+            _run_one(
+                args.client_slug,
+                website_limit=args.website_limit,
+                website_max_depth=args.website_max_depth,
+                skip_website=args.skip_website,
+                skip_drive=args.skip_drive,
+            )
+        )
         print(json.dumps(res, indent=2))
         return 0
 
     results = asyncio.run(
-        _run_all(website_limit=args.website_limit, website_max_depth=args.website_max_depth, limit_clients=args.limit_clients)
+        _run_all(
+            website_limit=args.website_limit,
+            website_max_depth=args.website_max_depth,
+            limit_clients=args.limit_clients,
+            skip_website=args.skip_website,
+            skip_drive=args.skip_drive,
+        )
     )
     print("\n=== summary ===")
     print(json.dumps({"count": len(results), "results": results}, indent=2))

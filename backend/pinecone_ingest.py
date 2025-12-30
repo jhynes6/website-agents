@@ -2,6 +2,8 @@ import os
 from getpass import getpass
 from pinecone import Pinecone
 
+
+
 base_url = 'https://api.pinecone.io'
 pinecone_api_key = os.environ.get("PINECONE_API_KEY")
 
@@ -38,10 +40,6 @@ def get_pinecone_api_key():
     return api_key
 
 api_key = get_pinecone_api_key()
-/Users/hynes/Downloads/lawson_case_study_2023.pdf
-
-
-
 
 pc = Pinecone(
     # source_tag isn't necessary for production workloads, so feel free to remove later

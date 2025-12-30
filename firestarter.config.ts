@@ -1,8 +1,6 @@
 import { groq } from '@ai-sdk/groq'
 import { openai } from '@ai-sdk/openai'
 import { anthropic } from '@ai-sdk/anthropic'
-import { Ratelimit } from '@upstash/ratelimit'
-import { Redis } from '@upstash/redis'
 
 // AI provider configuration
 const AI_PROVIDERS = {
@@ -35,24 +33,8 @@ function getAIModel() {
 
 // Rate limiter factory
 function createRateLimiter(identifier: string, requests = 50, window = '1 d') {
-  if (typeof window !== 'undefined') {
+  // Upstash rate limiting removed. Keep function for backward compatibility.
     return null
-  }
-  if (!process.env.UPSTASH_REDIS_REST_URL || !process.env.UPSTASH_REDIS_REST_TOKEN) {
-    return null
-  }
-  
-  const redis = new Redis({
-    url: process.env.UPSTASH_REDIS_REST_URL,
-    token: process.env.UPSTASH_REDIS_REST_TOKEN,
-  })
-  
-  return new Ratelimit({
-    redis,
-    limiter: Ratelimit.fixedWindow(requests, window),
-    analytics: true,
-    prefix: `mintagent:ratelimit:${identifier}`,
-  })
 }
 
 const config = {
@@ -90,10 +72,6 @@ const config = {
   storage: {
     maxIndexes: 50,
     localStorageKey: 'mintagent_indexes',
-    redisPrefix: {
-      indexes: 'mintagent:indexes',
-      index: 'mintagent:index:',
-    },
   },
 
   rateLimits: {
@@ -104,8 +82,8 @@ const config = {
 
   features: {
     enableCreation: process.env.DISABLE_CHATBOT_CREATION !== 'true',
-    enableRedis: !!(process.env.UPSTASH_REDIS_REST_URL && process.env.UPSTASH_REDIS_REST_TOKEN),
-    enableSearch: !!(process.env.UPSTASH_SEARCH_REST_URL && process.env.UPSTASH_SEARCH_REST_TOKEN),
+    enableRedis: false,
+    enableSearch: false,
   },
 }
 

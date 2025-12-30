@@ -683,7 +683,7 @@ export default function MintagentPage() {
                     className="border-[#0E3D68]/20 focus:border-[#00B388] focus:ring-[#00B388]/20"
                   />
                   <p className="text-xs text-muted-foreground mt-1">
-                    Optional. If empty, uses backend default (`UPSTASH_SEARCH_INDEX`).
+                    Optional.
                   </p>
                 </div>
               </div>

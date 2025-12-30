@@ -211,56 +211,6 @@ def _pinecone_tools(*, mcp: Optional[MCPClient]) -> Dict[str, AgentTool]:
 
 
 # -----------------------------
-# DigitalOcean (native client in this repo)
-# -----------------------------
-
-
-def _digitalocean_tools(*, mcp: Optional[MCPClient]) -> Dict[str, AgentTool]:
-    # NOTE: We rely on the existing in-repo DigitalOcean client implementation.
-    # We are NOT adding new DO API endpoints here.
-    from .clients.digital_ocean_client import do_client
-
-    return {
-        "digitalocean.list_knowledge_bases": AgentTool(
-            name="digitalocean.list_knowledge_bases",
-            description="List knowledge bases in DigitalOcean GenAI.",
-            call=lambda: do_client.list_knowledge_bases(),
-        ),
-        "digitalocean.get_knowledge_base": AgentTool(
-            name="digitalocean.get_knowledge_base",
-            description="Get a DigitalOcean knowledge base by UUID.",
-            call=lambda *, kb_uuid: do_client.get_knowledge_base(str(kb_uuid)),
-        ),
-        "digitalocean.list_agents": AgentTool(
-            name="digitalocean.list_agents",
-            description="List agents in DigitalOcean GenAI.",
-            call=lambda: do_client.list_agents(),
-        ),
-        "digitalocean.get_agent": AgentTool(
-            name="digitalocean.get_agent",
-            description="Get a DigitalOcean agent by UUID.",
-            call=lambda *, agent_uuid: do_client.get_agent(str(agent_uuid)),
-        ),
-        "digitalocean.create_agent": AgentTool(
-            name="digitalocean.create_agent",
-            description="Create a DigitalOcean agent (KB UUIDs optional).",
-            call=lambda *,
-            name,
-            knowledge_base_uuids=None,
-            instruction=None,
-            project_id=None,
-            region=None: do_client.create_agent(
-                name=str(name),
-                knowledge_base_uuids=list(knowledge_base_uuids or []),
-                instruction=instruction,
-                project_id=project_id,
-                region=region,
-            ),
-        ),
-    }
-
-
-# -----------------------------
 # Supabase Email Bison Project (MCP-backed)
 # -----------------------------
 
@@ -404,7 +354,6 @@ _TOOLSET_FACTORIES: Dict[str, Callable[[Optional[MCPClient]], Dict[str, AgentToo
     "brightdata": lambda mcp: _brightdata_tools(mcp=mcp),
     "firecrawl": lambda mcp: _firecrawl_tools(mcp=mcp),
     "pinecone": lambda mcp: _pinecone_tools(mcp=mcp),
-    "digitalocean": lambda mcp: _digitalocean_tools(mcp=mcp),
     "supabase_email_bison_project": lambda mcp: _supabase_email_bison_project_tools(mcp=mcp),
 }
 

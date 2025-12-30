@@ -3,14 +3,12 @@ from typing import Any, Dict, Optional
 
 from fastapi import APIRouter, HTTPException
 from fastapi.responses import JSONResponse
-from openai import AsyncOpenAI
 
 from ..logging import log
 from ..config import get_settings
 from ..clients.agent_templates.loader import load_agent_template
 from ..clients.llm import llm_client
 from ..clients.pinecone_client import pinecone_kb_client
-from ..services.do_agent_manager import ensure_agent
 
 
 router = APIRouter()
@@ -130,6 +128,7 @@ async def inbox_manager_qa(payload: Dict[str, Any]) -> JSONResponse:
       - qa_raw: raw model output
       - qa: parsed JSON if possible (else null)
     """
+    settings = get_settings()
     client_slug: Optional[str] = payload.get("clientSlug") or payload.get("client_slug") or payload.get("namespace")
     res: Optional[Dict[str, Any]] = payload.get("webhookPayload") or payload.get("res")
     proposed_reply: Optional[str] = payload.get("proposedReply") or payload.get("proposed_reply")
@@ -141,40 +140,49 @@ async def inbox_manager_qa(payload: Dict[str, Any]) -> JSONResponse:
     if not proposed_reply:
         raise HTTPException(status_code=400, detail="proposedReply is required")
 
-    # Ensure QA agent exists for this client
-    agent_rec = await ensure_agent(client_slug, agent_type="inbox_manager_qa")
-    if not agent_rec.endpoint_url or not agent_rec.api_key:
-        raise HTTPException(status_code=500, detail="Failed to resolve QA agent endpoint/key")
-
     workspace_name = (res.get("event") or {}).get("workspace_name")
     prospect_name = ((res.get("data") or {}).get("reply") or {}).get("from_name")
 
-    user_content = (
-        "You are the inbox_manager_qa agent.\n\n"
-        "Evaluate the proposed reply against the full webhook payload.\n\n"
-        f"workspace_name: {workspace_name}\n"
-        f"prospect_name: {prospect_name}\n\n"
-        "webhook payload (variable name `res`):\n"
-        f"{json.dumps(res, ensure_ascii=False)}\n\n"
-        "proposed_reply:\n"
-        f"{proposed_reply}\n"
+    system_prompt = """You are an inbox reply QA agent.
+
+You will be given:
+- a prospect reply webhook payload (JSON)
+- a proposed draft reply (plain text)
+
+Your job:
+- Identify hallucinations, incorrect claims, missing clarifications, bad tone, policy risk, or any request for info we don't have.
+- Suggest concrete edits.
+
+Return ONLY valid JSON with this exact shape:
+{
+  "is_safe_to_send": boolean,
+  "confidence": number between 0 and 1,
+  "issues": ["..."],
+  "suggested_edits": ["..."],
+  "rewritten_reply": "string (optional, include only if you think changes are required)"
+}
+"""
+
+    user_prompt = (
+        "workspace_name: "
+        + str(workspace_name or "")
+        + "\nprospect_name: "
+        + str(prospect_name or "")
+        + "\n\nwebhook payload (variable name `res`):\n"
+        + json.dumps(res, ensure_ascii=False)
+        + "\n\nproposed_reply:\n"
+        + str(proposed_reply)
     )
 
-    client = AsyncOpenAI(base_url=f"{agent_rec.endpoint_url}/api/v1", api_key=agent_rec.api_key)
+    log("inbox_manager.qa.start", {"client_slug": client_slug, "has_workspace": bool(workspace_name)})
 
-    log(
-        "inbox_manager.qa.start",
-        {"client_slug": client_slug, "agent_uuid": agent_rec.agent_uuid, "has_workspace": bool(workspace_name)},
+    resp = await llm_client.chat(
+        messages=[{"role": "system", "content": system_prompt}, {"role": "user", "content": user_prompt}],
+        temperature=0.2,
+        max_tokens=min(settings.ai_max_tokens, 900),
+        model=str(payload.get("model") or "gpt-4o-mini"),
     )
-
-    resp = await client.chat.completions.create(
-        model="n/a",
-        messages=[{"role": "user", "content": user_content}],
-        stream=False,
-        extra_body={"include_retrieval_info": False},
-    )
-
-    qa_raw = (resp.choices[0].message.content or "").strip()
+    qa_raw = (resp["choices"][0]["message"]["content"] or "").strip()
 
     qa: Optional[Dict[str, Any]] = None
     try:

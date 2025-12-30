@@ -1,7 +1,7 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
-from .routes import create, debug, query, stats, indexes, agents, agent_debug, resources, inbox_manager
+from .routes import create, debug, query, stats, indexes, agents, agent_debug, resources, inbox_manager, chat, assistant_chat
 
 app = FastAPI(title="MintAgent Python Backend", version="0.1.0")
 
@@ -16,6 +16,8 @@ app.add_middleware(
 
 app.include_router(debug.router, prefix="/api/mintagent", tags=["debug"])
 app.include_router(create.router, prefix="/api/mintagent", tags=["create"])
+app.include_router(chat.router, prefix="/api/mintagent", tags=["chat"])
+app.include_router(assistant_chat.router, prefix="/api/mintagent", tags=["assistant_chat"])
 app.include_router(query.router, prefix="/api/mintagent", tags=["query"])
 app.include_router(stats.router, prefix="/api/mintagent", tags=["stats"])
 app.include_router(indexes.router, prefix="/api/mintagent", tags=["indexes"])

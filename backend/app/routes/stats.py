@@ -1,9 +1,6 @@
 from typing import Any, Dict, List, Optional
-import json
-import asyncio
 from fastapi import APIRouter, HTTPException
 
-from ..clients.digital_ocean_client import do_client
 from ..config import get_settings
 from ..logging import log
 
@@ -22,32 +19,23 @@ async def get_namespace_stats(payload: Dict[str, Any]) -> Dict[str, Any]:
         raise HTTPException(status_code=400, detail="Client slug (namespace) is required")
     
     try:
-        # Fetch metadata.json from Spaces to get the stats
-        # We don't have per-document breakdowns easily available in DO yet without listing all objects.
-        # So we'll return the aggregate count from metadata.
-        
-        pages_crawled = 0
-        
-        if do_client.s3_client and settings.digitalocean_spaces_bucket:
-            try:
-                loop = asyncio.get_event_loop()
-                response = await loop.run_in_executor(
-                    None,
-                    lambda: do_client.s3_client.get_object(
-                        Bucket=settings.digitalocean_spaces_bucket,
-                        Key=f"{namespace}/metadata.json"
-                    )
-                )
-                content = response['Body'].read().decode('utf-8')
-                stored_meta = json.loads(content)
-                pages_crawled = stored_meta.get("pagesCrawled", 0)
-            except Exception:
-                pass
+        # Pinecone-backed stats: use namespace vector_count as the primary signal.
+        if not settings.pinecone_api_key:
+            raise HTTPException(status_code=500, detail="PINECONE_API_KEY not configured")
+
+        from pinecone import Pinecone
+
+        pc = Pinecone(api_key=settings.pinecone_api_key)
+        desc = pc.describe_index(settings.pinecone_kb_index_name)
+        idx = pc.Index(host=desc.host)
+        stats = idx.describe_index_stats()
+        ns_info = (stats or {}).get("namespaces") or {}
+        vector_count = int((ns_info.get(namespace) or {}).get("vector_count") or 0)
 
         return {
-            "total": pages_crawled,
-            "by_content_type": {"website_page": pages_crawled} if pages_crawled > 0 else {},
-            "by_document_source": {"website_crawl": pages_crawled} if pages_crawled > 0 else {}
+            "total": vector_count,
+            "by_content_type": {},
+            "by_document_source": {},
         }
 
     except Exception as exc:

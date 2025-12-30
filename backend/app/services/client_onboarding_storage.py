@@ -74,6 +74,8 @@ async def onboard_client_to_supabase_storage(
     intake_form_url: Optional[str] = None,
     website_limit: int = 500,
     website_max_depth: Optional[int] = None,
+    skip_website: bool = False,
+    skip_drive: bool = False,
 ) -> OnboardResult:
     """
     New onboarding workflow:
@@ -104,7 +106,7 @@ async def onboard_client_to_supabase_storage(
     # 4) website crawl
     website_result: Dict[str, Any] = {"status": "skipped"}
     wurl = _normalize_url(website_url)
-    if wurl:
+    if wurl and not skip_website:
         log("onboarding.website.start", {"client_slug": slug, "url": wurl, "limit": website_limit})
         pages, raw_status = await firecrawl_client.crawl_and_wait(
             wurl,
@@ -151,7 +153,7 @@ async def onboard_client_to_supabase_storage(
     intake_result: Dict[str, Any] = {"status": "skipped"}
 
     creds_path = _resolve_service_account_path()
-    if drive_folder_url:
+    if drive_folder_url and not skip_drive:
         log("onboarding.drive.start", {"client_slug": slug})
         docs, summary, _ = build_drive_documents(drive_folder_url, slug, creds_path)
 

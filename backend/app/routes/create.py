@@ -4,6 +4,8 @@ import logging
 import os
 import time
 import re
+import yaml
+import httpx
 from pathlib import Path
 from urllib.parse import urlparse
 from typing import Any, Dict, List, Optional
@@ -16,7 +18,6 @@ from googleapiclient.errors import HttpError
 from ..clients.firecrawl import firecrawl_client
 from ..clients.llm import llm_client
 from ..clients.pinecone_client import pinecone_kb_client
-from ..clients.digital_ocean_client import DigitalOceanClient
 from ..clients.supabase_agent_storage_client import SupabaseAgentStorageClient
 from ..config import get_settings
 from ..logging import log, logger
@@ -25,6 +26,9 @@ from ..services.drive_ingest import (
     categorize_drive_documents,
     extract_drive_folder_id,
 )
+from pinecone import Pinecone
+from openai import OpenAI
+import tempfile
 
 DRIVE_CONTENT_SYSTEM_PROMPT = """
 You are helping categorize document content based on the type of information in each document.
@@ -49,7 +53,6 @@ DRIVE_VALID_CATEGORIES = [
 ]
 
 router = APIRouter()
-do_client = DigitalOceanClient()
 
 # Initialize Supabase Agent Storage client (lazy - only if configured)
 _supabase_storage_client = None
@@ -557,6 +560,281 @@ async def _upload_to_storage(client_slug: str, documents: List[Dict[str, Any]]) 
     }
 
 
+async def _create_assistant(client_slug: str) -> Dict[str, Any]:
+    """
+    Create a Pinecone Assistant for the client and upload all documents.
+    
+    Creates an assistant named after the client slug and uploads all
+    markdown files from Supabase Storage to populate the knowledge base.
+    """
+    settings = get_settings()
+    
+    if not settings.pinecone_api_key:
+        log("create.assistant.not_configured", {"client": client_slug})
+        return {"success": False, "reason": "Missing Pinecone API key"}
+    
+    BUCKET_NAME = "client-data-sources"
+    assistant_name = client_slug
+    
+    # Initialize Pinecone
+    pc = Pinecone(api_key=settings.pinecone_api_key)
+    
+    # Check if assistant already exists
+    try:
+        existing_assistants = pc.assistant.list_assistants()
+        assistant_exists = any(
+            a.name == assistant_name 
+            for a in existing_assistants.get("assistants", [])
+        )
+        
+        if assistant_exists:
+            log("create.assistant.exists", {"client": client_slug, "assistant": assistant_name})
+            return {
+                "success": True,
+                "assistant_name": assistant_name,
+                "created": False,
+                "reason": "Assistant already exists"
+            }
+    except Exception as e:
+        log("create.assistant.check_error", {"client": client_slug, "error": str(e)})
+        # Continue anyway - might be first time
+    
+    # Create assistant with custom instructions
+    instructions = f"""You are a helpful AI assistant with knowledge about {client_slug}.
+Answer questions based on the provided documents about this organization.
+Be concise, accurate, and cite sources when possible.
+If you don't know the answer, say so clearly."""
+    
+    try:
+        assistant = pc.assistant.create_assistant(
+            assistant_name=assistant_name,
+            instructions=instructions,
+            timeout=30
+        )
+        log("create.assistant.created", {
+            "client": client_slug,
+            "assistant": assistant_name,
+            "status": assistant.status
+        })
+    except Exception as e:
+        log("create.assistant.create_error", {"client": client_slug, "error": str(e)})
+        return {"success": False, "error": str(e)}
+    
+    # Get Supabase client and list all markdown files
+    supabase_client = get_supabase_storage_client()
+    if not supabase_client:
+        log("create.assistant.no_supabase", {"client": client_slug})
+        return {"success": False, "reason": "Supabase Storage not configured"}
+    
+    # List all markdown files
+    all_files = []
+    for subfolder in ["website", "drive", "intake_form"]:
+        prefix = f"{client_slug}/{subfolder}"
+        
+        try:
+            objects = supabase_client.list_objects(BUCKET_NAME, prefix=prefix)
+            for obj in objects:
+                name = obj.get("name", "")
+                if name and name.endswith(".md") and not name.endswith("/.keep"):
+                    full_path = f"{prefix}/{name}"
+                    all_files.append((full_path, name))
+        except Exception as e:
+            log("create.assistant.list_error", {"subfolder": subfolder, "error": str(e)})
+    
+    if not all_files:
+        log("create.assistant.no_files", {"client": client_slug})
+        return {
+            "success": True,
+            "assistant_name": assistant_name,
+            "files_uploaded": 0,
+            "warning": "No files to upload"
+        }
+    
+    log("create.assistant.uploading", {
+        "client": client_slug,
+        "files": len(all_files)
+    })
+    
+    # Upload files to assistant
+    uploaded_count = 0
+    failed_count = 0
+    
+    with tempfile.TemporaryDirectory() as temp_dir:
+        temp_path = Path(temp_dir)
+        
+        for file_path, file_name in all_files:
+            try:
+                # Download from Supabase
+                content_bytes = supabase_client.download_bytes(BUCKET_NAME, file_path)
+                if not content_bytes:
+                    failed_count += 1
+                    continue
+                
+                # Save to temp file
+                safe_filename = file_name.replace("/", "_")
+                local_file = temp_path / safe_filename
+                local_file.write_bytes(content_bytes)
+                
+                # Upload to assistant
+                pc.assistant.Assistant(assistant_name=assistant_name).upload_file(
+                    file_path=str(local_file),
+                    timeout=None
+                )
+                
+                uploaded_count += 1
+                
+            except Exception as e:
+                log("create.assistant.upload_error", {
+                    "file": file_name,
+                    "error": str(e)
+                })
+                failed_count += 1
+    
+    log("create.assistant.complete", {
+        "client": client_slug,
+        "assistant": assistant_name,
+        "uploaded": uploaded_count,
+        "failed": failed_count
+    })
+    
+    return {
+        "success": True,
+        "assistant_name": assistant_name,
+        "files_uploaded": uploaded_count,
+        "files_failed": failed_count,
+        "created": True
+    }
+
+
+async def _vectorize_to_pinecone(client_slug: str) -> Dict[str, Any]:
+    """
+    Vectorize all markdown files from Supabase Storage to Pinecone.
+    
+    Reads files from client-data-sources bucket, chunks content,
+    generates embeddings, and upserts to Pinecone index with client namespace.
+    """
+    settings = get_settings()
+    
+    BUCKET_NAME = "client-data-sources"
+
+    # Pinecone (Records API via pinecone_kb_client)
+    if not settings.pinecone_api_key:
+        log("create.pinecone.not_configured", {"client": client_slug})
+        return {"success": False, "reason": "Missing PINECONE_API_KEY"}
+
+    namespace = client_slug
+    
+    # Get Supabase Storage client
+    supabase_client = get_supabase_storage_client()
+    if not supabase_client:
+        log("create.pinecone.no_supabase", {"client": client_slug})
+        return {"success": False, "reason": "Supabase Storage not configured"}
+    
+    # List all markdown files for the client
+    base_url = str(settings.supabase_agent_url).rstrip("/")
+    storage_url = f"{base_url}/storage/v1"
+    headers = {
+        "Authorization": f"Bearer {settings.supabase_agent_key}",
+        "apikey": settings.supabase_agent_key
+    }
+    list_url = f"{storage_url}/object/list/{BUCKET_NAME}"
+    
+    all_files = []
+    for subfolder in ["website", "drive", "intake_form"]:
+        prefix = f"{client_slug}/{subfolder}"
+        payload = {
+            "limit": 1000,
+            "offset": 0,
+            "prefix": prefix,
+            "sortBy": {"column": "name", "order": "asc"}
+        }
+        
+        try:
+            resp = httpx.post(list_url, headers=headers, json=payload, timeout=30)
+            if resp.status_code == 200:
+                data = resp.json()
+                md_files = [
+                    f"{prefix}/{item['name']}" for item in data
+                    if item.get("metadata") and item.get("name", "").endswith(".md")
+                ]
+                all_files.extend(md_files)
+        except Exception as e:
+            log("create.pinecone.list_error", {"subfolder": subfolder, "error": str(e)})
+    
+    if not all_files:
+        log("create.pinecone.no_files", {"client": client_slug})
+        return {"success": True, "files_processed": 0, "records_upserted": 0, "namespace": namespace, "index": settings.pinecone_kb_index_name}
+    
+    log("create.pinecone.processing", {"client": client_slug, "files": len(all_files)})
+    
+    # Process each file into documents, then upsert via pinecone_kb_client (integrated embedding).
+    files_processed = 0
+    docs: List[Dict[str, Any]] = []
+    
+    for file_path in all_files:
+        try:
+            # Download file
+            content_bytes = supabase_client.download_bytes(BUCKET_NAME, file_path)
+            if not content_bytes:
+                continue
+            
+            content_str = content_bytes.decode("utf-8")
+            
+            # Parse YAML frontmatter
+            metadata = {}
+            body = content_str
+            if content_str.startswith("---"):
+                parts = content_str.split("---", 2)
+                if len(parts) >= 3:
+                    import yaml
+                    metadata = yaml.safe_load(parts[1]) or {}
+                    body = parts[2].strip()
+            
+            # Ensure doc_id exists
+            doc_id = metadata.get("doc_id")
+            if not doc_id:
+                continue
+            
+            # Normalize keywords to string list
+            kws_in = metadata.get("keywords")
+            if isinstance(kws_in, str) and kws_in.strip():
+                kws = [k.strip().lower() for k in kws_in.split(",") if k.strip()]
+            elif isinstance(kws_in, list):
+                kws = [str(k).strip().lower() for k in kws_in if str(k).strip()]
+            else:
+                kws = []
+
+            docs.append(
+                {
+                    "title": metadata.get("title") or "",
+                    "url": metadata.get("url") or "",
+                    "content_type": metadata.get("content_type") or "",
+                    "document_source": metadata.get("document_source") or "unknown",
+                    "keywords": kws,
+                    "markdown": body,
+                    # Stable per-file identity for record IDs + UI links
+                    "file_key": metadata.get("file_key") or doc_id or file_path,
+                }
+            )
+            files_processed += 1
+        
+        except Exception as e:
+            log("create.pinecone.file_error", {"file": file_path, "error": str(e)})
+    
+    log("create.pinecone.complete", {
+        "client": client_slug,
+        "files": files_processed,
+        "docs": len(docs),
+    })
+    
+    try:
+        upsert_res = pinecone_kb_client.upsert_documents(client_slug=client_slug, documents=docs)
+        return {"success": True, "files_processed": files_processed, **upsert_res}
+    except Exception as e:
+        log("create.pinecone.error", {"client": client_slug, "error": str(e)})
+        return {"success": False, "files_processed": files_processed, "error": str(e), "namespace": namespace}
+
+
 async def _categorize_pages_parallel(pages: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
     """Categorize pages in parallel using LLM."""
     tasks = []
@@ -921,8 +1199,55 @@ async def create_chatbot(payload: Dict[str, Any]) -> Dict[str, Any]:
                     log("create.supabase.metadata_error", {"error": str(e), "client": client_slug})
 
             # -------------------------------------------------------------------------
-            # 6. Store metadata in Supabase Storage (Pinecone vectorization is separate)
+            # 6. Vectorize to Pinecone (only if Supabase upload was successful)
             # -------------------------------------------------------------------------
+            pinecone_info: Dict[str, Any] = {}
+            if storage_info.get("success"):
+                try:
+                    pinecone_info = await _vectorize_to_pinecone(client_slug)
+                    if pinecone_info.get("success"):
+                        log("create.pinecone.success", {
+                            "client": client_slug,
+                            "files": pinecone_info.get("files_processed", 0),
+                            "records": pinecone_info.get("records_upserted", 0),
+                            "namespace": pinecone_info.get("namespace")
+                        })
+                    else:
+                        log("create.pinecone.failed", {
+                            "client": client_slug,
+                            "reason": pinecone_info.get("reason", "Unknown")
+                        })
+                except Exception as e:
+                    log("create.pinecone.error", {"client": client_slug, "error": str(e)})
+                    pinecone_info = {"success": False, "error": str(e)}
+
+            # -------------------------------------------------------------------------
+            # 7. Create Pinecone Assistant (for new clients with successful vectorization)
+            # -------------------------------------------------------------------------
+            assistant_info: Dict[str, Any] = {}
+            if storage_info.get("success") and pinecone_info.get("success"):
+                try:
+                    assistant_info = await _create_assistant(client_slug)
+                    if assistant_info.get("success"):
+                        if assistant_info.get("created"):
+                            log("create.assistant.success", {
+                                "client": client_slug,
+                                "assistant": assistant_info.get("assistant_name"),
+                                "files": assistant_info.get("files_uploaded", 0)
+                            })
+                        else:
+                            log("create.assistant.skipped", {
+                                "client": client_slug,
+                                "reason": assistant_info.get("reason", "Already exists")
+                            })
+                    else:
+                        log("create.assistant.failed", {
+                            "client": client_slug,
+                            "reason": assistant_info.get("reason", "Unknown")
+                        })
+                except Exception as e:
+                    log("create.assistant.error", {"client": client_slug, "error": str(e)})
+                    assistant_info = {"success": False, "error": str(e)}
 
         except Exception as e:
             log("create.ingest.error", {"error": str(e)})
@@ -932,10 +1257,12 @@ async def create_chatbot(payload: Dict[str, Any]) -> Dict[str, Any]:
     return {
         "success": True,
         "status": "success",
-        "index": get_settings().pinecone_kb_index_name,
+        "index": settings.pinecone_kb_index_name,
         "namespace": namespace,
         "pages_processed": len(pages),
         "drive_docs_processed": len(drive_docs),
         "total_documents": len(final_documents),
-        "storage": storage_info,
+        "storage": storage_info if 'storage_info' in locals() else {},
+        "pinecone": pinecone_info if 'pinecone_info' in locals() else {},
+        "assistant": assistant_info if 'assistant_info' in locals() else {},
     }

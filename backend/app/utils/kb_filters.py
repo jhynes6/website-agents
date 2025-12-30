@@ -1,8 +1,9 @@
 """
 Client-side filtering utilities for Knowledge Base retrieval results.
 
-Since DigitalOcean KB doesn't preserve S3 metadata, we parse YAML frontmatter
-from the parent_chunk_text field to enable filtering by content_type, document_source, etc.
+We parse YAML frontmatter embedded in chunk text to enable filtering by
+content_type, document_source, etc. (Legacy pipelines used frontmatter to
+carry metadata alongside Markdown content.)
 """
 
 import re

@@ -5,6 +5,7 @@ import json
 from dataclasses import dataclass
 from typing import Any, Dict, List, Optional
 from urllib.parse import quote
+import base64
 
 import httpx
 
@@ -31,13 +32,50 @@ class SupabaseStorageClient:
 
     def __init__(self, *, project_url: Optional[str] = None, service_role_key: Optional[str] = None) -> None:
         s = get_settings()
-        self.project_url = (project_url or str(s.supabase_url or "")).rstrip("/")
-        self.service_role_key = service_role_key or (s.supabase_service_role_key or "")
+        # Prefer Agents project env vars, fall back to generic SUPABASE_*.
+        self.project_url = (
+            project_url
+            or str(s.supabase_agent_url or "")
+            or str(s.supabase_url or "")
+        ).rstrip("/")
+        self.service_role_key = (
+            service_role_key
+            or (s.supabase_agent_key or "")
+            or (s.supabase_service_role_key or "")
+        )
         if not self.project_url:
-            raise ValueError("SUPABASE_URL not configured")
+            raise ValueError(
+                "Supabase URL not configured. Set SUPABASE_AGENT_URL (preferred) or SUPABASE_URL."
+            )
         if not self.service_role_key:
-            raise ValueError("SUPABASE_SERVICE_ROLE_KEY not configured (required for Storage admin operations)")
+            raise ValueError(
+                "Supabase key not configured. Set SUPABASE_AGENT_KEY (preferred) or SUPABASE_SERVICE_ROLE_KEY."
+            )
+        self._warn_if_not_service_role(self.service_role_key)
         self.base_url = f"{self.project_url}/storage/v1"
+
+    @staticmethod
+    def _warn_if_not_service_role(jwt: str) -> None:
+        """
+        Creating buckets / uploading server-side typically requires a service-role key
+        unless you have explicitly opened up Storage via policies.
+        """
+        token = (jwt or "").strip()
+        parts = token.split(".")
+        if len(parts) != 3:
+            return
+        try:
+            payload_b64 = parts[1] + "=" * (-len(parts[1]) % 4)
+            payload = json.loads(base64.urlsafe_b64decode(payload_b64.encode("utf-8")).decode("utf-8"))
+            role = payload.get("role")
+            if role and role != "service_role":
+                raise ValueError(
+                    f"SUPABASE_AGENT_KEY appears to be role={role!r}. "
+                    "Bucket creation/uploads will fail unless you use a service-role key or you have permissive Storage policies."
+                )
+        except Exception:
+            # If we can't decode, don't block initialization.
+            return
 
     def _headers(self) -> Dict[str, str]:
         key = self.service_role_key
@@ -169,33 +207,33 @@ class SupabaseStorageClient:
         bucket: str,
         *,
         prefix: str = "",
-        limit: int = 1000,
+        limit: int = 100,
         offset: int = 0,
         sort_by: Optional[Dict[str, str]] = None,
+        search: Optional[str] = None,
     ) -> List[Dict[str, Any]]:
         """
-        List objects in a bucket using the Storage API list endpoint.
+        List/search objects in a bucket under a prefix.
 
-        Note: This is paginated via limit/offset.
+        Storage API: POST /object/list/{bucketName}
+        Note: response is an array of objects (not wrapped in {"items": ...}).
         """
         b = (bucket or "").strip()
         if not b:
             raise ValueError("bucket required")
 
         url = f"{self.base_url}/object/list/{quote(b)}"
-        body: Dict[str, Any] = {
-            "prefix": prefix,
-            "limit": limit,
-            "offset": offset,
-        }
+        body: Dict[str, Any] = {"prefix": prefix, "limit": int(limit), "offset": int(offset)}
         if sort_by:
             body["sortBy"] = sort_by
+        if search:
+            body["search"] = search
+
         resp = httpx.post(url, headers={**self._headers(), "Content-Type": "application/json"}, json=body, timeout=60)
         if resp.status_code >= 400:
             raise RuntimeError(f"Supabase Storage list objects error {resp.status_code}: {resp.text}")
         data = resp.json()
-        items = data.get("items") if isinstance(data, dict) else None
-        return items or []
+        return data if isinstance(data, list) else []
 
     def delete_objects(self, bucket: str, paths: List[str]) -> Dict[str, Any]:
         """
@@ -210,7 +248,8 @@ class SupabaseStorageClient:
         resp = httpx.delete(
             url,
             headers={**self._headers(), "Content-Type": "application/json"},
-            json={"paths": paths},
+            # Storage API expects `prefixes` for batch delete.
+            json={"prefixes": paths},
             timeout=120,
         )
         if resp.status_code >= 400:

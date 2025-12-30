@@ -6,7 +6,6 @@ from typing import Any, Dict, List, Optional, Tuple
 
 from fastapi import APIRouter, HTTPException
 
-from ..clients.digital_ocean_client import do_client
 from ..config import get_settings
 
 router = APIRouter()
@@ -27,42 +26,28 @@ def _open_pinecone_index(index_name: str):
     return pc.Index(host=desc.host)
 
 
-async def _try_get_spaces_client_report(bucket: str, client_slug: str) -> Optional[Dict[str, Any]]:
+def _pinecone_fetch_report_doc(*, index_name: str, namespace: str, doc_id: str) -> Optional[Dict[str, Any]]:
     """
-    Best-effort: load our canonical UI/KB report from Spaces.
+    Fetch a report doc from Pinecone by ID and parse JSON from the stored `text` field.
+    Returns None if missing.
     """
-    if not do_client.s3_client:
-        return None
-    loop = asyncio.get_event_loop()
-    try:
-        resp = await loop.run_in_executor(
-            None,
-            lambda: do_client.s3_client.get_object(
-                Bucket=bucket,
-                Key=f"REPORTING/clients/{client_slug}.json",
-            ),
-        )
-        return json.loads(resp["Body"].read().decode("utf-8"))
-    except Exception:
+    from pinecone import Pinecone
+
+    settings = get_settings()
+    if not settings.pinecone_api_key:
         return None
 
+    pc = Pinecone(api_key=settings.pinecone_api_key)
+    desc = pc.describe_index(index_name)
+    idx = pc.Index(host=desc.host)
 
-async def _try_get_spaces_metadata_json(bucket: str, client_slug: str) -> Optional[Dict[str, Any]]:
-    """
-    Best-effort: load legacy metadata.json from Spaces (written by create flow).
-    """
-    if not do_client.s3_client:
+    resp = idx.fetch(ids=[doc_id], namespace=namespace)
+    vec = resp.vectors.get(doc_id) if hasattr(resp, "vectors") else None
+    if not vec:
         return None
-    loop = asyncio.get_event_loop()
+    raw = (vec.metadata or {}).get("text") or ""
     try:
-        resp = await loop.run_in_executor(
-            None,
-            lambda: do_client.s3_client.get_object(
-                Bucket=bucket,
-                Key=f"{client_slug}/metadata.json",
-            ),
-        )
-        return json.loads(resp["Body"].read().decode("utf-8"))
+        return json.loads(raw)
     except Exception:
         return None
 
@@ -72,7 +57,6 @@ def _build_index_payload(
     client_slug: str,
     vector_count: int,
     client_report: Optional[Dict[str, Any]],
-    legacy_meta: Optional[Dict[str, Any]],
 ) -> Dict[str, Any]:
     # Metadata defaults
     metadata: Dict[str, Any] = {
@@ -104,22 +88,6 @@ def _build_index_payload(
 
         ts = client_report.get("timestamps") or {}
         created_at = ts.get("createdAt") or ts.get("created_at") or created_at
-
-    # Fallback to legacy metadata.json written by create flow
-    if isinstance(legacy_meta, dict):
-        pages_crawled = int(legacy_meta.get("pagesCrawled") or pages_crawled or 0)
-        created_at = legacy_meta.get("createdAt") or created_at
-        m = legacy_meta.get("metadata") or {}
-        if m.get("title"):
-            metadata["title"] = m["title"]
-        if m.get("description"):
-            metadata["description"] = m["description"]
-        if m.get("favicon"):
-            metadata["favicon"] = m["favicon"]
-        if m.get("ogImage"):
-            metadata["ogImage"] = m["ogImage"]
-        if m.get("indexName"):
-            metadata["indexName"] = m["indexName"]
 
     # Reasonable fallback
     if not created_at:
@@ -167,18 +135,17 @@ async def list_indexes(
             raise HTTPException(status_code=404, detail="Namespace not found")
         namespaces = {target_slug: namespaces[target_slug]}
 
-    # Spaces bucket for UI metadata (optional but recommended)
-    bucket = settings.digitalocean_spaces_bucket
-
     async def process_namespace(slug: str, ns_info: Dict[str, Any]) -> Dict[str, Any]:
         vector_count = int((ns_info or {}).get("vector_count") or 0)
-        client_report = await _try_get_spaces_client_report(bucket, slug) if bucket else None
-        legacy_meta = await _try_get_spaces_metadata_json(bucket, slug) if bucket else None
+        client_report = _pinecone_fetch_report_doc(
+            index_name=settings.pinecone_client_kb_reports_index_name,
+            namespace=settings.pinecone_client_kb_reports_namespace,
+            doc_id=f"_client_kb_master/clients/{slug}.json",
+        )
         return _build_index_payload(
             client_slug=slug,
             vector_count=vector_count,
             client_report=client_report,
-            legacy_meta=legacy_meta,
         )
 
     results = await asyncio.gather(

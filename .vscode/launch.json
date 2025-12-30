@@ -8,13 +8,10 @@
             "name": "A/B Test Agent Systems",
             "type": "debugpy",
             "request": "launch",
-            "program": "${workspaceFolder}/backend/scripts/ab_test_agent_systems.py",
-            "cwd": "${workspaceFolder}/backend",
+            "program": "${workspaceFolder}/upsert_to_pinecone.py ",
+            "cwd": "${workspaceFolder}",
             "args": [
-                "--client",
-                "nextlevel-thinking",
-                "--output",
-                "nextlevel-thinking_ab_test.json"
+                "--all"
             ],
             "jinja": true,
             "justMyCode": false,

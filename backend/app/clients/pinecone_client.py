@@ -100,7 +100,7 @@ class PineconeKBClient:
     Thin Pinecone wrapper for this app's KB workflows.
 
     Design choices:
-    - One KB index per environment (e.g. client-knowledge-bases), namespace per client_slug.
+    - One KB index per environment (e.g. sb-knowledge-bases), namespace per client_slug.
     - Integrated embedding via `create_index_for_model` + `upsert_records`.
     - Flat metadata only (no nested objects).
     """

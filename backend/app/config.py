@@ -33,93 +33,7 @@ class Settings(BaseSettings):
     # Timeout for crawl jobs (ms). Default: 90s. Max allowed: 10m.
     firecrawl_poll_timeout_ms: int = Field(600_000, ge=5_000, le=600_000, alias="FIRECRAWL_POLL_TIMEOUT_MS")
 
-    # Upstash (deprecated - DO-only path). Keep optional for backwards compatibility.
-    upstash_search_rest_url: Optional[HttpUrl] = Field(None, alias="UPSTASH_SEARCH_REST_URL")
-    upstash_search_rest_token: Optional[str] = Field(None, alias="UPSTASH_SEARCH_REST_TOKEN")
-    upstash_search_index: str = Field("mintagent", alias="UPSTASH_SEARCH_INDEX")
-
-    # Redis (deprecated - DO-only path). Keep optional for backwards compatibility.
-    upstash_redis_rest_url: Optional[HttpUrl] = Field(None, alias="UPSTASH_REDIS_REST_URL")
-    upstash_redis_rest_token: Optional[str] = Field(None, alias="UPSTASH_REDIS_REST_TOKEN")
-
-    # Digital Ocean
-    digitalocean_token: Optional[str] = Field(None, alias="DIGITALOCEAN_TOKEN")
-    digitalocean_project_id: Optional[str] = Field(None, alias="DIGITALOCEAN_PROJECT_ID")
-    digitalocean_spaces_key: Optional[str] = Field(None, alias="DIGITALOCEAN_SPACES_KEY")
-    digitalocean_spaces_secret: Optional[str] = Field(None, alias="DIGITALOCEAN_SPACES_SECRET")
-    digitalocean_spaces_region: str = Field("tor1", alias="DIGITALOCEAN_SPACES_REGION")
-    digitalocean_spaces_bucket: Optional[str] = Field(None, alias="DIGITALOCEAN_SPACES_BUCKET")
-    # For KB creation (default region)
-    digitalocean_genai_region: str = Field("tor1", alias="DIGITALOCEAN_GENAI_REGION")
-    # Shared Database ID for Knowledge Bases
-    digitalocean_db_id: Optional[str] = Field("e27f23bd-d953-48c5-8923-f827868ba230", alias="DIGITALOCEAN_DB_ID") 
-    # Model access key (for DO-managed foundation models)
-    digitalocean_model_access_key: Optional[str] = Field(None, alias="DIGITAL_OCEAN_MODEL_ACCESS_KEY")
-    # Optional: workspace/provider key IDs used by some org setups for agent creation
-    digitalocean_workspace_uuid: Optional[str] = Field(None, alias="DIGITALOCEAN_WORKSPACE_UUID")
-    digitalocean_openai_key_uuid: Optional[str] = Field(None, alias="DIGITALOCEAN_OPENAI_KEY_UUID")
-    # Chunking algorithm for KB data sources
-    digitalocean_chunking_algorithm: str = Field(
-        "CHUNKING_ALGORITHM_HIERARCHICAL",
-        alias="DIGITAL_OCEAN_CHUNKING_ALGORITHM",
-    )
-    # Enable advanced chunking options (limited preview). If false, we omit
-    # chunking_algorithm/options to avoid 403 errors from the API.
-    digitalocean_enable_advanced_chunking: bool = Field(
-        False, alias="DIGITAL_OCEAN_ENABLE_ADVANCED_CHUNKING"
-    )
-    # Agent retrieval defaults (applied via update after creation)
-    digitalocean_agent_retrieval_method: str = Field(
-        "RETRIEVAL_METHOD_REWRITE",
-        alias="DIGITAL_OCEAN_AGENT_RETRIEVAL_METHOD",
-    )
-    digitalocean_agent_provide_citations: bool = Field(
-        True,
-        alias="DIGITAL_OCEAN_AGENT_PROVIDE_CITATIONS",
-    )
-    digitalocean_agent_k: int = Field(
-        5,
-        alias="DIGITAL_OCEAN_AGENT_K",
-        ge=1,
-    )
-    digitalocean_agent_conversation_logs_enabled: bool = Field(
-        True,
-        alias="DIGITAL_OCEAN_AGENT_CONVERSATION_LOGS_ENABLED",
-    )
-    digitalocean_agent_log_insights_enabled: bool = Field(
-        True,
-        alias="DIGITAL_OCEAN_AGENT_LOG_INSIGHTS_ENABLED",
-    )
-    digitalocean_agent_model_uuid: str = Field(
-        "9a3644c7-f300-11ef-bf8f-4e013e2ddde4",
-        alias="DIGITALOCEAN_AGENT_MODEL_UUID"
-    )
-    
-    # Agent generation parameters
-    digitalocean_agent_temperature: float = Field(
-        0.3,
-        alias="DIGITALOCEAN_AGENT_TEMPERATURE",
-        ge=0.0,
-        le=2.0
-    )
-    digitalocean_agent_top_p: float = Field(
-        0.8,
-        alias="DIGITALOCEAN_AGENT_TOP_P",
-        ge=0.0,
-        le=1.0
-    )
-    digitalocean_agent_top_k: int = Field(
-        5,
-        alias="DIGITALOCEAN_AGENT_TOP_K",
-        ge=1,
-        le=100
-    )
-    digitalocean_agent_max_tokens: int = Field(
-        4096,
-        alias="DIGITALOCEAN_AGENT_MAX_TOKENS",
-        ge=1,
-        le=4096
-    )
+    # Upstash and DigitalOcean have been removed from this project.
 
     # AI providers
     openai_api_key: Optional[str] = Field(None, alias="OPENAI_API_KEY")
@@ -173,6 +87,17 @@ class Settings(BaseSettings):
     # Optional schema override (default public)
     supabase_schema: str = Field("public", alias="SUPABASE_SCHEMA")
 
+    # Supabase (mintleads-agents project) - Storage + non-vectorized data
+    # These are intentionally separate from BISON_* to avoid collisions.
+    # Preferred env var names for this repo:
+    # - SUPABASE_AGENT_URL
+    # - SUPABASE_AGENT_KEY
+    # Optional:
+    # - SUPABASE_AGENT_PUBLISHABLE_KEY
+    supabase_agent_url: Optional[HttpUrl] = Field(None, alias="SUPABASE_AGENT_URL")
+    supabase_agent_key: Optional[str] = Field(None, alias="SUPABASE_AGENT_KEY")
+    supabase_agent_publishable_key: Optional[str] = Field(None, alias="SUPABASE_AGENT_PUBLISHABLE_KEY")
+
     # Email Bison API
     bison_api_key: Optional[str] = Field(None, alias="BISON_API_KEY")
 
@@ -185,13 +110,14 @@ class Settings(BaseSettings):
     # Defaults for migration scripts / infra
     pinecone_cloud: str = Field("aws", alias="PINECONE_CLOUD")
     pinecone_region: str = Field("us-east-1", alias="PINECONE_REGION")
-    pinecone_kb_index_name: str = Field("client-knowledge-bases", alias="PINECONE_KB_INDEX")
+    # Canonical KB index for this project (upload + retrieval).
+    pinecone_kb_index_name: str = Field("sb-knowledge-bases", alias="PINECONE_KB_INDEX")
     pinecone_agent_index_name: str = Field("agents", alias="PINECONE_AGENT_INDEX")
     # Report indexes (structured JSON “cards” + summaries for UI)
     # User-provided env var names:
     # - CLIENT_KB_REPORTS: Pinecone index name for client KB report docs
     # - AGENT_REPORTS: Pinecone index name for agent report docs
-    pinecone_client_kb_reports_index_name: str = Field("client-knowledge-bases", alias="CLIENT_KB_REPORTS")
+    pinecone_client_kb_reports_index_name: str = Field("sb-knowledge-bases", alias="CLIENT_KB_REPORTS")
     pinecone_agent_reports_index_name: str = Field("agents", alias="AGENT_REPORTS")
     # Namespaces within those report indexes
     pinecone_client_kb_reports_namespace: str = Field("REPORTING", alias="CLIENT_KB_REPORTS_NAMESPACE")

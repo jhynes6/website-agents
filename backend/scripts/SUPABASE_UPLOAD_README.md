@@ -10,11 +10,11 @@ Add these to your `backend/.env` file:
 
 ```bash
 # Supabase Agents Project Configuration
-SUPABASE_AGENT_URL=https://tauelcoqhukoumpisgbb.supabase.co
-SUPABASE_AGENT_KEY=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InRhdWVsY29xaHVrb3VtcGlzZ2JiIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjcwNDc5MjUsImV4cCI6MjA4MjYyMzkyNX0.-PkKGUFG-3CrKzY-n8McRLhEddNvOOi5NRaB6S53YtQ
+SUPABASE_AGENT_URL=https://<your-project-ref>.supabase.co
+SUPABASE_AGENT_KEY=<your-supabase-agent-key>
 
 # Optional: Modern publishable key
-SUPABASE_AGENT_PUBLISHABLE_KEY=sb_publishable_ggoEmmbwzSXdjhg8jCswdA_3z-wrhZO
+SUPABASE_AGENT_PUBLISHABLE_KEY=<your-supabase-publishable-key>
 ```
 
 ### 2. Ensure Dependencies

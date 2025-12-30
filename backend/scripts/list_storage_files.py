@@ -30,7 +30,7 @@ if env_path.exists():
 from app.config import get_settings
 
 
-def list_files(folder_path: str = "", limit: int = 1000, offset: int = 0):
+def list_files(folder_path: str = "", limit: int = 1000, offset: int = 0):  
     """
     List all files in a Supabase Storage folder.
     
