@@ -70,6 +70,23 @@ class FirecrawlClient:
             raise RuntimeError(f"Firecrawl error {resp.status_code}: {resp.text}")
         return resp.json()
 
+    async def _get_any(self, url_or_path: str) -> Dict[str, Any]:
+        """
+        Firecrawl pagination returns an absolute `next` URL. Support both:
+        - relative paths like "/crawl/<id>"
+        - absolute URLs like "https://api.firecrawl.dev/v2/crawl/<id>?skip=..."
+        """
+        u = (url_or_path or "").strip()
+        if not u:
+            raise ValueError("url_or_path required")
+        if u.startswith("http://") or u.startswith("https://"):
+            async with httpx.AsyncClient(timeout=30) as client:
+                resp = await client.get(u, headers=self.headers)
+            if resp.status_code >= 400:
+                raise RuntimeError(f"Firecrawl error {resp.status_code}: {resp.text}")
+            return resp.json()
+        return await self._get(u)
+
     async def map_urls(self, url: str, limit: int = 500) -> List[Dict[str, Any]]:
         payload: Dict[str, Any] = {
             "url": url,
@@ -103,6 +120,8 @@ class FirecrawlClient:
         include_paths: Optional[List[str]],
         exclude_paths: Optional[List[str]],
         max_depth: Optional[int] = None,
+        crawl_entire_domain: Optional[bool] = None,
+        allow_subdomains: Optional[bool] = None,
     ) -> Tuple[List[Dict[str, Any]], Dict[str, Any]]:
         """Start a crawl and poll until completion."""
         payload: Dict[str, Any] = {
@@ -132,12 +151,18 @@ class FirecrawlClient:
         if max_depth is not None:
             # Firecrawl expects maxDiscoveryDepth (not maxDepth)
             payload["maxDiscoveryDepth"] = max_depth
+        if crawl_entire_domain is not None:
+            payload["crawlEntireDomain"] = bool(crawl_entire_domain)
+        if allow_subdomains is not None:
+            payload["allowSubdomains"] = bool(allow_subdomains)
         log("firecrawl.crawl.payload", {
             "url": url,
             "limit": payload.get("limit"),
             "maxDiscoveryDepth": payload.get("maxDiscoveryDepth"),
             "includePaths": payload.get("includePaths"),
             "excludePaths": payload.get("excludePaths"),
+            "crawlEntireDomain": payload.get("crawlEntireDomain"),
+            "allowSubdomains": payload.get("allowSubdomains"),
         })
         start_resp = await self._post("/crawl", payload)
         crawl_id = start_resp.get("id")
@@ -157,7 +182,7 @@ class FirecrawlClient:
 
             if status in ("completed", "failed"):
                 data = status_resp.get("data") or []
-                # Check for pagination - Firecrawl might return a "next" URL if there's more data
+                # Firecrawl can paginate large responses (>10MB) via an absolute `next` URL.
                 next_url = status_resp.get("next") if isinstance(status_resp, dict) else None
                 total_pages = status_resp.get("total") if isinstance(status_resp, dict) else None
                 log("firecrawl.crawl.completed", {
@@ -171,16 +196,65 @@ class FirecrawlClient:
                     "elapsed_ms": int(elapsed * 1000),
                     "response_keys": list(status_resp.keys()) if isinstance(status_resp, dict) else [],
                 })
-                # If there's a next URL and we got fewer pages than requested, there might be pagination
-                if next_url and len(data) < limit:
-                    log("firecrawl.crawl.pagination_warning", {
-                        "crawl_id": crawl_id,
-                        "pages_returned": len(data),
-                        "limit_requested": limit,
-                        "next_url_present": True,
-                        "message": "Firecrawl returned fewer pages than requested. Check if pagination is needed or if plan limit was hit.",
-                    })
-                return data, status_resp
+                all_pages: List[Dict[str, Any]] = list(data) if isinstance(data, list) else []
+                # Dedupe by source URL
+                def _k(p: Dict[str, Any]) -> str:
+                    try:
+                        m = p.get("metadata") or {}
+                        if isinstance(m, dict):
+                            return str(m.get("sourceURL") or p.get("url") or "").rstrip("/")
+                        return str(p.get("url") or "").rstrip("/")
+                    except Exception:
+                        return ""
+                seen = set()
+                deduped: List[Dict[str, Any]] = []
+                for p in all_pages:
+                    if not isinstance(p, dict):
+                        continue
+                    key = _k(p)
+                    if not key or key in seen:
+                        continue
+                    seen.add(key)
+                    deduped.append(p)
+                all_pages = deduped
+
+                # Follow pagination until exhausted OR we reach the requested limit.
+                page_fetches = 0
+                while next_url and len(all_pages) < limit:
+                    page_fetches += 1
+                    if page_fetches > 200:
+                        log("firecrawl.crawl.next_limit", {"crawl_id": crawl_id, "fetches": page_fetches})
+                        break
+                    try:
+                        next_resp = await self._get_any(str(next_url))
+                    except Exception as e:
+                        log("firecrawl.crawl.next_error", {"crawl_id": crawl_id, "error": str(e)})
+                        break
+
+                    next_data = next_resp.get("data") or []
+                    if isinstance(next_data, list):
+                        for p in next_data:
+                            if not isinstance(p, dict):
+                                continue
+                            key = _k(p)
+                            if not key or key in seen:
+                                continue
+                            seen.add(key)
+                            all_pages.append(p)
+
+                    next_url = next_resp.get("next")
+                    log(
+                        "firecrawl.crawl.next_page",
+                        {
+                            "crawl_id": crawl_id,
+                            "fetch": page_fetches,
+                            "pages_total_collected": len(all_pages),
+                            "has_next": bool(next_url),
+                            "next_url": str(next_url)[:100] if next_url else None,
+                        },
+                    )
+
+                return all_pages[:limit], status_resp
 
         # Timeout reached - return partial data instead of raising error
         log("firecrawl.timeout", {"crawl_id": crawl_id, "elapsed_ms": int(elapsed * 1000)})

@@ -1733,7 +1733,13 @@ async def create_chatbot(payload: Dict[str, Any]) -> Dict[str, Any]:
     include_paths: Optional[List[str]] = payload.get("includePaths")
     exclude_paths: Optional[List[str]] = payload.get("excludePaths")
     index_name: Optional[str] = payload.get("index")
-    blog_limit: int = int(payload.get("blogLimit") or 50)
+    # Blog crawl limit: if the user requested "All" (high limit) but didn't specify blogLimit,
+    # don't silently cap blog pages at 50.
+    blog_limit_raw = payload.get("blogLimit")
+    if blog_limit_raw is None and int(payload.get("limit") or 500) >= 1000:
+        blog_limit = int(payload.get("limit") or 1000)
+    else:
+        blog_limit = int(blog_limit_raw or 50)
     client_slug: Optional[str] = payload.get("clientSlug") or payload.get("client_slug")
     client_name: Optional[str] = payload.get("clientName") or payload.get("client_name")
     skip_redis: bool = bool(payload.get("skipRedisSave"))
@@ -1849,12 +1855,19 @@ async def create_chatbot(payload: Dict[str, Any]) -> Dict[str, Any]:
                 "exclude_paths": main_excludes,
             },
         )
+        # If user asks for very large crawls, broaden internal coverage.
+        crawl_entire_domain = payload.get("crawlEntireDomain")
+        if crawl_entire_domain is None and limit >= 1000:
+            crawl_entire_domain = True
+
         main_pages, raw_status_main = await firecrawl_client.crawl_and_wait(
             url,
             limit,
             include_paths,
             main_excludes,
             max_depth,
+            crawl_entire_domain=crawl_entire_domain,
+            allow_subdomains=None,
         )
         log(
             "create.crawl.phase_result",
@@ -1883,6 +1896,8 @@ async def create_chatbot(payload: Dict[str, Any]) -> Dict[str, Any]:
             [".*blog.*"],
             exclude_paths,
             max_depth,
+            crawl_entire_domain=crawl_entire_domain,
+            allow_subdomains=None,
         )
         log(
             "create.crawl.phase_result",

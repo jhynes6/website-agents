@@ -363,6 +363,8 @@ export default function MintagentPage() {
         body: JSON.stringify({ 
           url: hasUrl ? normalizedUrl : undefined, 
           limit: pageLimit, 
+          blogLimit: pageLimit,
+          crawlEntireDomain: pageLimit >= 1000 ? true : undefined,
           index: slug || undefined,
           clientSlug: slug,
           clientName: clientName.trim() || undefined,
