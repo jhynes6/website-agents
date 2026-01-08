@@ -3,12 +3,14 @@ from __future__ import annotations
 import json
 import hashlib
 import time
+import re
 from dataclasses import dataclass
 from datetime import datetime, timezone
 from typing import Any, Dict, List, Optional, Tuple
-from urllib.parse import urlparse
+from urllib.parse import urlparse, quote
 
 from ..config import get_settings
+from ..utils.content_hash import compute_content_hash
 
 
 def _stable_id(*parts: str) -> str:
@@ -38,6 +40,156 @@ def _chunk_text(text: str, chunk_size: int, overlap: int) -> List[str]:
             break
         start = max(0, end - overlap)
     return chunks
+
+
+def _word_count(text: str) -> int:
+    return len(re.findall(r"\w+", text or ""))
+
+
+def _split_markdown_blocks(md: str) -> List[str]:
+    """
+    Split markdown into "blocks" separated by blank lines.
+    This tends to preserve lists/tables/code blocks better than line-by-line splitting.
+    """
+    t = (md or "").strip()
+    if not t:
+        return []
+    # Normalize newlines and collapse excessive blank lines.
+    t = t.replace("\r\n", "\n").replace("\r", "\n")
+    t = re.sub(r"\n{3,}", "\n\n", t)
+    return [b.strip() for b in t.split("\n\n") if b.strip()]
+
+
+def _chunk_markdown_semantic_v1(
+    md: str,
+    *,
+    target_words: int = 350,
+    max_words: int = 550,
+    overlap_words: int = 80,
+) -> List[str]:
+    """
+    Structure-aware chunking for markdown-ish content.
+
+    Strategy:
+    - Split into sections by headings (#..######)
+    - Within each section, chunk on paragraph/list/table blocks
+    - Enforce word-budget rather than raw characters
+    - Carry a small overlap in terms of tail blocks
+    """
+    text = (md or "").strip()
+    if not text:
+        return []
+
+    # Parse headings into sections
+    heading_re = re.compile(r"^(#{1,6})\s+(.+?)\s*$")
+    lines = text.replace("\r\n", "\n").replace("\r", "\n").split("\n")
+
+    sections: List[Dict[str, Any]] = []
+    heading_stack: List[Tuple[int, str]] = []
+    cur_lines: List[str] = []
+
+    def flush_section():
+        nonlocal cur_lines
+        body = "\n".join(cur_lines).strip()
+        if not body:
+            cur_lines = []
+            return
+        headings = "\n".join([("#" * lvl) + " " + title for (lvl, title) in heading_stack]).strip()
+        prefix = (headings + "\n\n") if headings else ""
+        sections.append({"prefix": prefix, "body": body})
+        cur_lines = []
+
+    for line in lines:
+        m = heading_re.match(line.strip())
+        if m:
+            # start new section; commit previous
+            flush_section()
+            level = len(m.group(1))
+            title = m.group(2).strip()
+            # update stack for heading level
+            while heading_stack and heading_stack[-1][0] >= level:
+                heading_stack.pop()
+            heading_stack.append((level, title))
+            continue
+        cur_lines.append(line)
+    flush_section()
+
+    # If no headings, treat whole doc as a single section.
+    if not sections:
+        sections = [{"prefix": "", "body": text}]
+
+    out: List[str] = []
+
+    for sec in sections:
+        prefix: str = sec["prefix"]
+        blocks = _split_markdown_blocks(sec["body"])
+        if not blocks:
+            continue
+
+        cur_blocks: List[str] = []
+        cur_words = 0
+        tail_blocks: List[str] = []
+        tail_words = 0
+
+        def emit_current():
+            nonlocal cur_blocks, cur_words, tail_blocks, tail_words
+            if not cur_blocks:
+                return
+            chunk_body = "\n\n".join(cur_blocks).strip()
+            if not chunk_body:
+                return
+            out.append((prefix + chunk_body).strip())
+            # prepare overlap by taking tail blocks up to overlap_words
+            tail_blocks = []
+            tail_words = 0
+            for b in reversed(cur_blocks):
+                bw = _word_count(b)
+                if tail_words + bw > overlap_words and tail_blocks:
+                    break
+                tail_blocks.insert(0, b)
+                tail_words += bw
+                if tail_words >= overlap_words:
+                    break
+            cur_blocks = []
+            cur_words = 0
+
+        for b in blocks:
+            bw = _word_count(b)
+            if bw == 0:
+                continue
+
+            # If this single block is enormous, fall back to char chunking within the block.
+            if bw > max_words * 2:
+                emit_current()
+                # chunk the huge block itself
+                # (use conservative char-size to avoid super-long chunks)
+                for sub in _chunk_text(b, chunk_size=2000, overlap=250):
+                    out.append((prefix + sub).strip())
+                continue
+
+            # Start chunk with overlap if we just emitted
+            if not cur_blocks and tail_blocks:
+                cur_blocks.extend(tail_blocks)
+                cur_words = sum(_word_count(x) for x in tail_blocks)
+
+            # If adding this block would exceed max_words, emit current chunk.
+            if cur_blocks and (cur_words + bw) > max_words:
+                emit_current()
+                # start next chunk with overlap
+                if tail_blocks:
+                    cur_blocks.extend(tail_blocks)
+                    cur_words = sum(_word_count(x) for x in tail_blocks)
+
+            cur_blocks.append(b)
+            cur_words += bw
+
+            # If we've crossed target_words and we are at a natural boundary, emit.
+            if cur_words >= target_words and (cur_words >= max_words or b.endswith((".", "!", "?", ":"))):
+                emit_current()
+
+        emit_current()
+
+    return [c for c in out if c.strip()]
 
 
 def _website_markdown_file_key(url: str) -> str:
@@ -248,7 +400,10 @@ class PineconeKBClient:
         namespace = client_slug
         idx = self._index(index_name=index_name, text_field=text_field)
         now = datetime.now(timezone.utc).isoformat()
-        chunker = chunker_name or f"char:{chunk_size}:{overlap}"
+        raw_chunker = (chunker_name or "").strip()
+        chunker_sel = raw_chunker.lower()
+        # Default: char-based windows
+        chunker = raw_chunker or f"char:{chunk_size}:{overlap}"
 
         records: List[Dict[str, Any]] = []
         for doc in documents:
@@ -272,8 +427,11 @@ class PineconeKBClient:
             url = str(doc.get("url") or (doc.get("metadata") or {}).get("url") or "")
             content_type = str(doc.get("content_type") or (doc.get("metadata") or {}).get("content_type") or "other")
             document_source = str(doc.get("document_source") or (doc.get("metadata") or {}).get("document_source") or "unknown")
-            spaces_key = str(doc.get("spaces_key") or doc.get("_spaces_key") or "")
             file_key = str(doc.get("file_key") or "")
+            storage_bucket = str(doc.get("storage_bucket") or (doc.get("metadata") or {}).get("storage_bucket") or "client-data-sources")
+            storage_path = str(doc.get("storage_path") or (doc.get("metadata") or {}).get("storage_path") or file_key or "")
+            file_type = str(doc.get("file_type") or (doc.get("metadata") or {}).get("file_type") or "")
+            document_context = str(doc.get("document_context") or (doc.get("metadata") or {}).get("document_context") or "").strip()
             # Flat, filterable favicon field (if available). Required for onboarding reports.
             # NOTE: must remain flat (no nested metadata objects) to keep Pinecone metadata filtering happy.
             favicon = None
@@ -286,17 +444,67 @@ class PineconeKBClient:
             if (not file_key) and document_source.strip().lower() == "website" and url:
                 file_key = _website_markdown_file_key(url)
             if not file_key:
-                # Fallback for non-website or missing URL: use spaces_key if available.
-                file_key = spaces_key
+                # Fallback for non-website or missing URL.
+                file_key = storage_path or url or title or "unknown"
+
+            # Ensure original file type is present.
+            if not file_type:
+                if document_source.strip().lower() == "website":
+                    file_type = "html"
             keywords = doc.get("keywords")
             if not isinstance(keywords, list) or not all(isinstance(k, str) for k in keywords):
                 keywords = []
 
-            chunks = _chunk_text(content, chunk_size=chunk_size, overlap=overlap)
+            # Hash the document body just before chunking (tracks content changes over time)
+            content_hash = ""
+            try:
+                content_hash = str(doc.get("content_hash") or (doc.get("metadata") or {}).get("content_hash") or "").strip()
+            except Exception:
+                content_hash = ""
+            if not content_hash:
+                content_hash = compute_content_hash(content)
+
+            # Chunking strategy (opt-in):
+            # - default: char window
+            # - semantic markdown: md_semantic_v1[:w350][:m550][:o80]
+            if chunker_sel.startswith("md_semantic_v1"):
+                # Parse optional params from chunker_name like "md_semantic_v1:w350:m550:o80"
+                tw = 350
+                mw = 550
+                ow = 80
+                m = re.search(r"w(\d+)", chunker_sel)
+                if m:
+                    tw = max(50, int(m.group(1)))
+                m = re.search(r"m(\d+)", chunker_sel)
+                if m:
+                    mw = max(tw, int(m.group(1)))
+                m = re.search(r"o(\d+)", chunker_sel)
+                if m:
+                    ow = max(0, int(m.group(1)))
+                chunker = f"md_semantic_v1:w{tw}:m{mw}:o{ow}"
+                chunks = _chunk_markdown_semantic_v1(content, target_words=tw, max_words=mw, overlap_words=ow)
+            elif chunker_sel in ("char", "char_v1"):
+                chunker = f"char:{chunk_size}:{overlap}"
+                chunks = _chunk_text(content, chunk_size=chunk_size, overlap=overlap)
+            elif chunker_sel.startswith("char:"):
+                # If they pass explicit "char:1200:200", keep it (and still use our defaults for now)
+                chunks = _chunk_text(content, chunk_size=chunk_size, overlap=overlap)
+            else:
+                # Unknown chunker string -> safe fallback
+                chunker = f"char:{chunk_size}:{overlap}"
+                chunks = _chunk_text(content, chunk_size=chunk_size, overlap=overlap)
             for i, chunk in enumerate(chunks):
                 # Use file_key as the stable per-file identifier for record IDs
-                id_seed = file_key or spaces_key or url or title or "unknown"
+                id_seed = file_key or storage_path or url or title or "unknown"
                 rec_id = _stable_id(namespace, id_seed, str(i), chunk[:200])
+                # Preview URL into Supabase Storage (public URL form).
+                preview_url = ""
+                try:
+                    project_url = str(self.settings.supabase_agent_url or self.settings.supabase_url or "").rstrip("/")
+                    if project_url and storage_bucket and storage_path:
+                        preview_url = f"{project_url}/storage/v1/object/public/{storage_bucket}/{quote(storage_path, safe='/')}"
+                except Exception:
+                    preview_url = ""
                 # IMPORTANT: flat fields only (no nested metadata objects)
                 records.append(
                     {
@@ -305,9 +513,12 @@ class PineconeKBClient:
                         "client_slug": namespace,
                         "file_key": file_key,
                         **({"favicon": favicon} if favicon else {}),
-                        # Keep Spaces object key as a separate field for operational tooling
-                        # (keyword backfills, raw file fetches, etc.)
-                        "spaces_key": spaces_key,
+                        "storage_bucket": storage_bucket,
+                        "storage_path": storage_path,
+                        "storage_preview_url": preview_url,
+                        "file_type": file_type,
+                        "content_hash": content_hash,
+                        "document_context": document_context,
                         "title": title,
                         "url": url,
                         "content_type": content_type,
@@ -388,7 +599,7 @@ class PineconeKBClient:
                 if not isinstance(md, dict):
                     continue
 
-                file_key = str(md.get("file_key") or md.get("spaces_key") or md.get("url") or _id or "").strip()
+                file_key = str(md.get("storage_path") or md.get("file_key") or md.get("url") or _id or "").strip()
                 if not file_key:
                     continue
 

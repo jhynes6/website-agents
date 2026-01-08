@@ -275,7 +275,14 @@ async def categorize_drive_documents(documents: List[Dict[str, Any]]) -> None:
 
 
 def build_drive_documents(
-    folder_input: str, namespace: str, credentials_path: Path, logger: Optional[logging.Logger] = None
+    folder_input: str,
+    namespace: str,
+    credentials_path: Path,
+    logger: Optional[logging.Logger] = None,
+    *,
+    # Default to full content; callers can opt into truncation if they need lighter payloads.
+    text_max_chars: Optional[int] = None,
+    fullcontent_max_chars: Optional[int] = None,
 ) -> Tuple[List[Dict[str, Any]], Dict[str, Any], List[Dict[str, Any]]]:
     """Fetch all files from a Drive folder and return documents ready for upsert."""
     folder_id = extract_drive_folder_id(folder_input)
@@ -303,7 +310,11 @@ def build_drive_documents(
             intake_count += 1
 
         view_url = file_meta.get("webViewLink") or f"https://drive.google.com/file/d/{file_id}/view"
-        searchable_text = f"namespace:{namespace} {name} {content}"[:1000]
+        full_text = f"namespace:{namespace} {name}\n\n{content or ''}".strip()
+        preview_text = full_text[:1000]
+        doc_text = full_text if text_max_chars is None else full_text[: max(0, int(text_max_chars))]
+        md_full = (content or "")
+        md_full = md_full if fullcontent_max_chars is None else md_full[: max(0, int(fullcontent_max_chars))]
         
         # Use file_id to ensure uniqueness
         doc_id = f"drive_{file_id}"
@@ -312,7 +323,12 @@ def build_drive_documents(
             {
                 "id": doc_id,
                 "content": {
-                    "text": searchable_text,
+                    # NOTE: Downstream behavior depends on this field:
+                    # - When building `.md` files for Supabase Storage, callers should pass text_max_chars=None.
+                    # - For lightweight previews (e.g., onboarding JSON manifests), keep defaults.
+                    "text": doc_text,
+                    # Kept for quick inspection / UIs that don't want megabytes of text
+                    "preview": preview_text,
                     "url": view_url,
                     "title": name,
                     "description": "",
@@ -322,7 +338,8 @@ def build_drive_documents(
                     "title": name,
                     "url": view_url,
                     "sourceURL": view_url,
-                    "fullContent": (content or "")[:5000],
+                    # Store raw extracted text (unprefixed). This is mainly used for categorization/debugging.
+                    "fullContent": md_full,
                     "document_source": doc_source,
                     "content_type": "intake_form" if doc_source == "intake_form" else "uncategorized",
                     "driveFileId": file_meta.get("id"),

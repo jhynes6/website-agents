@@ -7,7 +7,7 @@ import re
 import yaml
 import httpx
 from pathlib import Path
-from urllib.parse import urlparse
+from urllib.parse import urlparse, quote
 from typing import Any, Dict, List, Optional
 
 from fastapi import APIRouter, HTTPException
@@ -19,6 +19,7 @@ from ..clients.firecrawl import firecrawl_client
 from ..clients.llm import llm_client
 from ..clients.pinecone_client import pinecone_kb_client
 from ..clients.supabase_agent_storage_client import SupabaseAgentStorageClient
+from ..clients.supabase_agents_db_client import SupabaseAgentsDbClient
 from ..config import get_settings
 from ..logging import log, logger
 from ..services.drive_ingest import (
@@ -26,6 +27,7 @@ from ..services.drive_ingest import (
     categorize_drive_documents,
     extract_drive_folder_id,
 )
+from ..utils.content_hash import compute_content_hash
 from pinecone import Pinecone
 from openai import OpenAI
 import tempfile
@@ -125,13 +127,41 @@ async def _llm_clean_markdown_for_kb(*, url: str, title: str, markdown: str) -> 
     if not md:
         return ""
 
-    # Keep prompt bounded: head + tail to include footer patterns
-    head = md[:8000]
-    tail = md[-2000:] if len(md) > 10000 else ""
-    if tail:
-        md_in = head + "\n\n---\n\n[FOOTER_CONTEXT]\n" + tail
-    else:
-        md_in = head
+    def _split_markdown_for_llm(text: str, *, max_chars: int = 6000) -> List[str]:
+        """
+        Split markdown into chunks without arbitrarily dropping content.
+        Prefers splitting on blank lines, falls back to hard splits if needed.
+        """
+        t = (text or "").strip()
+        if not t:
+            return []
+        if len(t) <= max_chars:
+            return [t]
+
+        parts = t.split("\n\n")
+        chunks: List[str] = []
+        buf: List[str] = []
+        size = 0
+        for p in parts:
+            sep = 2 if buf else 0
+            if size + sep + len(p) <= max_chars:
+                buf.append(p)
+                size += sep + len(p)
+                continue
+            if buf:
+                chunks.append("\n\n".join(buf).strip())
+            buf = [p]
+            size = len(p)
+            # handle very large single paragraph
+            if size > max_chars:
+                large = buf[0]
+                buf = []
+                size = 0
+                for i in range(0, len(large), max_chars):
+                    chunks.append(large[i : i + max_chars].strip())
+        if buf:
+            chunks.append("\n\n".join(buf).strip())
+        return [c for c in chunks if c]
 
     system = (
         "You clean scraped website markdown for a sales knowledge base.\n"
@@ -154,22 +184,34 @@ async def _llm_clean_markdown_for_kb(*, url: str, title: str, markdown: str) -> 
         "- No code fences.\n"
         "- Keep headings/bullets when they carry meaning.\n"
     )
-    user = f"URL: {url}\nTitle: {title}\n\nMARKDOWN:\n{md_in}"
+    segments = _split_markdown_for_llm(md, max_chars=6000)
+    if not segments:
+        return ""
 
     try:
-        resp = await llm_client.chat(
-            messages=[{"role": "system", "content": system}, {"role": "user", "content": user}],
-            temperature=0.1,
-            max_tokens=1400,
-            model="gpt-4o-mini",
-        )
-        out = (resp["choices"][0]["message"]["content"] or "").strip()
-        # Strip accidental fences/frontmatter if the model disobeys
-        out = re.sub(r"(?s)^```.*?\n", "", out).strip()
-        out = re.sub(r"(?s)\n```$", "", out).strip()
-        out = re.sub(r"(?s)^---\n.*?\n---\n", "", out).strip()
-        # Final deterministic cleanup (removes any leftover links/images/CTAs)
-        return out
+        cleaned_parts: List[str] = []
+        total = len(segments)
+        for i, seg in enumerate(segments, 1):
+            user = (
+                f"URL: {url}\nTitle: {title}\n"
+                f"SEGMENT {i}/{total} (part of a larger page; do not summarize or invent content):\n\n"
+                f"MARKDOWN:\n{seg}"
+            )
+            resp = await llm_client.chat(
+                messages=[{"role": "system", "content": system}, {"role": "user", "content": user}],
+                temperature=0.1,
+                # Allow the model to return a substantial cleaned segment without truncating mid-output.
+                max_tokens=4000,
+                model="gpt-4o-mini",
+            )
+            out = (resp["choices"][0]["message"]["content"] or "").strip()
+            # Strip accidental fences/frontmatter if the model disobeys
+            out = re.sub(r"(?s)^```.*?\n", "", out).strip()
+            out = re.sub(r"(?s)\n```$", "", out).strip()
+            out = re.sub(r"(?s)^---\n.*?\n---\n", "", out).strip()
+            cleaned_parts.append(out)
+
+        return "\n\n".join([p for p in cleaned_parts if p]).strip()
     except Exception as e:
         log("create.markdown_clean.error", {"error": str(e), "url": url})
         return markdown
@@ -292,6 +334,40 @@ async def _extract_keywords_for_doc(title: str, body: str) -> List[str]:
     return []
 
 
+async def _extract_document_context_for_doc(body: str) -> Optional[str]:
+    """
+    Summarize the document in 1-2 sentences for KB labeling ("document_context").
+
+    IMPORTANT: Input must be the cleaned markdown body ONLY (no YAML header).
+    """
+    cleaned = (body or "").strip()
+    if not cleaned:
+        return None
+
+    # Keep prompt bounded.
+    cleaned = cleaned[:4000]
+
+    user = (
+        "What is this document? Please summarize it in one or two sentences to describe its purpose and content, "
+        "as if labeling it for use in a knowledge base or vector database.\n\n"
+        f"{cleaned}"
+    )
+    try:
+        resp = await llm_client.chat(
+            messages=[{"role": "user", "content": user}],
+            temperature=0.2,
+            max_tokens=120,
+            model="gpt-4o-mini",
+        )
+        raw = resp["choices"][0]["message"]["content"].strip()
+        # Defensive cleanup: strip wrapping quotes and excessive whitespace.
+        raw = raw.strip().strip('"').strip("'").strip()
+        return raw or None
+    except Exception as e:
+        log("create.document_context.error", {"error": str(e)})
+        return None
+
+
 def _doc_id_from_url(raw_url: str) -> str:
     """Build a stable id from domain + path without a trailing slash."""
     parsed = urlparse(raw_url or "")
@@ -381,6 +457,12 @@ async def _upload_to_storage(client_slug: str, documents: List[Dict[str, Any]]) 
         log("create.local_backup.initialized", {"client": client_slug, "path": str(local_backup_dir)})
 
     # 2) Upload raw files to Supabase Storage
+    db: SupabaseAgentsDbClient | None = None
+    try:
+        db = SupabaseAgentsDbClient()
+    except Exception:
+        db = None
+
     for doc in documents:
         try:
             # Handle content being string or dict
@@ -450,6 +532,63 @@ async def _upload_to_storage(client_slug: str, documents: List[Dict[str, Any]]) 
             header_lines.append(f"doc_id: \"{doc_id}\"")
             header_lines.append(f"client_slug: \"{client_slug}\"")
             header_lines.append(f"document_source: \"{doc.get('document_source', 'unknown')}\"")
+
+            # Storage location (used later for Pinecone metadata + easy lookup in Supabase UI)
+            header_lines.append(f"storage_bucket: \"{BUCKET_NAME}\"")
+            header_lines.append(f"storage_path: \"{filename}\"")
+
+            # Public "view" URL (same shape as storage_preview_url, but stored explicitly for DB column db_file_url)
+            db_file_url = ""
+            try:
+                settings = get_settings()
+                base = str(settings.supabase_agent_url or settings.supabase_url or "").rstrip("/")
+                if base:
+                    db_file_url = f"{base}/storage/v1/object/public/{BUCKET_NAME}/{quote(filename, safe='/')}"
+            except Exception:
+                db_file_url = ""
+            if db_file_url:
+                header_lines.append(f"storage_preview_url: \"{db_file_url}\"")
+
+            # Original file type (before converting to .md)
+            # - website sources come from HTML pages
+            # - drive sources come from Drive mimeType (captured during listing)
+            file_type = None
+            try:
+                ds_norm = str(doc.get("document_source", "") or "").strip().lower()
+                if ds_norm == "website":
+                    file_type = "html"
+                else:
+                    mime = ""
+                    if isinstance(meta, dict) and meta.get("mimeType"):
+                        mime = str(meta.get("mimeType") or "")
+                    # Best-effort mapping
+                    if mime == "application/pdf":
+                        file_type = "pdf"
+                    elif mime == "application/vnd.google-apps.document":
+                        file_type = "gdoc"
+                    elif mime == "application/vnd.google-apps.presentation":
+                        file_type = "gslide"
+                    elif mime == "application/vnd.google-apps.spreadsheet":
+                        file_type = "gsheet"
+                    elif "officedocument.wordprocessingml.document" in mime:
+                        file_type = "docx"
+                    elif "officedocument.presentationml.presentation" in mime:
+                        file_type = "pptx"
+                    elif "officedocument.spreadsheetml.sheet" in mime:
+                        file_type = "xlsx"
+                    elif mime.startswith("text/"):
+                        # text/plain, text/markdown, etc.
+                        file_type = mime.split("/", 1)[-1] or "txt"
+                    else:
+                        # Fall back to extension from the source title, if present
+                        t = str(doc.get("title") or "")
+                        if "." in t:
+                            file_type = t.rsplit(".", 1)[-1].lower()
+            except Exception:
+                file_type = None
+
+            if file_type:
+                header_lines.append(f"file_type: \"{file_type}\"")
             
             # URL and title
             if doc_url:
@@ -462,14 +601,22 @@ async def _upload_to_storage(client_slug: str, documents: List[Dict[str, Any]]) 
             # Content classification
             if doc.get("content_type"):
                 header_lines.append(f"content_type: \"{doc['content_type']}\"")
+
+            # 1-2 sentence summary for KB labeling
+            doc_context = doc.get("document_context")
+            if isinstance(doc_context, str) and doc_context.strip():
+                header_lines.append(f"document_context: \"{doc_context.strip().replace('\"', '\\\\\"')}\"")
+
+            # Content hash (hash of the markdown body BEFORE chunking)
+            content_hash = compute_content_hash(content)
+            header_lines.append(f"content_hash: \"{content_hash}\"")
             
-            # Keywords (if available)
+            # Keywords (store as string for DB + easy grepping)
             keywords = doc.get("keywords", [])
             if keywords and isinstance(keywords, list):
-                # YAML list format
-                header_lines.append("keywords:")
-                for kw in keywords:
-                    header_lines.append(f"  - \"{kw}\"")
+                kw_str = ", ".join([str(k).strip() for k in keywords if str(k).strip()])
+                if kw_str:
+                    header_lines.append(f"keywords: \"{kw_str.replace('\"', '\\\\\"')}\"")
             
             # Ingestion timestamp
             ingested_at = time.strftime("%Y-%m-%dT%H:%M:%S.000000+00:00")
@@ -511,10 +658,62 @@ async def _upload_to_storage(client_slug: str, documents: List[Dict[str, Any]]) 
                     doc["_storage_path"] = filename
                     doc["_content_body_size"] = content_body_bytes
                     doc["_total_size"] = len(full_content)
+                    doc["_content_hash"] = content_hash
+
+                    # Upsert documents table row (ingested)
+                    if db is not None:
+                        try:
+                            kw_str = ""
+                            kws = doc.get("keywords") or []
+                            if isinstance(kws, list):
+                                kw_str = ", ".join([str(k).strip() for k in kws if str(k).strip()])
+                            await db.upsert_documents(
+                                docs=[
+                                    {
+                                        "doc_id": doc_id,
+                                        "client_slug": client_slug,
+                                        "ingestion_status": "ingested",
+                                        "document_source": str(doc.get("document_source") or ""),
+                                        "content_type": str(doc.get("content_type") or ""),
+                                        "url": str(doc_url or ""),
+                                        "keywords": kw_str or None,
+                                        "document_context": (str(doc.get("document_context")).strip() if isinstance(doc.get("document_context"), str) else None),
+                                        "content_hash": content_hash,
+                                        "db_file_url": db_file_url or None,
+                                        "text": content,
+                                    }
+                                ]
+                            )
+                        except Exception:
+                            # Don't fail ingestion on DB write issues
+                            pass
                 except Exception as e:
                     log("create.supabase.upload_error", {"doc_id": doc_id, "error": str(e)})
                     supabase_failed += 1
                     upload_success = False
+
+                    # Record ingest error in documents table
+                    if db is not None:
+                        try:
+                            await db.upsert_documents(
+                                docs=[
+                                    {
+                                        "doc_id": doc_id,
+                                        "client_slug": client_slug,
+                                        "ingestion_status": "error - ingest",
+                                        "document_source": str(doc.get("document_source") or ""),
+                                        "content_type": str(doc.get("content_type") or ""),
+                                        "url": str(doc_url or ""),
+                                        "keywords": None,
+                                        "document_context": (str(doc.get("document_context")).strip() if isinstance(doc.get("document_context"), str) else None),
+                                        "content_hash": compute_content_hash(content),
+                                        "db_file_url": db_file_url or None,
+                                        "text": content,
+                                    }
+                                ]
+                            )
+                        except Exception:
+                            pass
             
             # If upload failed or bucket doesn't exist, save locally
             if not upload_success and local_backup_dir:
@@ -706,7 +905,13 @@ If you don't know the answer, say so clearly."""
     }
 
 
-async def _vectorize_to_pinecone(client_slug: str) -> Dict[str, Any]:
+async def _vectorize_to_pinecone(
+    client_slug: str,
+    *,
+    namespace_override: Optional[str] = None,
+    index_override: Optional[str] = None,
+    force_chunker: Optional[str] = None,
+) -> Dict[str, Any]:
     """
     Vectorize all markdown files from Supabase Storage to Pinecone.
     
@@ -722,7 +927,8 @@ async def _vectorize_to_pinecone(client_slug: str) -> Dict[str, Any]:
         log("create.pinecone.not_configured", {"client": client_slug})
         return {"success": False, "reason": "Missing PINECONE_API_KEY"}
 
-    namespace = client_slug
+    namespace = (namespace_override or client_slug).strip() or client_slug
+    effective_index_name = (index_override or settings.pinecone_kb_index_name).strip() or settings.pinecone_kb_index_name
     
     # Get Supabase Storage client
     supabase_client = get_supabase_storage_client()
@@ -730,51 +936,82 @@ async def _vectorize_to_pinecone(client_slug: str) -> Dict[str, Any]:
         log("create.pinecone.no_supabase", {"client": client_slug})
         return {"success": False, "reason": "Supabase Storage not configured"}
     
-    # List all markdown files for the client
-    base_url = str(settings.supabase_agent_url).rstrip("/")
-    storage_url = f"{base_url}/storage/v1"
-    headers = {
-        "Authorization": f"Bearer {settings.supabase_agent_key}",
-        "apikey": settings.supabase_agent_key
-    }
-    list_url = f"{storage_url}/object/list/{BUCKET_NAME}"
-    
-    all_files = []
+    # List all markdown files for the client using the server-side Storage client (JWT/service-role).
+    # This avoids brittle assumptions about list response shape and avoids using publishable keys.
+    from ..clients.supabase_storage_client import SupabaseStorageClient
+
+    storage = SupabaseStorageClient()
+
+    def _normalize_object_name(*, client_slug: str, subfolder: str, name: str) -> str:
+        """
+        Supabase list_objects can return names either relative to prefix or already prefixed.
+        Normalize to full object path within the bucket.
+        """
+        n = (name or "").strip().lstrip("/")
+        if not n:
+            return ""
+        if n.startswith(f"{client_slug}/"):
+            return n
+        if n.startswith(f"{subfolder}/"):
+            return f"{client_slug}/{n}"
+        return f"{client_slug}/{subfolder}/{n}"
+
+    all_files: List[str] = []
     for subfolder in ["website", "drive", "intake_form"]:
-        prefix = f"{client_slug}/{subfolder}"
-        payload = {
-            "limit": 1000,
-            "offset": 0,
-            "prefix": prefix,
-            "sortBy": {"column": "name", "order": "asc"}
-        }
-        
-        try:
-            resp = httpx.post(list_url, headers=headers, json=payload, timeout=30)
-            if resp.status_code == 200:
-                data = resp.json()
-                md_files = [
-                    f"{prefix}/{item['name']}" for item in data
-                    if item.get("metadata") and item.get("name", "").endswith(".md")
-                ]
-                all_files.extend(md_files)
-        except Exception as e:
-            log("create.pinecone.list_error", {"subfolder": subfolder, "error": str(e)})
+        prefix = f"{client_slug}/{subfolder}/"
+        offset = 0
+        while True:
+            try:
+                items = storage.list_objects(
+                    BUCKET_NAME,
+                    prefix=prefix,
+                    limit=1000,
+                    offset=offset,
+                    sort_by={"column": "name", "order": "asc"},
+                )
+            except Exception as e:
+                log("create.pinecone.list_error", {"subfolder": subfolder, "error": str(e)})
+                break
+
+            if not items:
+                break
+
+            files_this_page: List[str] = []
+            for it in items:
+                if not isinstance(it, dict):
+                    continue
+                # Folder entries have metadata=None; file entries typically have dict metadata.
+                if it.get("metadata") is None:
+                    continue
+                name = str(it.get("name") or "")
+                if not name.endswith(".md"):
+                    continue
+                full = _normalize_object_name(client_slug=client_slug, subfolder=subfolder, name=name)
+                if full:
+                    files_this_page.append(full)
+
+            all_files.extend(files_this_page)
+
+            # Pagination: if we got fewer than limit items, we're done.
+            if len(items) < 1000:
+                break
+            offset += 1000
     
     if not all_files:
         log("create.pinecone.no_files", {"client": client_slug})
-        return {"success": True, "files_processed": 0, "records_upserted": 0, "namespace": namespace, "index": settings.pinecone_kb_index_name}
+        return {"success": True, "files_processed": 0, "records_upserted": 0, "namespace": namespace, "index": effective_index_name}
     
     log("create.pinecone.processing", {"client": client_slug, "files": len(all_files)})
     
     # Process each file into documents, then upsert via pinecone_kb_client (integrated embedding).
     files_processed = 0
     docs: List[Dict[str, Any]] = []
+    doc_ids: List[str] = []
     
     for file_path in all_files:
         try:
             # Download file
-            content_bytes = supabase_client.download_bytes(BUCKET_NAME, file_path)
+            content_bytes = storage.download_bytes(BUCKET_NAME, file_path)
             if not content_bytes:
                 continue
             
@@ -794,6 +1031,7 @@ async def _vectorize_to_pinecone(client_slug: str) -> Dict[str, Any]:
             doc_id = metadata.get("doc_id")
             if not doc_id:
                 continue
+            doc_ids.append(str(doc_id))
             
             # Normalize keywords to string list
             kws_in = metadata.get("keywords")
@@ -813,7 +1051,16 @@ async def _vectorize_to_pinecone(client_slug: str) -> Dict[str, Any]:
                     "keywords": kws,
                     "markdown": body,
                     # Stable per-file identity for record IDs + UI links
-                    "file_key": metadata.get("file_key") or doc_id or file_path,
+                    # Prefer storage_path (full Supabase key) so it is stable and directly traceable.
+                    "file_key": metadata.get("storage_path") or metadata.get("file_key") or file_path,
+                    # New storage metadata (for Pinecone record metadata)
+                    "storage_bucket": metadata.get("storage_bucket") or "client-data-sources",
+                    "storage_path": metadata.get("storage_path") or file_path,
+                    "storage_preview_url": metadata.get("storage_preview_url") or "",
+                    "db_file_url": metadata.get("storage_preview_url") or "",
+                    "file_type": metadata.get("file_type") or ("html" if (metadata.get("document_source") == "website") else None),
+                    "content_hash": metadata.get("content_hash") or "",
+                    "document_context": metadata.get("document_context") or "",
                 }
             )
             files_processed += 1
@@ -828,11 +1075,47 @@ async def _vectorize_to_pinecone(client_slug: str) -> Dict[str, Any]:
     })
     
     try:
-        upsert_res = pinecone_kb_client.upsert_documents(client_slug=client_slug, documents=docs)
-        return {"success": True, "files_processed": files_processed, **upsert_res}
+        # Allow per-client chunker selection (A/B) via metadata.json or request payload.
+        chunker_name = None
+        try:
+            # Prefer new metadata file; fall back to legacy metadata.json.
+            supabase_meta = supabase_client.download_json(BUCKET_NAME, f"{client_slug}/supabase_storage_metadata.json")
+            if not isinstance(supabase_meta, dict):
+                supabase_meta = supabase_client.download_json(BUCKET_NAME, f"{client_slug}/metadata.json")
+            if isinstance(supabase_meta, dict):
+                c = supabase_meta.get("chunker") or (supabase_meta.get("chunking") or {}).get("chunker")
+                if isinstance(c, str) and c.strip():
+                    chunker_name = c.strip()
+        except Exception:
+            pass
+        if isinstance(force_chunker, str) and force_chunker.strip():
+            chunker_name = force_chunker.strip()
+
+        upsert_res = pinecone_kb_client.upsert_documents(
+            client_slug=namespace,
+            documents=docs,
+            chunker_name=chunker_name,
+            index_name=effective_index_name,
+        )
+
+        # Mark documents embedded in DB
+        try:
+            if doc_ids:
+                db = SupabaseAgentsDbClient()
+                await db.set_documents_status(doc_ids=doc_ids, status="embedded")
+        except Exception:
+            pass
+
+        return {"success": True, "files_processed": files_processed, "doc_ids": doc_ids, "namespace": namespace, "index": effective_index_name, **upsert_res}
     except Exception as e:
         log("create.pinecone.error", {"client": client_slug, "error": str(e)})
-        return {"success": False, "files_processed": files_processed, "error": str(e), "namespace": namespace}
+        try:
+            if doc_ids:
+                db = SupabaseAgentsDbClient()
+                await db.set_documents_status(doc_ids=doc_ids, status="error - embed")
+        except Exception:
+            pass
+        return {"success": False, "files_processed": files_processed, "error": str(e), "namespace": namespace, "index": effective_index_name}
 
 
 async def _categorize_pages_parallel(pages: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
@@ -878,12 +1161,33 @@ async def create_chatbot(payload: Dict[str, Any]) -> Dict[str, Any]:
     index_name: Optional[str] = payload.get("index")
     blog_limit: int = int(payload.get("blogLimit") or 50)
     client_slug: Optional[str] = payload.get("clientSlug") or payload.get("client_slug")
+    client_name: Optional[str] = payload.get("clientName") or payload.get("client_name")
     skip_redis: bool = bool(payload.get("skipRedisSave"))
     drive_folder_input: Optional[str] = (
         payload.get("clientDriveFolder")
         or payload.get("driveFolderId")
         or payload.get("driveFolder")
         or payload.get("drive_folder")
+    )
+    # Optional chunking strategy (opt-in A/B). Examples:
+    # - "char:1200:200" (default)
+    # - "md_semantic_v1" or "md_semantic_v1:w350:m550:o80"
+    requested_chunker: Optional[str] = payload.get("chunker") or payload.get("chunkerName") or payload.get("chunking")
+    if isinstance(requested_chunker, dict):
+        requested_chunker = requested_chunker.get("chunker")
+    if isinstance(requested_chunker, str):
+        requested_chunker = requested_chunker.strip() or None
+    else:
+        requested_chunker = None
+
+    # Semantic embeddings A/B: keep Storage the same, but write to Pinecone under a -semantic namespace
+    semantic_embeddings: bool = bool(payload.get("semanticEmbeddings") or payload.get("semantic_embeddings"))
+
+    # Pinecone Assistant creation is disabled by default (opt-in only).
+    create_assistant: bool = bool(
+        payload.get("createAssistant")
+        or payload.get("create_assistant")
+        or payload.get("createPineconeAssistant")
     )
 
     # Validate required inputs
@@ -899,6 +1203,45 @@ async def create_chatbot(payload: Dict[str, Any]) -> Dict[str, Any]:
     # Canonical namespace/index are the client slug (no timestamp)
     namespace = normalized_slug
     index_name = normalized_slug
+
+    # Canonical client fields for DB
+    client_domain = normalized_slug
+    website_field: Optional[str] = None
+    if url:
+        try:
+            u = url.strip()
+            if "://" not in u:
+                u = "https://" + u
+            parsed = urlparse(u)
+            dom = (parsed.netloc or "").split("@")[-1].split(":")[0].lower().replace("www.", "").strip()
+            if dom:
+                client_domain = dom
+                website_field = f"https://{dom}"
+        except Exception:
+            pass
+
+    drive_folder_url_field: Optional[str] = None
+    if drive_folder_input:
+        raw = str(drive_folder_input).strip()
+        if raw.startswith("http://") or raw.startswith("https://"):
+            drive_folder_url_field = raw
+        else:
+            # treat as folder id
+            drive_folder_url_field = f"https://drive.google.com/drive/folders/{raw}"
+
+    # Upsert client row early (intake_form_url is populated later after drive scan)
+    try:
+        db = SupabaseAgentsDbClient()
+        await db.upsert_client(
+            client_slug=normalized_slug,
+            client_domain=client_domain,
+            client_name=client_name,
+            website=website_field,
+            drive_folder_url=drive_folder_url_field,
+            intake_form_url=None,
+        )
+    except Exception:
+        pass
 
     log(
         "create.request",
@@ -982,6 +1325,7 @@ async def create_chatbot(payload: Dict[str, Any]) -> Dict[str, Any]:
         log("create.categorize.done", {"count": len(pages)})
 
         # Clean markdown after Firecrawl (before keyword extraction + Pinecone ingest)
+        # Default: enabled. Set `"skipMarkdownClean": true` to disable.
         if not bool(payload.get("skipMarkdownClean")):
             log("create.markdown_clean.start", {"count": len(pages)})
             pages = await _clean_pages_markdown_parallel(pages)
@@ -1018,13 +1362,40 @@ async def create_chatbot(payload: Dict[str, Any]) -> Dict[str, Any]:
 
             # build_drive_documents returns (documents, summary, files)
             # It requires namespace and credentials path
-            raw_drive_docs, summary, _ = build_drive_documents(folder_id, namespace, creds_path)
+            # IMPORTANT: Do not truncate Drive doc text here; we write it to Supabase Storage as `.md`
+            # and later vectorize from Storage. Truncation would permanently drop the rest of the document.
+            raw_drive_docs, summary, _ = build_drive_documents(folder_id, namespace, creds_path, text_max_chars=None)
             log("create.drive.fetched", {"count": len(raw_drive_docs), "summary": summary})
             
             # categorize_drive_documents modifies in-place and takes only list
             await categorize_drive_documents(raw_drive_docs)
             drive_docs = raw_drive_docs
             log("create.drive.categorized", {"count": len(drive_docs)})
+
+            # Update clients.intake_form_url after we've scanned the drive folder.
+            try:
+                intake_url = None
+                for d in drive_docs:
+                    meta = d.get("metadata") or {}
+                    if not isinstance(meta, dict):
+                        continue
+                    if str(meta.get("document_source") or "").strip() == "intake_form":
+                        intake_url = str(meta.get("url") or "") or str((d.get("content") or {}).get("url") or "")
+                        intake_url = intake_url.strip() if intake_url else None
+                        if intake_url:
+                            break
+                if intake_url:
+                    db = SupabaseAgentsDbClient()
+                    await db.upsert_client(
+                        client_slug=normalized_slug,
+                        client_domain=client_domain,
+                        client_name=client_name,
+                        website=website_field,
+                        drive_folder_url=drive_folder_url_field,
+                        intake_form_url=intake_url,
+                    )
+            except Exception:
+                pass
             
         except Exception as e:
             log("create.drive.error", {"error": str(e)})
@@ -1111,11 +1482,18 @@ async def create_chatbot(payload: Dict[str, Any]) -> Dict[str, Any]:
     # -------------------------------------------------------------------------
     if final_documents:
         # Keep this conservative to avoid cost spikes: 1 request per doc
+        context_tasks = []
         keyword_tasks = []
         for d in final_documents:
             title = str(d.get("title") or (d.get("metadata") or {}).get("title") or "")
             body = str(d.get("markdown") or d.get("content") or "")
+            # document_context (must not include YAML headers)
+            context_tasks.append(_extract_document_context_for_doc(body=body))
             keyword_tasks.append(_extract_keywords_for_doc(title=title, body=body))
+        context_list = await asyncio.gather(*context_tasks)
+        for d, ctx in zip(final_documents, context_list):
+            if isinstance(ctx, str) and ctx.strip():
+                d["document_context"] = ctx.strip()
         keywords_list = await asyncio.gather(*keyword_tasks)
         for d, kws in zip(final_documents, keywords_list):
             if kws:
@@ -1132,69 +1510,63 @@ async def create_chatbot(payload: Dict[str, Any]) -> Dict[str, Any]:
             # -------------------------------------------------------------------------
             # 5. Save Metadata for UI (Indexes List)
             # -------------------------------------------------------------------------
-            # Prefer Pinecone-based report (authoritative, post-ingest)
-            # Strategy: list_paginated -> fetch -> dedupe by file_key.
-            metadata_file: Dict[str, Any]
-            try:
-                metadata_file = pinecone_kb_client.build_onboarding_metadata_report(
-                    client_slug=client_slug,
-                    website_url=url,
-                    drive_url=drive_folder_input or "",
-                    wait_after_upsert_s=1.5,  # allow for eventual consistency right after upsert
-                )
-            except Exception as e:
-                # Fallback to pre-ingest counts if Pinecone enumeration fails
-                log("create.pinecone.report_error", {"error": str(e), "client": client_slug})
+            # We write TWO metadata files (do not overwrite legacy metadata.json):
+            # - supabase_storage_metadata.json: derived from what we just uploaded to Storage
+            # - pinecone_namespace_metadata.json: derived from Pinecone namespace after vectorization
 
-                website_docs_list = [d for d in final_documents if d.get("document_source") == "website"]
-                drive_docs_list = [d for d in final_documents if d.get("document_source") in ["drive", "client_materials"]]
-                intake_form_docs = len([d for d in final_documents if d.get("document_source") in ["intake_form", "intake-form"]])
+            website_docs_list = [d for d in final_documents if d.get("document_source") == "website"]
+            drive_docs_list = [d for d in final_documents if d.get("document_source") in ["drive", "client_materials"]]
+            intake_form_docs = len([d for d in final_documents if d.get("document_source") in ["intake_form", "intake-form"]])
 
-                def _by_content_type(docs: List[Dict[str, Any]]) -> Dict[str, int]:
-                    counts: Dict[str, int] = {}
-                    for doc in docs:
-                        ct = doc.get("content_type") or doc.get("metadata", {}).get("content_type") or "other"
-                        counts[ct] = counts.get(ct, 0) + 1
-                    return counts
+            def _by_content_type(docs: List[Dict[str, Any]]) -> Dict[str, int]:
+                counts: Dict[str, int] = {}
+                for doc in docs:
+                    ct = doc.get("content_type") or doc.get("metadata", {}).get("content_type") or "other"
+                    counts[ct] = counts.get(ct, 0) + 1
+                return counts
 
-                website_docs = {"total": len(website_docs_list), "by_content_type": _by_content_type(website_docs_list)}
-                drive_docs_count = {"total": len(drive_docs_list), "by_content_type": _by_content_type(drive_docs_list)}
+            website_docs = {"total": len(website_docs_list), "by_content_type": _by_content_type(website_docs_list)}
+            drive_docs_count = {"total": len(drive_docs_list), "by_content_type": _by_content_type(drive_docs_list)}
 
-                homepage_doc = next(
-                    (
-                        d
-                        for d in website_docs_list
-                        if (d.get("content_type") or d.get("metadata", {}).get("content_type")) in ["homepage", "home", "home page"]
-                    ),
-                    None,
-                )
-                homepage_meta = homepage_doc.get("metadata", {}) if homepage_doc else {}
-                homepage_title = homepage_meta.get("title") or (homepage_doc or {}).get("title") or client_slug
-                homepage_favicon = homepage_meta.get("favicon") or homepage_meta.get("ogImage")
+            homepage_doc = next(
+                (
+                    d
+                    for d in website_docs_list
+                    if (d.get("content_type") or d.get("metadata", {}).get("content_type")) in ["homepage", "home", "home page"]
+                ),
+                None,
+            )
+            homepage_meta = homepage_doc.get("metadata", {}) if homepage_doc else {}
+            homepage_title = homepage_meta.get("title") or (homepage_doc or {}).get("title") or client_slug
+            homepage_favicon = homepage_meta.get("favicon") or homepage_meta.get("ogImage")
 
-                metadata_file = {
-                    "website_url": url,
-                    "drive_url": drive_folder_input or "",
-                    "client_slug": client_slug,
-                    "website_docs": website_docs,
-                    "intake_form_docs": intake_form_docs,
-                    "drive_docs": drive_docs_count,
-                    "createdAt": time.strftime("%Y-%m-%dT%H:%M:%S.000Z"),
-                    "metadata": {"title": homepage_title, **({"favicon": homepage_favicon} if homepage_favicon else {})},
-                }
+            supabase_storage_metadata_file: Dict[str, Any] = {
+                "website_url": url,
+                "drive_url": drive_folder_input or "",
+                "client_slug": client_slug,
+                "client_name": client_name or None,
+                "website_docs": website_docs,
+                "intake_form_docs": intake_form_docs,
+                "drive_docs": drive_docs_count,
+                "createdAt": time.strftime("%Y-%m-%dT%H:%M:%S.000Z"),
+                "metadata": {"title": homepage_title, **({"favicon": homepage_favicon} if homepage_favicon else {})},
+                # Persist chosen chunker so bulk scripts + future re-ingests can keep behavior consistent.
+                "chunker": requested_chunker or "char:1200:200",
+                "source": "supabase_storage",
+            }
 
-            # Upload metadata to Supabase Storage
+            # Upload supabase_storage_metadata.json to Supabase Storage
             supabase_client = get_supabase_storage_client()
             BUCKET_NAME = "client-data-sources"
             if supabase_client:
                 try:
                     supabase_client.upload_json(
                         bucket=BUCKET_NAME,
-                        path=f"{client_slug}/metadata.json",
-                        payload=metadata_file,
+                        path=f"{client_slug}/supabase_storage_metadata.json",
+                        payload=supabase_storage_metadata_file,
                         upsert=True
                     )
-                    log("create.supabase.metadata_saved", {"client": client_slug, "bucket": BUCKET_NAME})
+                    log("create.supabase.metadata_saved", {"client": client_slug, "bucket": BUCKET_NAME, "key": "supabase_storage_metadata.json"})
                 except Exception as e:
                     log("create.supabase.metadata_error", {"error": str(e), "client": client_slug})
 
@@ -1204,7 +1576,16 @@ async def create_chatbot(payload: Dict[str, Any]) -> Dict[str, Any]:
             pinecone_info: Dict[str, Any] = {}
             if storage_info.get("success"):
                 try:
-                    pinecone_info = await _vectorize_to_pinecone(client_slug)
+                    effective_namespace = f"{client_slug}-semantic" if semantic_embeddings else client_slug
+                    # Default semantic index is configurable; set to the same index to keep everything in sb-knowledge-bases.
+                    effective_index = settings.pinecone_kb_semantic_index_name if semantic_embeddings else settings.pinecone_kb_index_name
+                    force_chunker = "md_semantic_v1" if semantic_embeddings else None
+                    pinecone_info = await _vectorize_to_pinecone(
+                        client_slug,
+                        namespace_override=effective_namespace,
+                        index_override=effective_index,
+                        force_chunker=force_chunker,
+                    )
                     if pinecone_info.get("success"):
                         log("create.pinecone.success", {
                             "client": client_slug,
@@ -1221,11 +1602,50 @@ async def create_chatbot(payload: Dict[str, Any]) -> Dict[str, Any]:
                     log("create.pinecone.error", {"client": client_slug, "error": str(e)})
                     pinecone_info = {"success": False, "error": str(e)}
 
+            # After vectorization, write pinecone_namespace_metadata.json (authoritative for UI display)
+            if supabase_client and storage_info.get("success") and pinecone_info.get("success"):
+                try:
+                    effective_namespace = pinecone_info.get("namespace") or client_slug
+                    effective_index = pinecone_info.get("index") or settings.pinecone_kb_index_name
+                    pinecone_meta = pinecone_kb_client.build_onboarding_metadata_report(
+                        client_slug=str(effective_namespace),
+                        website_url=url,
+                        drive_url=drive_folder_input or "",
+                        index_name=str(effective_index),
+                        wait_after_upsert_s=1.5,
+                    )
+                    if isinstance(pinecone_meta, dict):
+                        # Ensure Pinecone metadata carries favicon from Supabase metadata (for UI logos).
+                        # Pinecone namespace enumeration may not reliably recover favicons.
+                        sb_meta = supabase_storage_metadata_file.get("metadata") if isinstance(supabase_storage_metadata_file, dict) else None
+                        pc_meta = pinecone_meta.get("metadata")
+                        if not isinstance(pc_meta, dict):
+                            pc_meta = {}
+                            pinecone_meta["metadata"] = pc_meta
+                        if isinstance(sb_meta, dict) and sb_meta.get("favicon") and not pc_meta.get("favicon"):
+                            pc_meta["favicon"] = sb_meta.get("favicon")
+
+                        # Preserve chunker + a marker
+                        pinecone_meta["chunker"] = pinecone_meta.get("chunker") or (requested_chunker or "char:1200:200")
+                        pinecone_meta["source"] = "pinecone_namespace"
+                        pinecone_meta["base_client_slug"] = client_slug
+                        pinecone_meta["semantic_embeddings"] = bool(semantic_embeddings)
+                        pinecone_meta["client_name"] = client_name or pinecone_meta.get("client_name") or None
+                        supabase_client.upload_json(
+                            bucket=BUCKET_NAME,
+                            path=f"{client_slug}/pinecone_namespace_metadata.json",
+                            payload=pinecone_meta,
+                            upsert=True,
+                        )
+                        log("create.supabase.metadata_saved", {"client": client_slug, "bucket": BUCKET_NAME, "key": "pinecone_namespace_metadata.json"})
+                except Exception as e:
+                    log("create.pinecone.report_error", {"error": str(e), "client": client_slug})
+
             # -------------------------------------------------------------------------
-            # 7. Create Pinecone Assistant (for new clients with successful vectorization)
+            # 7. (Optional) Create Pinecone Assistant (DISABLED BY DEFAULT)
             # -------------------------------------------------------------------------
-            assistant_info: Dict[str, Any] = {}
-            if storage_info.get("success") and pinecone_info.get("success"):
+            assistant_info: Dict[str, Any] = {"success": False, "skipped": True, "reason": "Assistant creation disabled by default"}
+            if create_assistant and storage_info.get("success") and pinecone_info.get("success"):
                 try:
                     assistant_info = await _create_assistant(client_slug)
                     if assistant_info.get("success"):
@@ -1248,6 +1668,8 @@ async def create_chatbot(payload: Dict[str, Any]) -> Dict[str, Any]:
                 except Exception as e:
                     log("create.assistant.error", {"client": client_slug, "error": str(e)})
                     assistant_info = {"success": False, "error": str(e)}
+            elif not create_assistant:
+                log("create.assistant.disabled", {"client": client_slug})
 
         except Exception as e:
             log("create.ingest.error", {"error": str(e)})

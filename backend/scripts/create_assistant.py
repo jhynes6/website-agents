@@ -42,13 +42,10 @@ def _detect_storage_layout(settings, client_slug: str) -> tuple[str, str]:
     """
     Returns (bucket_name, prefix_base)
 
-    - bucket-per-client: bucket = client_slug, prefix_base = ""
-    - shared bucket: bucket = client-data-sources, prefix_base = f"{client_slug}/"
+    Shared bucket is canonical for this repo:
+    - bucket = client-data-sources
+    - prefix_base = f"{client_slug}/"
     """
-    c = _supabase_storage_client(settings)
-    bucket_ids = {str(b.get("id") or b.get("name") or "").strip() for b in c.list_buckets() if isinstance(b, dict)}
-    if client_slug in bucket_ids:
-        return client_slug, ""
     return "client-data-sources", f"{client_slug}/"
 
 

@@ -2,6 +2,7 @@
 Resource links endpoint - generates presigned URLs for key JSON reports
 """
 from fastapi import APIRouter, HTTPException, Request
+from fastapi.responses import JSONResponse
 import json
 import logging
 from typing import Any, Dict
@@ -10,6 +11,8 @@ from ..config import get_settings
 
 logger = logging.getLogger(__name__)
 router = APIRouter()
+
+INDEXES_BUCKET = "client-data-sources"
 
 
 def _pinecone_fetch_report_doc(*, index_name: str, namespace: str, doc_id: str) -> Dict[str, Any]:
@@ -87,7 +90,7 @@ async def get_summary_warnings():
 
 
 @router.get("/client-details/{client_slug}")
-async def get_client_details(client_slug: str):
+async def get_client_details(client_slug: str, request: Request):
     """
     Fetch detailed client information from both KB and agent registries
     
@@ -102,7 +105,11 @@ async def get_client_details(client_slug: str):
         result = {
             "client_slug": client_slug,
             "kb_data": None,
-            "agent_data": None
+            "agent_data": None,
+            # UI convenience links to quickly view Supabase Storage metadata files in a new tab.
+            "metadata_url": f"{str(request.base_url).rstrip('/')}/api/mintagent/client-metadata/{client_slug}",
+            "supabase_storage_metadata_url": f"{str(request.base_url).rstrip('/')}/api/mintagent/client-metadata/{client_slug}?source=supabase",
+            "pinecone_namespace_metadata_url": f"{str(request.base_url).rstrip('/')}/api/mintagent/client-metadata/{client_slug}?source=pinecone",
         }
         
         # Fetch KB/Client data
@@ -130,6 +137,54 @@ async def get_client_details(client_slug: str):
     except Exception as e:
         logger.error(f"Error fetching client details for {client_slug}: {e}")
         raise HTTPException(status_code=500, detail=f"Failed to fetch client details: {str(e)}")
+
+
+@router.get("/client-metadata/{client_slug}")
+async def get_client_metadata(client_slug: str, source: str = "pinecone"):
+    """
+    Return the raw Supabase Storage metadata file for a client.
+
+    Storage location:
+      - bucket: client-data-sources
+      - keys:
+          - {client_slug}/pinecone_namespace_metadata.json
+          - {client_slug}/supabase_storage_metadata.json
+          - {client_slug}/metadata.json (legacy)
+    """
+    from ..clients.supabase_storage_client import SupabaseStorageClient
+
+    slug = (client_slug or "").strip()
+    if not slug:
+        raise HTTPException(status_code=400, detail="client_slug required")
+
+    storage = SupabaseStorageClient()
+    source_norm = (source or "pinecone").strip().lower()
+    candidates = []
+    if source_norm in ("pinecone", "pinecone_namespace"):
+        candidates = [f"{slug}/pinecone_namespace_metadata.json", f"{slug}/supabase_storage_metadata.json", f"{slug}/metadata.json"]
+    elif source_norm in ("supabase", "storage", "supabase_storage"):
+        candidates = [f"{slug}/supabase_storage_metadata.json", f"{slug}/metadata.json", f"{slug}/pinecone_namespace_metadata.json"]
+    else:
+        candidates = [f"{slug}/pinecone_namespace_metadata.json", f"{slug}/supabase_storage_metadata.json", f"{slug}/metadata.json"]
+
+    data = None
+    last_err: Exception | None = None
+    for key in candidates:
+        try:
+            data = storage.download_json(INDEXES_BUCKET, key)
+            if isinstance(data, dict):
+                break
+        except Exception as e:
+            last_err = e
+            data = None
+            continue
+
+    if not isinstance(data, dict):
+        logger.warning(f"Could not fetch metadata for {slug} (source={source_norm}): {last_err}")
+        raise HTTPException(status_code=404, detail="metadata not found for client")
+
+    # Return as JSON so it renders nicely in-browser.
+    return JSONResponse(content=data)
 
 
 @router.get("/report/{doc_id:path}")

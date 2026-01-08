@@ -63,7 +63,9 @@ Creates or refreshes a client knowledge base by:
 - Uploading raw artifacts to storage (Supabase Storage),
 - Upserting vectors into Pinecone,
 - Optionally creating a Pinecone Assistant,
-- Writing a UI metadata file (`metadata.json`) for index listing.
+- Writing UI metadata files for index listing:
+  - `supabase_storage_metadata.json`
+  - `pinecone_namespace_metadata.json` (preferred for display)
 
 ### Request body
 
@@ -93,6 +95,7 @@ Creates or refreshes a client knowledge base by:
 - **`maxDepth`** (alias: `depth`): crawl depth (default `3`).
 - **`includePaths` / `excludePaths`**: path filters forwarded to crawl.
 - **`skipMarkdownClean`**: if true, disables post-crawl markdown cleaning.
+- **`createAssistant`** (aliases: `create_assistant`, `createPineconeAssistant`): if true, attempts to create a Pinecone Assistant. **Default is false**.
 - **`skipRedisSave`**: legacy switch (present for back-compat).
 
 ### Response (200)

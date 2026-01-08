@@ -240,6 +240,7 @@ function DashboardContent() {
   const [clientDetails, setClientDetails] = useState<{
     kb_data: any
     agent_data: any
+    metadata_url?: string | null
   } | null>(null)
   const [showKbDetailsModal, setShowKbDetailsModal] = useState(false)
   const [showAgentDetailsModal, setShowAgentDetailsModal] = useState(false)
@@ -518,15 +519,35 @@ function DashboardContent() {
     }
   }
 
-  const handleDelete = () => {
-    // Remove from localStorage
-    const storedIndexes = localStorage.getItem('mintagent_indexes')
-    if (storedIndexes && siteData) {
-      const indexes = JSON.parse(storedIndexes)
-      const updatedIndexes = indexes.filter((idx: { clientSlug: string }) => idx.clientSlug !== siteData.clientSlug)
-      localStorage.setItem('mintagent_indexes', JSON.stringify(updatedIndexes))
+  const handleDelete = async () => {
+    if (!siteData?.clientSlug) return
+    try {
+      // Delete server-side (Pinecone namespace + Supabase Storage folder)
+      const resp = await fetch(`/api/indexes?namespace=${encodeURIComponent(siteData.clientSlug)}`, {
+        method: 'DELETE',
+      })
+      if (!resp.ok) {
+        console.error('[Dashboard] Delete failed:', resp.status, await resp.text())
+      }
+    } catch (e) {
+      console.error('[Dashboard] Delete request error:', e)
     }
-    
+
+    // Always clean up local cached state
+    const storedIndexes = localStorage.getItem('mintagent_indexes')
+    if (storedIndexes) {
+      try {
+        const indexes = JSON.parse(storedIndexes)
+        const updatedIndexes = indexes.filter(
+          (idx: { clientSlug?: string; namespace?: string }) =>
+            (idx.clientSlug || idx.namespace) !== siteData.clientSlug
+        )
+        localStorage.setItem('mintagent_indexes', JSON.stringify(updatedIndexes))
+      } catch {
+        // ignore parse errors
+      }
+    }
+
     sessionStorage.removeItem('mintagent_current_data')
     router.push('/indexes')
   }
@@ -545,6 +566,7 @@ function DashboardContent() {
       </div>
     )
   }
+  const metadataJsonUrl = getBackendUrl(`/api/mintagent/client-metadata/${siteData.clientSlug}`)
   
   // Get agent endpoint URL if available
   const agentEndpointUrl = siteData.agent?.endpointUrl || null
@@ -834,6 +856,28 @@ print(data['choices'][0]['message']['content'])`
                 </button>
               </div>
             )}
+
+            {/* Quick link to Supabase Storage metadata (Pinecone-derived preferred) */}
+            <div className="bg-white rounded-xl p-4 border border-gray-200 flex-shrink-0">
+              <div className="flex items-center justify-between gap-3">
+                <div className="min-w-0">
+                  <p className="text-sm font-semibold text-[#36322F] truncate">Knowledge Base</p>
+                  <p className="text-xs text-gray-600 truncate">
+                    View <span className="font-mono">pinecone_namespace_metadata.json</span>
+                  </p>
+                </div>
+                <Button asChild variant="outline" size="sm" className="gap-2">
+                  <a
+                    href={clientDetails?.pinecone_namespace_metadata_url || clientDetails?.metadata_url || metadataJsonUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    <FileText className="w-4 h-4" />
+                    pinecone metadata
+                  </a>
+                </Button>
+              </div>
+            </div>
 
             <div className="bg-white rounded-xl p-6 border border-gray-200 flex flex-col flex-shrink-0">
               <h2 className="text-lg font-semibold text-[#36322F] mb-4">Quick Start</h2>

@@ -2,10 +2,12 @@ from __future__ import annotations
 
 import hashlib
 import json
+from json import JSONDecodeError
 from dataclasses import dataclass
 from typing import Any, Dict, List, Optional
 from urllib.parse import quote
 import base64
+import os
 
 import httpx
 
@@ -40,6 +42,8 @@ class SupabaseStorageClient:
         ).rstrip("/")
         self.service_role_key = (
             service_role_key
+            or (s.supabase_agent_service_role_key or "")
+            or (os.getenv("SUPABASE_AGENT_SERVICE_ROLE_KEY") or "")
             or (s.supabase_agent_key or "")
             or (s.supabase_service_role_key or "")
         )
@@ -165,6 +169,29 @@ class SupabaseStorageClient:
             return False
         raise RuntimeError(f"Supabase Storage object info error {resp.status_code}: {resp.text}")
 
+    def download_bytes(self, bucket: str, path: str) -> bytes:
+        """
+        Download an object by path.
+        """
+        b = (bucket or "").strip()
+        p = (path or "").lstrip("/")
+        if not b:
+            raise ValueError("bucket required")
+        if not p:
+            raise ValueError("path required")
+        url = f"{self.base_url}/object/{quote(b)}/{quote(p, safe='/')}"
+        resp = httpx.get(url, headers=self._headers(), timeout=120)
+        if resp.status_code >= 400:
+            raise RuntimeError(f"Supabase Storage download error {resp.status_code}: {resp.text}")
+        return resp.content
+
+    def download_json(self, bucket: str, path: str) -> Any:
+        raw = self.download_bytes(bucket, path)
+        try:
+            return json.loads(raw.decode("utf-8"))
+        except (UnicodeDecodeError, JSONDecodeError):
+            raise RuntimeError(f"Supabase Storage download_json failed to parse JSON: {bucket}/{path}")
+
     def upload_bytes(
         self,
         *,
@@ -172,6 +199,7 @@ class SupabaseStorageClient:
         path: str,
         data: bytes,
         content_type: str = "application/octet-stream",
+        upsert: bool = False,
     ) -> UploadResult:
         """
         Upload a new object (POST /object/{bucketName}/{wildcard}).
@@ -189,6 +217,8 @@ class SupabaseStorageClient:
             **self._headers(),
             "Content-Type": content_type,
         }
+        if upsert:
+            headers["x-upsert"] = "true"
         resp = httpx.post(url, headers=headers, content=data, timeout=120)
         if resp.status_code >= 400:
             raise RuntimeError(f"Supabase Storage upload error {resp.status_code}: {resp.text}")
@@ -198,9 +228,15 @@ class SupabaseStorageClient:
             key = str(raw.get("Key") or raw.get("key") or "")
         return UploadResult(key=key or f"{b}/{p}", raw=raw if isinstance(raw, dict) else {"raw": raw})
 
-    def upload_json(self, *, bucket: str, path: str, payload: Any) -> UploadResult:
+    def upload_json(self, *, bucket: str, path: str, payload: Any, upsert: bool = False) -> UploadResult:
         data = json.dumps(payload, ensure_ascii=False, indent=2).encode("utf-8")
-        return self.upload_bytes(bucket=bucket, path=path, data=data, content_type="application/json; charset=utf-8")
+        return self.upload_bytes(
+            bucket=bucket,
+            path=path,
+            data=data,
+            content_type="application/json; charset=utf-8",
+            upsert=upsert,
+        )
 
     def list_objects(
         self,
@@ -245,7 +281,10 @@ class SupabaseStorageClient:
         if not paths:
             return {"status": "skipped", "message": "no paths provided"}
         url = f"{self.base_url}/object/{quote(b)}"
-        resp = httpx.delete(
+        # NOTE: In our pinned httpx version, `httpx.delete()` does NOT accept `json=`.
+        # Use the generic request() API which does support JSON bodies.
+        resp = httpx.request(
+            "DELETE",
             url,
             headers={**self._headers(), "Content-Type": "application/json"},
             # Storage API expects `prefixes` for batch delete.

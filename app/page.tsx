@@ -43,6 +43,8 @@ export default function MintagentPage() {
   const [url, setUrl] = useState(urlParam || 'https://mintleads.io/');
   const [clientDriveFolder, setClientDriveFolder] = useState('');
   const [indexName, setIndexName] = useState<string>('');
+  const [clientName, setClientName] = useState<string>('');
+  const [semanticEmbeddings, setSemanticEmbeddings] = useState(false);
   const [hasInteracted, setHasInteracted] = useState(false);
   const [loading, setLoading] = useState(false);
   const [showSettings, setShowSettings] = useState(false);
@@ -326,6 +328,8 @@ export default function MintagentPage() {
           limit: pageLimit, 
           index: slug || undefined,
           clientSlug: slug,
+          clientName: clientName.trim() || undefined,
+          semanticEmbeddings: semanticEmbeddings || undefined,
           clientDriveFolder: driveFolder || undefined 
         })
       });
@@ -690,6 +694,24 @@ export default function MintagentPage() {
               <div className="flex flex-col sm:flex-row sm:items-center gap-3">
                 <div className="flex-1">
                   <label className="block text-sm font-medium text-[#0E3D68] dark:text-gray-300 mb-1">
+                    Client Name
+                  </label>
+                  <Input
+                    type="text"
+                    value={clientName}
+                    onChange={(e) => setClientName(e.target.value)}
+                    placeholder="e.g. MintLeads"
+                    disabled={loading}
+                    className="border-[#0E3D68]/20 focus:border-[#00B388] focus:ring-[#00B388]/20"
+                  />
+                  <p className="text-xs text-muted-foreground mt-1">
+                    Optional. Stored in the Supabase <span className="font-mono">clients</span> table.
+                  </p>
+                </div>
+              </div>
+              <div className="flex flex-col sm:flex-row sm:items-center gap-3">
+                <div className="flex-1">
+                  <label className="block text-sm font-medium text-[#0E3D68] dark:text-gray-300 mb-1">
                     Client Drive Folder
                   </label>
                   <Input
@@ -715,6 +737,18 @@ export default function MintagentPage() {
                     disabled={loading}
                   />
                   <span>Use Map + Scrape for comprehensive coverage (slower but finds all pages)</span>
+                </label>
+              </div>
+              <div className="flex items-center gap-3 text-sm text-muted-foreground">
+                <label className="flex items-center gap-2">
+                  <input
+                    type="checkbox"
+                    className="h-4 w-4 rounded border-gray-300 text-[#00B388] focus:ring-[#00B388]"
+                    checked={semanticEmbeddings}
+                    onChange={() => setSemanticEmbeddings(!semanticEmbeddings)}
+                    disabled={loading}
+                  />
+                  <span>Semantic embeddings (A/B test: upsert to namespace with <span className="font-mono">-semantic</span>)</span>
                 </label>
               </div>
               <p className="text-xs text-gray-500 mt-1 ml-6">

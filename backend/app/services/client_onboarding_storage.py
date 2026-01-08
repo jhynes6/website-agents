@@ -90,18 +90,23 @@ async def onboard_client_to_supabase_storage(
         raise ValueError("client_slug required")
 
     storage = SupabaseStorageClient()
+    bucket = "client-data-sources"
 
-    # 1/2) ensure bucket
-    existed = storage.bucket_exists(slug)
-    if not existed:
-        log("onboarding.storage.bucket.create", {"client_slug": slug})
-        storage.create_bucket(slug, public=True)
-    else:
-        log("onboarding.storage.bucket.exists", {"client_slug": slug})
+    # Ensure the shared bucket exists (one-bucket model).
+    try:
+        if not storage.bucket_exists(bucket):
+            log("onboarding.storage.bucket.create", {"bucket": bucket})
+            storage.create_bucket(bucket, public=False)
+    except Exception:
+        # If RLS prevents checking, attempt creation and continue.
+        try:
+            storage.create_bucket(bucket, public=False)
+        except Exception:
+            pass
 
     # 3) ensure prefixes
-    prefixes = ["website", "drive", "intake_form"]
-    storage.ensure_prefixes(slug, prefixes)
+    prefixes = [f"{slug}/website", f"{slug}/drive", f"{slug}/intake_form"]
+    storage.ensure_prefixes(bucket, prefixes)
 
     # 4) website crawl
     website_result: Dict[str, Any] = {"status": "skipped"}
@@ -126,13 +131,19 @@ async def onboard_client_to_supabase_storage(
                 continue
 
             key = SupabaseStorageClient.safe_key_for_url(page_url, prefix="website/pages", ext="md")
-            storage.upload_bytes(bucket=slug, path=key, data=markdown.encode("utf-8"), content_type="text/markdown; charset=utf-8")
+            storage.upload_bytes(
+                bucket=bucket,
+                path=f"{slug}/{key}",
+                data=markdown.encode("utf-8"),
+                content_type="text/markdown; charset=utf-8",
+                upsert=True,
+            )
             saved.append(
                 {
                     "url": page_url,
                     "title": meta.get("title"),
                     "content_type": meta.get("content_type"),
-                    "storage_key": key,
+                    "storage_key": f"{slug}/{key}",
                 }
             )
 
@@ -144,7 +155,7 @@ async def onboard_client_to_supabase_storage(
             "raw_status": raw_status,
             "pages": saved,
         }
-        storage.upload_json(bucket=slug, path="website/manifest.json", payload=manifest)
+        storage.upload_json(bucket=bucket, path=f"{slug}/website/manifest.json", payload=manifest, upsert=True)
         website_result = {"status": "ok", "saved_pages": len(saved), "total_pages": len(pages)}
         log("onboarding.website.done", {"client_slug": slug, **website_result})
 
@@ -173,8 +184,8 @@ async def onboard_client_to_supabase_storage(
             else:
                 prefix = "drive"
 
-            key = f"{prefix}/documents/{doc_id}.json"
-            storage.upload_json(bucket=slug, path=key, payload=d)
+            key = f"{slug}/{prefix}/documents/{doc_id}.json"
+            storage.upload_json(bucket=bucket, path=key, payload=d, upsert=True)
             if prefix == "intake_form":
                 intake_saved += 1
             else:
@@ -184,14 +195,15 @@ async def onboard_client_to_supabase_storage(
         intake_doc_id = _extract_drive_doc_id(intake_form_url or "")
         if intake_doc_id:
             storage.upload_json(
-                bucket=slug,
-                path="intake_form/intake_form_url.json",
+                bucket=bucket,
+                path=f"{slug}/intake_form/intake_form_url.json",
                 payload={"client_slug": slug, "intake_form_url": intake_form_url, "drive_file_id": intake_doc_id, "saved_at": _utc_now_iso()},
+                upsert=True,
             )
 
         storage.upload_json(
-            bucket=slug,
-            path="drive/manifest.json",
+            bucket=bucket,
+            path=f"{slug}/drive/manifest.json",
             payload={
                 "client_slug": slug,
                 "drive_folder_url": drive_folder_url,
@@ -199,6 +211,7 @@ async def onboard_client_to_supabase_storage(
                 "summary": summary,
                 "counts": {"documents_total": len(docs), "drive_saved": drive_saved, "intake_saved": intake_saved},
             },
+            upsert=True,
         )
 
         drive_result = {"status": "ok", "saved": drive_saved, "total": len(docs)}
@@ -207,8 +220,8 @@ async def onboard_client_to_supabase_storage(
 
     return OnboardResult(
         client_slug=slug,
-        bucket=slug,
-        ensured_bucket=not existed,
+        bucket=bucket,
+        ensured_bucket=True,
         ensured_prefixes=prefixes,
         website=website_result,
         drive=drive_result,

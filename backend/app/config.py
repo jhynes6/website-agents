@@ -68,6 +68,8 @@ class Settings(BaseSettings):
     supabase_agent_url: Optional[HttpUrl] = Field(None, alias="SUPABASE_AGENT_URL")
     supabase_agent_key: Optional[str] = Field(None, alias="SUPABASE_AGENT_KEY")
     supabase_agent_publishable_key: Optional[str] = Field(None, alias="SUPABASE_AGENT_PUBLISHABLE_KEY")
+    # Service role key for server-side Storage operations (preferred when present)
+    supabase_agent_service_role_key: Optional[str] = Field(None, alias="SUPABASE_AGENT_SERVICE_ROLE_KEY")
 
     # Supabase (Email Bison workspace -> client slug mapping)
     # New (preferred): Bison-specific Supabase env vars (matches context/supabase_client.py)
@@ -112,6 +114,8 @@ class Settings(BaseSettings):
     pinecone_region: str = Field("us-east-1", alias="PINECONE_REGION")
     # Canonical KB index for this project (upload + retrieval).
     pinecone_kb_index_name: str = Field("sb-knowledge-bases", alias="PINECONE_KB_INDEX")
+    # Optional separate index for semantic A/B runs (only used when semanticEmbeddings is enabled).
+    pinecone_kb_semantic_index_name: str = Field("sb-knowledge-bases-semantic", alias="PINECONE_KB_SEMANTIC_INDEX")
     pinecone_agent_index_name: str = Field("agents", alias="PINECONE_AGENT_INDEX")
     # Report indexes (structured JSON “cards” + summaries for UI)
     # User-provided env var names:

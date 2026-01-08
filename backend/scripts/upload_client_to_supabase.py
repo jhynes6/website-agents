@@ -166,14 +166,15 @@ async def setup_client_bucket(
     row: Dict[str, str]
 ) -> Dict[str, Any]:
     """
-    Set up a complete client bucket with folder structure and metadata.
+    Set up a complete client folder in the shared bucket with folder structure and metadata.
     
     Structure:
-    {client-slug}/              (bucket)
-    ├── metadata.json          (stats and info)
-    ├── website/               (folder for website docs)
-    ├── drive/                 (folder for drive docs)
-    └── intake_form/           (folder for intake form)
+    client-data-sources/       (bucket)
+    └── {client-slug}/
+        ├── metadata.json
+        ├── website/
+        ├── drive/
+        └── intake_form/
     """
     client_slug = row.get("client-slug", "").strip()
     
@@ -194,13 +195,13 @@ async def setup_client_bucket(
     # Prepare metadata
     metadata = prepare_metadata_json(row)
     
-    # 1. Create the bucket (named after client slug)
-    bucket_name = client_slug
-    logger.info(f"  Creating bucket: {bucket_name}")
+    # Shared bucket
+    bucket_name = "client-data-sources"
+    logger.info(f"  Ensuring shared bucket: {bucket_name}")
     
     try:
         storage_client.ensure_bucket(bucket_name, public=False)
-        logger.info(f"  ✓ Bucket '{bucket_name}' ready")
+        logger.info(f"  ✓ Bucket '{bucket_name}' ready (shared)")
     except Exception as e:
         logger.warning(f"  Could not create bucket (may already exist): {e}")
     
@@ -208,22 +209,22 @@ async def setup_client_bucket(
     folders = ["website", "drive", "intake_form"]
     for folder in folders:
         try:
-            keep_path = f"{folder}/.keep"
+            keep_path = f"{client_slug}/{folder}/.keep"
             storage_client.upload_bytes(
                 bucket=bucket_name,
                 path=keep_path,
                 data=b"# This file ensures the folder exists in Supabase Storage\n",
                 content_type="text/plain; charset=utf-8"
             )
-            logger.info(f"  ✓ Created folder: {folder}/")
+            logger.info(f"  ✓ Created folder: {client_slug}/{folder}/")
         except Exception as e:
             logger.warning(f"  Could not create folder {folder}: {e}")
     
-    # 3. Upload metadata.json to bucket root
+    # 3. Upload metadata.json to client folder root
     try:
         result = storage_client.upload_json(
             bucket=bucket_name,
-            path="metadata.json",
+            path=f"{client_slug}/metadata.json",
             payload=metadata
         )
         logger.info(f"  ✓ Uploaded: metadata.json")

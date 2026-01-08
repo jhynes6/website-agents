@@ -34,12 +34,14 @@ if env_path.exists():
 from app.config import get_settings
 from app.clients.pinecone_client import pinecone_kb_client  # noqa: E402
 from app.clients.supabase_storage_client import SupabaseStorageClient  # noqa: E402
+from app.clients.supabase_agents_db_client import SupabaseAgentsDbClient  # noqa: E402
 
 
 # Constants
 CHUNK_SIZE = 1200
 CHUNK_OVERLAP = 200
 SHARED_BUCKET = "client-data-sources"
+_CLI_CHUNKER = "auto"
 
 
 def _resolve_supabase_storage_key(settings) -> str:
@@ -155,9 +157,40 @@ async def list_clients_from_storage() -> List[str]:
     if not settings.supabase_agent_url or not settings.supabase_agent_key:
         raise RuntimeError("SUPABASE_AGENT_URL and SUPABASE_AGENT_KEY must be configured to use --all")
 
-    mode, slugs = _detect_storage_mode(settings=settings)
-    print(f"🧭 Storage mode: {mode} (clients discovered: {len(slugs)})")
+    # Shared bucket is canonical for this repo.
+    slugs = _list_client_slugs_from_shared_bucket(settings=settings)
+    print(f"🧭 Storage mode: shared_bucket (clients discovered: {len(slugs)})")
     return slugs
+
+
+def _resolve_client_chunker(*, settings, client_slug: str, cli_chunker: str) -> str:
+    """
+    Determine which chunker to use for this client (A/B friendly).
+
+    Priority:
+    1) CLI override (if not "auto")
+    2) Supabase Storage metadata.json field `chunker`
+    3) Default: char:1200:200
+    """
+    if (cli_chunker or "").strip().lower() != "auto":
+        return (cli_chunker or "").strip() or f"char:{CHUNK_SIZE}:{CHUNK_OVERLAP}"
+
+    api_key = _resolve_supabase_storage_key(settings)
+    client = SupabaseStorageClient(project_url=str(settings.supabase_agent_url or ""), service_role_key=api_key)
+    try:
+        # Prefer new metadata file, fallback to legacy metadata.json
+        try:
+            meta = client.download_json(SHARED_BUCKET, f"{client_slug}/supabase_storage_metadata.json")
+        except Exception:
+            meta = client.download_json(SHARED_BUCKET, f"{client_slug}/metadata.json")
+        if isinstance(meta, dict):
+            c = meta.get("chunker")
+            if isinstance(c, str) and c.strip():
+                return c.strip()
+    except Exception:
+        pass
+
+    return f"char:{CHUNK_SIZE}:{CHUNK_OVERLAP}"
 
 
 def chunk_text(text: str, chunk_size: int = CHUNK_SIZE, overlap: int = CHUNK_OVERLAP) -> List[str]:
@@ -317,15 +350,9 @@ async def process_client(client_slug: str, dry_run: bool = False) -> Dict[str, A
             print("❌ PINECONE_API_KEY not configured")
             return {"success": False, "error": "Missing Pinecone API key"}
         
-    # Determine storage model for this run.
-    # Prefer bucket-per-client if a bucket exists; otherwise fall back to shared bucket.
-    mode, _ = _detect_storage_mode(settings=settings)
-    if mode == "bucket_per_client":
-        bucket = client_slug
-        prefix_mode = "bucket_per_client"
-    else:
-        bucket = SHARED_BUCKET
-        prefix_mode = "shared_bucket"
+    # Shared bucket is canonical for this repo.
+    bucket = SHARED_BUCKET
+    prefix_mode = "shared_bucket"
     
     # List all files for client
     files = await list_client_files(bucket=bucket, client_slug=client_slug, prefix_mode=prefix_mode)
@@ -336,6 +363,12 @@ async def process_client(client_slug: str, dry_run: bool = False) -> Dict[str, A
     
     total_files = 0
     docs_for_upsert: List[Dict[str, Any]] = []
+    doc_ids: List[str] = []
+    db: SupabaseAgentsDbClient | None = None
+    try:
+        db = SupabaseAgentsDbClient()
+    except Exception:
+        db = None
     
     for subfolder, file_info in files:
         file_name = file_info["name"]  # Filename only, relative to prefix
@@ -381,10 +414,44 @@ async def process_client(client_slug: str, dry_run: bool = False) -> Dict[str, A
                 "document_source": metadata.get("document_source") or subfolder,
                 "keywords": kws_list,
                 "markdown": body,
-                # Stable identifier for record IDs
-                "file_key": f"{client_slug}/{file_path}",
+                # Storage + stable identifier
+                "storage_bucket": metadata.get("storage_bucket") or SHARED_BUCKET,
+                "storage_path": metadata.get("storage_path") or f"{client_slug}/{file_path}",
+                "storage_preview_url": metadata.get("storage_preview_url") or "",
+                "file_type": metadata.get("file_type") or ("html" if subfolder == "website" else None),
+                "content_hash": metadata.get("content_hash") or "",
+                "document_context": metadata.get("document_context") or "",
+                # Stable identifier for record IDs + UI links
+                "file_key": metadata.get("storage_path") or f"{client_slug}/{file_path}",
             }
         )
+        doc_id = metadata.get("doc_id")
+        if isinstance(doc_id, str) and doc_id.strip():
+            doc_ids.append(doc_id.strip())
+
+        # Upsert documents row as "ingested" (it exists in Storage by definition)
+        if db is not None and isinstance(doc_id, str) and doc_id.strip():
+            try:
+                kws_str = ", ".join(kws_list) if kws_list else None
+                await db.upsert_documents(
+                    docs=[
+                        {
+                            "doc_id": doc_id.strip(),
+                            "client_slug": client_slug,
+                            "ingestion_status": "ingested",
+                            "document_source": metadata.get("document_source") or subfolder,
+                            "content_type": metadata.get("content_type") or "",
+                            "url": metadata.get("url") or "",
+                            "keywords": kws_str,
+                            "content_hash": metadata.get("content_hash") or "",
+                            "document_context": metadata.get("document_context") or None,
+                            "db_file_url": metadata.get("storage_preview_url") or None,
+                            "text": body,
+                        }
+                    ]
+                )
+            except Exception:
+                pass
 
         total_files += 1
         
@@ -395,8 +462,44 @@ async def process_client(client_slug: str, dry_run: bool = False) -> Dict[str, A
         print(f"   Documents prepared: {len(docs_for_upsert)}")
         return {"success": True, "client_slug": client_slug, "files_processed": total_files, "records_upserted": 0}
 
-    print(f"\n🔼 Upserting to Pinecone (index: {settings.pinecone_kb_index_name}, namespace: {client_slug})")
-    upsert_res = pinecone_kb_client.upsert_documents(client_slug=client_slug, documents=docs_for_upsert)
+    semantic_mode = bool(os.getenv("MINTAGENT_SEMANTIC_MODE") == "1")
+    effective_namespace = f"{client_slug}-semantic" if semantic_mode else client_slug
+    effective_index = (
+        str(getattr(settings, "pinecone_kb_semantic_index_name", "") or "").strip()
+        if semantic_mode
+        else str(settings.pinecone_kb_index_name)
+    )
+    if not effective_index:
+        effective_index = str(settings.pinecone_kb_index_name)
+
+    chunker_name = _resolve_client_chunker(settings=settings, client_slug=client_slug, cli_chunker=_CLI_CHUNKER)
+    if semantic_mode:
+        # When semantic mode is enabled, default to semantic chunking (unless explicitly overridden).
+        if not chunker_name or str(chunker_name).strip().lower() == "auto":
+            chunker_name = "md_semantic_v1"
+
+    print(f"\n🔼 Upserting to Pinecone (index: {effective_index}, namespace: {effective_namespace}, chunker: {chunker_name})")
+    try:
+        upsert_res = pinecone_kb_client.upsert_documents(
+            client_slug=effective_namespace,
+            documents=docs_for_upsert,
+            chunk_size=CHUNK_SIZE,
+            overlap=CHUNK_OVERLAP,
+            chunker_name=chunker_name,
+            index_name=effective_index,
+        )
+        if db is not None and doc_ids:
+            try:
+                await db.set_documents_status(doc_ids=doc_ids, status="embedded")
+            except Exception:
+                pass
+    except Exception as e:
+        if db is not None and doc_ids:
+            try:
+                await db.set_documents_status(doc_ids=doc_ids, status="error - embed")
+            except Exception:
+                pass
+        raise
     
     print("\n" + "=" * 80)
     print(f"✅ Completed: {client_slug}")
@@ -440,6 +543,14 @@ async def main():
     )
 
     parser.add_argument(
+        "--chunker",
+        type=str,
+        default="auto",
+        help='Chunker strategy. Use "auto" (default) to read from Storage metadata.json `chunker`, '
+             'or set e.g. "char:1200:200" or "md_semantic_v1" or "md_semantic_v1:w350:m550:o80".',
+    )
+
+    parser.add_argument(
         "--limit",
         type=int,
         default=None,
@@ -453,6 +564,9 @@ async def main():
     )
     
     args = parser.parse_args()
+
+    global _CLI_CHUNKER
+    _CLI_CHUNKER = str(args.chunker or "auto")
     
     if not args.client and not args.all:
         print("❌ Error: Specify --client <slug> or --all")

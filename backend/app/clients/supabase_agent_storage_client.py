@@ -17,6 +17,16 @@ from ..config import get_settings
 def _sha1_hex(value: str) -> str:
     return hashlib.sha1(value.encode("utf-8"), usedforsecurity=False).hexdigest()
 
+def _looks_like_jwt(token: str) -> bool:
+    """
+    Supabase "legacy" anon/service_role keys are JWTs (3 segments separated by '.').
+    Newer publishable keys (e.g. sb_publishable_* / sbp_v0_*) are NOT JWTs and will
+    fail against endpoints that expect a compact JWS.
+    """
+    t = (token or "").strip()
+    parts = t.split(".")
+    return len(parts) == 3 and all(p.strip() for p in parts)
+
 
 @dataclass(frozen=True)
 class UploadResult:
@@ -35,11 +45,27 @@ class SupabaseAgentStorageClient:
     def __init__(self, *, project_url: Optional[str] = None, api_key: Optional[str] = None) -> None:
         s = get_settings()
         self.project_url = (project_url or str(s.supabase_agent_url or "")).rstrip("/")
-        self.api_key = api_key or (s.supabase_agent_key or "")
+        # Prefer service-role key for server-side Storage operations.
+        # Fall back to SUPABASE_AGENT_KEY for backwards compatibility.
+        self.api_key = (
+            api_key
+            or (s.supabase_agent_service_role_key or "")
+            or (s.supabase_agent_key or "")
+        )
         if not self.project_url:
             raise ValueError("SUPABASE_AGENT_URL not configured")
         if not self.api_key:
-            raise ValueError("SUPABASE_AGENT_KEY not configured")
+            raise ValueError(
+                "Supabase key not configured. Set SUPABASE_AGENT_SERVICE_ROLE_KEY (preferred) "
+                "or SUPABASE_AGENT_KEY (legacy JWT anon/service_role)."
+            )
+        # Fail fast with a clearer error if someone accidentally provides a non-JWT publishable key.
+        if not _looks_like_jwt(self.api_key):
+            raise ValueError(
+                "Supabase Storage requires a JWT key (legacy anon/service_role). "
+                "Your configured key does not look like a compact JWS. "
+                "Set SUPABASE_AGENT_SERVICE_ROLE_KEY (preferred) or SUPABASE_AGENT_KEY to a JWT."
+            )
         self.base_url = f"{self.project_url}/storage/v1"
 
     def _headers(self) -> Dict[str, str]:
