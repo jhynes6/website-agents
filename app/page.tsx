@@ -204,7 +204,20 @@ export default function MintagentPage() {
       }
 
         // Auto-scrape all discovered URLs (up to the page limit)
-        const urlsToScrape = links.slice(0, pageLimit).map((l: any) => l.url || l);
+        let urlsToScrape = links.slice(0, pageLimit).map((l: any) => l.url || l);
+        // Ensure homepage is prioritized so we can extract metadata early.
+        try {
+          const normHome = normalizedUrl.replace(/\/$/, '')
+          const homeCandidates = new Set([normalizedUrl, normalizedUrl + '/', normHome, normHome + '/'])
+          const homeFirst: string[] = []
+          const rest: string[] = []
+          for (const u of urlsToScrape) {
+            const s = String(u || '')
+            if (homeCandidates.has(s)) homeFirst.push(s)
+            else rest.push(s)
+          }
+          urlsToScrape = [...homeFirst, ...rest]
+        } catch {}
         
         toast.success(`Discovered ${links.length} URLs. Scraping ${urlsToScrape.length} pages...`);
         
@@ -213,24 +226,48 @@ export default function MintagentPage() {
           pagesFound: urlsToScrape.length,
           pagesScraped: 0
         });
-        
-        const scrapeResp = await fetch(getBackendUrl('/api/mintagent/scrape'), {
-          method: 'POST',
-          headers: buildApiHeaders(),
-          body: JSON.stringify({ urls: urlsToScrape, index: slug || undefined, clientSlug: slug })
-        });
-        
-        data = await scrapeResp.json();
-        
-        if (!scrapeResp.ok || !data?.success) {
-          const errorMsg = (data as any)?.error || 'Failed to scrape URLs'
-          throw new Error(errorMsg)
+
+        // Scrape in small batches so the progress UI can update as work completes.
+        const batchSize = 25
+        let totalScraped = 0
+        let lastResult: any = null
+        for (let i = 0; i < urlsToScrape.length; i += batchSize) {
+          const batch = urlsToScrape.slice(i, i + batchSize)
+          setCrawlProgress({
+            status: `Scraping ${urlsToScrape.length} discovered pages...`,
+            pagesFound: urlsToScrape.length,
+            pagesScraped: totalScraped
+          })
+
+          const scrapeResp = await fetch(getBackendUrl('/api/mintagent/scrape'), {
+            method: 'POST',
+            headers: buildApiHeaders(),
+            body: JSON.stringify({ urls: batch, index: slug || undefined, clientSlug: slug })
+          })
+
+          const batchData = await scrapeResp.json()
+          if (!scrapeResp.ok || !batchData?.success) {
+            const errorMsg = (batchData as any)?.error || 'Failed to scrape URLs'
+            throw new Error(errorMsg)
+          }
+
+          const scrapedThisBatch = batchData.details?.pagesScraped ?? batch.length
+          totalScraped += scrapedThisBatch
+          lastResult = batchData
+
+          setCrawlProgress({
+            status: `Scraping ${urlsToScrape.length} discovered pages...`,
+            pagesFound: urlsToScrape.length,
+            pagesScraped: totalScraped
+          })
         }
+
+        data = lastResult
         
         setCrawlProgress({
           status: 'Scraping complete!',
-          pagesFound: data.details?.pagesScraped || urlsToScrape.length,
-          pagesScraped: data.details?.pagesScraped || urlsToScrape.length
+          pagesFound: urlsToScrape.length,
+          pagesScraped: totalScraped
         });
         
         // Handle map+scrape success - extract metadata and redirect

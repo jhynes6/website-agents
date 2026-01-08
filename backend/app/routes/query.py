@@ -1,5 +1,6 @@
 import json
 import asyncio
+import re
 from typing import Any, Dict, List, Optional
 
 from fastapi import APIRouter, HTTPException
@@ -16,8 +17,91 @@ router = APIRouter()
 def _normalize_agent_type(agent_type: str) -> str:
     t = (agent_type or "").strip().lower()
     if not t:
-        return "inbox_manager"
+        return "kb_chat"
     return t.replace("-", "_")
+
+def _parse_requested_case_study_count(q: str) -> int:
+    """
+    Best-effort parse of requests like:
+      - "summarize 5 case studies"
+      - "summarise 3 case studies"
+      - "summarize a few case studies"
+    """
+    text = (q or "").strip().lower()
+    # Explicit number
+    m = re.search(r"\b(?:summarize|summarise)\s+(\d+)\s+case\s+stud", text)
+    if m:
+        try:
+            n = int(m.group(1))
+            return max(1, min(10, n))
+        except Exception:
+            pass
+    # Vague counts
+    if re.search(r"\b(?:a\s+few|few|some|several)\s+case\s+stud", text):
+        return 3
+    return 3
+
+def _looks_like_case_study_summary_request(q: str) -> bool:
+    text = (q or "").strip().lower()
+    if "case stud" not in text:
+        return False
+    # Summarization intent
+    return any(x in text for x in ["summarize", "summarise", "summary", "summaries", "highlight", "highlights", "overview"])
+
+def _build_case_study_summaries_context(
+    *,
+    hits: List[Any],
+    max_docs: int,
+    chunks_per_doc: int = 3,
+) -> tuple[List[Dict[str, Any]], List[str]]:
+    """
+    Convert chunk-level hits into doc-level sources and numbered context blocks.
+
+    We dedupe by `file_key` and then take up to `chunks_per_doc` chunks per doc (ordered by chunk_index).
+    """
+    # file_key -> list of hits
+    by_fk: Dict[str, List[Any]] = {}
+    for h in hits:
+        f = getattr(h, "fields", {}) or {}
+        fk = str(f.get("file_key") or "").strip()
+        if not fk:
+            continue
+        by_fk.setdefault(fk, []).append(h)
+
+    # Rank docs by best score
+    ranked: List[tuple[str, float]] = []
+    for fk, hs in by_fk.items():
+        best = 0.0
+        for h in hs:
+            try:
+                best = max(best, float(getattr(h, "score", 0.0) or 0.0))
+            except Exception:
+                continue
+        ranked.append((fk, best))
+    ranked.sort(key=lambda x: x[1], reverse=True)
+    top_fks = [fk for fk, _ in ranked[: max_docs]]
+
+    sources: List[Dict[str, Any]] = []
+    context_blocks: List[str] = []
+    for i, fk in enumerate(top_fks, start=1):
+        hs = by_fk.get(fk, [])
+        # Order chunks by chunk_index to preserve narrative flow
+        def _chunk_idx(h: Any) -> int:
+            try:
+                return int((getattr(h, "fields", {}) or {}).get("chunk_index") or 0)
+            except Exception:
+                return 0
+        hs_sorted = sorted(hs, key=_chunk_idx)[: max(1, chunks_per_doc)]
+        # Pick representative metadata
+        first_fields = (getattr(hs_sorted[0], "fields", {}) or {}) if hs_sorted else {}
+        title = str(first_fields.get("title") or first_fields.get("file_key") or f"Case study {i}").strip()
+        url_out = str(first_fields.get("url") or first_fields.get("file_key") or "").strip()
+        combined = "\n\n".join([str((getattr(h, "fields", {}) or {}).get("text") or "").strip() for h in hs_sorted]).strip()
+        snippet = (combined[:250] + "…") if len(combined) > 250 else combined
+        sources.append({"title": title, "url": url_out, "snippet": snippet})
+        context_blocks.append(f"[{i}] Title: {title}\nURL: {url_out}\nContent:\n{combined}")
+
+    return sources, context_blocks
 
 
 def _system_prompt_for(agent_type: str) -> str:
@@ -88,11 +172,24 @@ async def query(payload: Dict[str, Any]) -> StreamingResponse:
     if keywords_list:
         pc_filter["keywords"] = {"$in": keywords_list}
 
+    # Special handling: "summarize N case studies" needs doc-level retrieval, not just 5 random chunks.
+    case_study_mode = _looks_like_case_study_summary_request(query_text)
+    requested_n = _parse_requested_case_study_count(query_text) if case_study_mode else 0
+    if case_study_mode and not content_type:
+        # If caller didn't explicitly filter, strongly bias to case studies.
+        pc_filter["content_type"] = {"$eq": "case_studies"}
+
     # Retrieve context from Pinecone
+    top_k_in = int(payload.get("topK") or 5)
+    # For case study summaries we need enough chunks to cover multiple distinct docs.
+    top_k = top_k_in
+    if case_study_mode:
+        top_k = max(top_k_in, min(60, max(20, requested_n * 10)))
+
     hits = pinecone_kb_client.search(
         client_slug=client_slug,
         query=query_text,
-        top_k=int(payload.get("topK") or 5),
+        top_k=top_k,
         filter=pc_filter or None,
         fields=["text", "title", "url", "file_key", "content_type", "document_source", "chunk_index"],
         # Pinecone eventual consistency: if user queries right after ingestion, retry once after 10s
@@ -103,7 +200,7 @@ async def query(payload: Dict[str, Any]) -> StreamingResponse:
         hits = pinecone_kb_client.search(
             client_slug=client_slug,
             query=query_text,
-            top_k=int(payload.get("topK") or 5),
+            top_k=top_k,
             filter=pc_filter or None,
             fields=["text", "title", "url", "file_key", "content_type", "document_source", "chunk_index"],
             wait_after_upsert_s=0.0,
@@ -112,13 +209,25 @@ async def query(payload: Dict[str, Any]) -> StreamingResponse:
     # Build sources + context string
     sources: List[Dict[str, Any]] = []
     context_blocks: List[str] = []
-    for h in hits:
-        f = h.fields
-        title = f.get("title") or f.get("file_key") or "Source"
-        url_out = f.get("url") or f.get("file_key") or ""
-        snippet = (f.get("text") or "")[:250]
-        sources.append({"title": title, "url": url_out, "snippet": snippet})
-        context_blocks.append(f"[{title}] {snippet}")
+    if case_study_mode:
+        # Prefer doc-level, numbered context so the model can actually summarize multiple distinct case studies.
+        sources, context_blocks = _build_case_study_summaries_context(hits=hits, max_docs=requested_n, chunks_per_doc=3)
+        if sources:
+            # Strong instruction: produce N summaries, cite using [n]
+            query_text = (
+                f"{query_text}\n\n"
+                f"IMPORTANT: Summarize {len(sources)} distinct case studies from the context below. "
+                "For each, include 2-4 bullets: (1) client/problem, (2) what was done, (3) measurable outcomes if present. "
+                "Cite sources as [1], [2], etc.\n"
+            )
+    else:
+        for h in hits:
+            f = h.fields
+            title = f.get("title") or f.get("file_key") or "Source"
+            url_out = f.get("url") or f.get("file_key") or ""
+            snippet = (f.get("text") or "")[:250]
+            sources.append({"title": title, "url": url_out, "snippet": snippet})
+            context_blocks.append(f"[{title}] {snippet}")
 
     system_prompt = _system_prompt_for(agent_type)
     user_prompt = f"User question:\n{query_text}\n\nContext:\n" + "\n\n".join(context_blocks)

@@ -289,7 +289,7 @@ function DashboardContent() {
           messages: [userMessage],
           clientSlug: siteData.clientSlug,
           index: indexName,
-          agentType: searchParams.get('agentType') || 'inbox_manager',
+          agentType: searchParams.get('agentType') || 'kb_chat',
           stream: true
         })
       })
@@ -393,7 +393,7 @@ function DashboardContent() {
   useEffect(() => {
     // Get clientSlug from URL params (fallback to namespace for compat)
     const clientSlugParam = searchParams.get('clientSlug') || searchParams.get('namespace')
-    const agentTypeParam = searchParams.get('agentType') || 'inbox_manager'
+    const agentTypeParam = searchParams.get('agentType') || 'kb_chat'
     console.log(`[Dashboard] Init with clientSlug: ${clientSlugParam}`)
     
     if (clientSlugParam) {

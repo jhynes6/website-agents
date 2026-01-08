@@ -326,38 +326,87 @@ async def scrape_urls(payload: Dict[str, Any]) -> Dict[str, Any]:
                 # LLM enrichment (same as /create): add per-file document_context + keywords before uploading.
                 if generate_document_context or generate_keywords:
                     try:
-                        ctx_tasks = []
-                        kw_tasks = []
-                        for d in final_documents:
-                            title = str(d.get("title") or (d.get("metadata") or {}).get("title") or "")
-                            body = str(d.get("markdown") or "")
-                            if generate_document_context:
-                                ctx_tasks.append(_extract_document_context_for_doc(body=body))
-                            if generate_keywords:
-                                kw_tasks.append(_extract_keywords_for_doc(title=title, body=body))
+                        enrich_sem = asyncio.Semaphore(10)
+                        progress_lock = asyncio.Lock()
+                        progress_counter = {"done": 0, "errors": 0}
+                        enrichment_start_time = time.time()
 
-                        if generate_document_context and ctx_tasks:
-                            ctx_list = await asyncio.gather(*ctx_tasks)
-                            for d, ctx in zip(final_documents, ctx_list):
-                                if isinstance(ctx, str) and ctx.strip():
-                                    d["document_context"] = ctx.strip()
+                        async def _enrich_one(d: Dict[str, Any], idx: int) -> None:
+                            async with enrich_sem:
+                                doc_url = str((d.get("metadata") or {}).get("url") or d.get("url") or "")
+                                doc_title = str(d.get("title") or (d.get("metadata") or {}).get("title") or "")[:50]
+                                doc_start_time = time.time()
+                                
+                                title = str(d.get("title") or (d.get("metadata") or {}).get("title") or "")
+                                body = str(d.get("markdown") or "")
+                                
+                                try:
+                                    if generate_document_context:
+                                        ctx = await _extract_document_context_for_doc(body=body)
+                                        if isinstance(ctx, str) and ctx.strip():
+                                            d["document_context"] = ctx.strip()
+                                except Exception as e:
+                                    async with progress_lock:
+                                        progress_counter["errors"] += 1
+                                    log("create.scrape.document_context_error", {"req_id": req_id, "idx": idx, "url": doc_url, "title": doc_title, "error": str(e)})
+                                try:
+                                    if generate_keywords:
+                                        kws = await _extract_keywords_for_doc(title=title, body=body)
+                                        if kws:
+                                            d["keywords"] = kws
+                                except Exception as e:
+                                    async with progress_lock:
+                                        progress_counter["errors"] += 1
+                                    log("create.scrape.keywords_error", {"req_id": req_id, "idx": idx, "url": doc_url, "title": doc_title, "error": str(e)})
+                                
+                                async with progress_lock:
+                                    progress_counter["done"] += 1
+                                    done = progress_counter["done"]
+                                    total = len(final_documents)
+                                    elapsed = time.time() - enrichment_start_time
+                                    doc_elapsed = time.time() - doc_start_time
+                                    
+                                    # Log every 25 documents or every 10% completion
+                                    if done % 25 == 0 or done % max(1, total // 10) == 0 or done == total:
+                                        pct = (done / total) * 100
+                                        avg_time = elapsed / done if done > 0 else 0
+                                        est_remaining = (total - done) * avg_time if done > 0 else 0
+                                        log(
+                                            "create.scrape.enrichment_progress",
+                                            {
+                                                "req_id": req_id,
+                                                "client": client_slug,
+                                                "done": done,
+                                                "total": total,
+                                                "percent": round(pct, 1),
+                                                "errors": progress_counter["errors"],
+                                                "elapsed_sec": round(elapsed, 1),
+                                                "avg_sec_per_doc": round(avg_time, 2),
+                                                "est_remaining_sec": round(est_remaining, 1),
+                                                "current_doc_time_sec": round(doc_elapsed, 2),
+                                                "current_url": doc_url[:100],
+                                                "current_title": doc_title,
+                                            },
+                                        )
 
-                        if generate_keywords and kw_tasks:
-                            kw_list = await asyncio.gather(*kw_tasks)
-                            for d, kws in zip(final_documents, kw_list):
-                                if kws:
-                                    d["keywords"] = kws
-
+                        log(
+                            "create.scrape.enrichment_start",
+                            {"req_id": req_id, "client": client_slug, "docs": len(final_documents), "sem": 10},
+                        )
+                        await asyncio.gather(*[_enrich_one(d, idx) for idx, d in enumerate(final_documents)])
+                        total_elapsed = time.time() - enrichment_start_time
                         log(
                             "create.scrape.enrichment_done",
                             {
                                 "req_id": req_id,
                                 "client": client_slug,
                                 "docs": len(final_documents),
-                                "document_context": generate_document_context,
-                                "keywords": generate_keywords,
+                                "elapsed_sec": round(total_elapsed, 1),
+                                "errors": progress_counter["errors"],
+                                "avg_sec_per_doc": round(total_elapsed / len(final_documents), 2) if final_documents else 0,
                             },
                         )
+
                     except Exception as e:
                         log("create.scrape.enrichment_error", {"req_id": req_id, "client": client_slug, "error": str(e)})
 
@@ -1807,6 +1856,15 @@ async def create_chatbot(payload: Dict[str, Any]) -> Dict[str, Any]:
             main_excludes,
             max_depth,
         )
+        log(
+            "create.crawl.phase_result",
+            {
+                "phase": "main",
+                "limit_requested": limit,
+                "pages_returned": len(main_pages),
+                "status": raw_status_main.get("status") if isinstance(raw_status_main, dict) else None,
+            },
+        )
 
         log(
             "create.crawl.phase",
@@ -1825,6 +1883,15 @@ async def create_chatbot(payload: Dict[str, Any]) -> Dict[str, Any]:
             [".*blog.*"],
             exclude_paths,
             max_depth,
+        )
+        log(
+            "create.crawl.phase_result",
+            {
+                "phase": "blog",
+                "limit_requested": blog_limit,
+                "pages_returned": len(blog_pages),
+                "status": raw_status_blog.get("status") if isinstance(raw_status_blog, dict) else None,
+            },
         )
 
         # Merge and deduplicate pages by sourceURL/url
@@ -2006,23 +2073,78 @@ async def create_chatbot(payload: Dict[str, Any]) -> Dict[str, Any]:
     # 3. Add per-file keywords (LLM) for Pinecone metadata filtering
     # -------------------------------------------------------------------------
     if final_documents:
-        # Keep this conservative to avoid cost spikes: 1 request per doc
-        context_tasks = []
-        keyword_tasks = []
-        for d in final_documents:
-            title = str(d.get("title") or (d.get("metadata") or {}).get("title") or "")
-            body = str(d.get("markdown") or d.get("content") or "")
-            # document_context (must not include YAML headers)
-            context_tasks.append(_extract_document_context_for_doc(body=body))
-            keyword_tasks.append(_extract_keywords_for_doc(title=title, body=body))
-        context_list = await asyncio.gather(*context_tasks)
-        for d, ctx in zip(final_documents, context_list):
-            if isinstance(ctx, str) and ctx.strip():
-                d["document_context"] = ctx.strip()
-        keywords_list = await asyncio.gather(*keyword_tasks)
-        for d, kws in zip(final_documents, keywords_list):
-            if kws:
-                d["keywords"] = kws
+        # Run per-doc LLM work concurrently with a bounded semaphore.
+        enrich_sem = asyncio.Semaphore(12)
+        progress_lock = asyncio.Lock()
+        progress_counter = {"done": 0, "errors": 0}
+        enrichment_start_time = time.time()
+
+        async def _enrich_one(d: Dict[str, Any], idx: int) -> None:
+            async with enrich_sem:
+                doc_url = str(d.get("url") or (d.get("metadata") or {}).get("url") or "")
+                doc_title = str(d.get("title") or (d.get("metadata") or {}).get("title") or "")[:50]
+                doc_start_time = time.time()
+                
+                title = str(d.get("title") or (d.get("metadata") or {}).get("title") or "")
+                body = str(d.get("markdown") or d.get("content") or "")
+                
+                try:
+                    ctx = await _extract_document_context_for_doc(body=body)
+                    if isinstance(ctx, str) and ctx.strip():
+                        d["document_context"] = ctx.strip()
+                except Exception as e:
+                    async with progress_lock:
+                        progress_counter["errors"] += 1
+                    log("create.document_context.error", {"idx": idx, "url": doc_url, "title": doc_title, "error": str(e)})
+                try:
+                    kws = await _extract_keywords_for_doc(title=title, body=body)
+                    if kws:
+                        d["keywords"] = kws
+                except Exception as e:
+                    async with progress_lock:
+                        progress_counter["errors"] += 1
+                    log("create.keywords.error", {"idx": idx, "url": doc_url, "title": doc_title, "error": str(e)})
+                
+                async with progress_lock:
+                    progress_counter["done"] += 1
+                    done = progress_counter["done"]
+                    total = len(final_documents)
+                    elapsed = time.time() - enrichment_start_time
+                    doc_elapsed = time.time() - doc_start_time
+                    
+                    # Log every 25 documents or every 10% completion
+                    if done % 25 == 0 or done % max(1, total // 10) == 0 or done == total:
+                        pct = (done / total) * 100
+                        avg_time = elapsed / done if done > 0 else 0
+                        est_remaining = (total - done) * avg_time if done > 0 else 0
+                        log(
+                            "create.enrichment_progress",
+                            {
+                                "done": done,
+                                "total": total,
+                                "percent": round(pct, 1),
+                                "errors": progress_counter["errors"],
+                                "elapsed_sec": round(elapsed, 1),
+                                "avg_sec_per_doc": round(avg_time, 2),
+                                "est_remaining_sec": round(est_remaining, 1),
+                                "current_doc_time_sec": round(doc_elapsed, 2),
+                                "current_url": doc_url[:100],
+                                "current_title": doc_title,
+                            },
+                        )
+
+        log("create.enrichment_start", {"docs": len(final_documents), "sem": 12})
+        await asyncio.gather(*[_enrich_one(d, idx) for idx, d in enumerate(final_documents)])
+        total_elapsed = time.time() - enrichment_start_time
+        log(
+            "create.enrichment_done",
+            {
+                "docs": len(final_documents),
+                "elapsed_sec": round(total_elapsed, 1),
+                "errors": progress_counter["errors"],
+                "avg_sec_per_doc": round(total_elapsed / len(final_documents), 2) if final_documents else 0,
+            },
+        )
 
     # -------------------------------------------------------------------------
     # 4. Ingest (Pinecone + optional Spaces raw store)

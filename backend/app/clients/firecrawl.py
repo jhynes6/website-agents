@@ -107,7 +107,7 @@ class FirecrawlClient:
         """Start a crawl and poll until completion."""
         payload: Dict[str, Any] = {
             "url": url,
-            "limit": limit,
+            "limit": limit,  # Firecrawl v2 crawl limit
             "scrapeOptions": {
                 "formats": ["markdown"],
                 "maxAge": self.settings.crawling_cache_max_age_ms,
@@ -117,7 +117,14 @@ class FirecrawlClient:
             },
             "zeroDataRetention": False,
         }
-        log("firecrawl.crawl.start", {"url": url, "limit": limit, "max_depth": max_depth, "include_paths": bool(include_paths), "exclude_paths": bool(exclude_paths)})
+        log("firecrawl.crawl.start", {
+            "url": url,
+            "limit": limit,
+            "max_depth": max_depth,
+            "include_paths": bool(include_paths),
+            "exclude_paths": bool(exclude_paths),
+            "payload_limit": payload.get("limit"),
+        })
         if include_paths is not None:
             payload["includePaths"] = include_paths
         if exclude_paths is not None:
@@ -125,6 +132,13 @@ class FirecrawlClient:
         if max_depth is not None:
             # Firecrawl expects maxDiscoveryDepth (not maxDepth)
             payload["maxDiscoveryDepth"] = max_depth
+        log("firecrawl.crawl.payload", {
+            "url": url,
+            "limit": payload.get("limit"),
+            "maxDiscoveryDepth": payload.get("maxDiscoveryDepth"),
+            "includePaths": payload.get("includePaths"),
+            "excludePaths": payload.get("excludePaths"),
+        })
         start_resp = await self._post("/crawl", payload)
         crawl_id = start_resp.get("id")
         if not crawl_id:
@@ -143,6 +157,29 @@ class FirecrawlClient:
 
             if status in ("completed", "failed"):
                 data = status_resp.get("data") or []
+                # Check for pagination - Firecrawl might return a "next" URL if there's more data
+                next_url = status_resp.get("next") if isinstance(status_resp, dict) else None
+                total_pages = status_resp.get("total") if isinstance(status_resp, dict) else None
+                log("firecrawl.crawl.completed", {
+                    "crawl_id": crawl_id,
+                    "status": status,
+                    "pages_returned": len(data),
+                    "limit_requested": limit,
+                    "total_pages": total_pages,
+                    "has_next": bool(next_url),
+                    "next_url": next_url[:100] if next_url else None,
+                    "elapsed_ms": int(elapsed * 1000),
+                    "response_keys": list(status_resp.keys()) if isinstance(status_resp, dict) else [],
+                })
+                # If there's a next URL and we got fewer pages than requested, there might be pagination
+                if next_url and len(data) < limit:
+                    log("firecrawl.crawl.pagination_warning", {
+                        "crawl_id": crawl_id,
+                        "pages_returned": len(data),
+                        "limit_requested": limit,
+                        "next_url_present": True,
+                        "message": "Firecrawl returned fewer pages than requested. Check if pagination is needed or if plan limit was hit.",
+                    })
                 return data, status_resp
 
         # Timeout reached - return partial data instead of raising error
