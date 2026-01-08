@@ -140,17 +140,21 @@ async def _build_indexes_from_storage(storage, slugs: List[str]) -> List[Dict[st
                 if not isinstance(meta, dict):
                     return None
 
-                # Prefer canonical client_name from DB for the UI card title.
+                # Prefer canonical client_name from DB, but keep UI card title stable as client_slug.
                 try:
                     name = (getattr(_build_indexes_from_storage, "_client_names", {}) or {}).get(slug)
                     if isinstance(name, str) and name.strip():
                         meta["client_name"] = name.strip()
-                        ui_meta = meta.get("metadata")
-                        if not isinstance(ui_meta, dict):
-                            ui_meta = {}
-                            meta["metadata"] = ui_meta
-                        # Frontend card title uses metadata.title.
-                        ui_meta["title"] = name.strip()
+                except Exception:
+                    pass
+
+                # Force the card title to be the slug (requested).
+                try:
+                    ui_meta = meta.get("metadata")
+                    if not isinstance(ui_meta, dict):
+                        ui_meta = {}
+                        meta["metadata"] = ui_meta
+                    ui_meta["title"] = slug
                 except Exception:
                     pass
 

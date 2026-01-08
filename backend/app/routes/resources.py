@@ -84,7 +84,17 @@ async def get_summary_warnings():
             "warnings": summary_data.get("top_warnings", []),
             "generated_at": summary_data.get("generated_at")
         }
+    except HTTPException as e:
+        # Missing reports are normal for fresh projects / before the report generator runs.
+        if e.status_code == 404:
+            return {"warnings": [], "generated_at": None, "missing": True}
+        logger.error(f"Error fetching summary warnings: {e}")
+        raise
     except Exception as e:
+        # If Pinecone returns a non-HTTPException 404-style error, treat as missing.
+        msg = str(e).lower()
+        if "404" in msg and "not found" in msg:
+            return {"warnings": [], "generated_at": None, "missing": True}
         logger.error(f"Error fetching summary warnings: {e}")
         raise HTTPException(status_code=500, detail=f"Failed to fetch summary warnings: {str(e)}")
 
@@ -102,10 +112,13 @@ async def get_client_details(client_slug: str, request: Request):
     """
     try:
         settings = get_settings()
-        result = {
+        result: Dict[str, Any] = {
             "client_slug": client_slug,
-            "kb_data": None,
-            "agent_data": None,
+            # Always return objects (not None) so the UI can safely render modals/tabs.
+            "kb_data": {},
+            "kb_data_found": False,
+            "agent_data": {},
+            "agent_data_found": False,
             # UI convenience links to quickly view Supabase Storage metadata files in a new tab.
             "metadata_url": f"{str(request.base_url).rstrip('/')}/api/mintagent/client-metadata/{client_slug}",
             "supabase_storage_metadata_url": f"{str(request.base_url).rstrip('/')}/api/mintagent/client-metadata/{client_slug}?source=supabase",
@@ -119,8 +132,19 @@ async def get_client_details(client_slug: str, request: Request):
                 namespace=settings.pinecone_client_kb_reports_namespace,
                 doc_id=f"_client_kb_master/clients/{client_slug}.json",
             )
+            result["kb_data_found"] = True
+        except HTTPException as e:
+            # Missing reports are normal for freshly ingested clients (report generator runs separately).
+            if e.status_code == 404:
+                logger.info(f"KB report not found for {client_slug}: {e.detail}")
+            else:
+                logger.warning(f"KB report fetch error for {client_slug}: {e}")
         except Exception as e:
-            logger.warning(f"Could not fetch KB data for {client_slug}: {e}")
+            msg = str(e).lower()
+            if "404" in msg and "not found" in msg:
+                logger.info(f"KB report not found for {client_slug}: {e}")
+            else:
+                logger.warning(f"KB report fetch error for {client_slug}: {e}")
         
         # Fetch Agent data
         try:
@@ -129,8 +153,19 @@ async def get_client_details(client_slug: str, request: Request):
                 namespace=settings.pinecone_agent_reports_namespace,
                 doc_id=f"agents/inbox_manager_{client_slug}.json",
             )
+            result["agent_data_found"] = True
+        except HTTPException as e:
+            # Agent reports are optional; missing is normal unless you run the agent pipeline.
+            if e.status_code == 404:
+                logger.info(f"Agent report not found for {client_slug}: {e.detail}")
+            else:
+                logger.warning(f"Agent report fetch error for {client_slug}: {e}")
         except Exception as e:
-            logger.warning(f"Could not fetch agent data for {client_slug}: {e}")
+            msg = str(e).lower()
+            if "404" in msg and "not found" in msg:
+                logger.info(f"Agent report not found for {client_slug}: {e}")
+            else:
+                logger.warning(f"Agent report fetch error for {client_slug}: {e}")
         
         return result
         
@@ -175,9 +210,9 @@ async def get_client_metadata(client_slug: str, source: str = "pinecone"):
             if isinstance(data, dict):
                 break
         except Exception as e:
-            last_err = e
-            data = None
-            continue
+                last_err = e
+                data = None
+                continue
 
     if not isinstance(data, dict):
         logger.warning(f"Could not fetch metadata for {slug} (source={source_norm}): {last_err}")

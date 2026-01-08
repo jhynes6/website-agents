@@ -74,7 +74,7 @@ function MarkdownContent({ content, onSourceClick, isStreaming = false }: { cont
     
     // Handle citations [1], [2], etc.
     parsed = parsed.replace(/\[(\d+)\]/g, (_, num) => {
-      return `<sup class="citation text-orange-600 cursor-pointer hover:text-orange-700 font-medium" data-citation="${num}">[${num}]</sup>`;
+      return `<sup class="citation text-green-600 cursor-pointer hover:text-green-700 font-medium" data-citation="${num}">[${num}]</sup>`;
     });
     
     // Bold text
@@ -977,9 +977,9 @@ print(data['choices'][0]['message']['content'])`
                   <div className="max-w-[85%] mr-12">
                     <div className="px-5 py-4 rounded-2xl bg-white border border-gray-200 text-gray-800 shadow-sm">
                       <div className="flex items-center gap-2">
-                        <div className="w-2 h-2 bg-orange-500 rounded-full animate-pulse" />
-                        <div className="w-2 h-2 bg-orange-500 rounded-full animate-pulse delay-75" />
-                        <div className="w-2 h-2 bg-orange-500 rounded-full animate-pulse delay-150" />
+                        <div className="w-2 h-2 bg-[#0E3D68] rounded-full animate-pulse" />
+                        <div className="w-2 h-2 bg-[#0E3D68] rounded-full animate-pulse delay-75" />
+                        <div className="w-2 h-2 bg-[#0E3D68] rounded-full animate-pulse delay-150" />
                       </div>
                     </div>
                   </div>
@@ -1001,7 +1001,7 @@ print(data['choices'][0]['message']['content'])`
                     <button
                       type="submit"
                       disabled={isLoading || !input.trim()}
-                      className="absolute right-2 top-1/2 -translate-y-1/2 p-2 text-orange-600 hover:text-orange-700 disabled:opacity-50 transition-colors"
+                      className="absolute right-2 top-1/2 -translate-y-1/2 p-2 text-[#0E3D68] hover:text-[#0a2d4d] disabled:opacity-50 transition-colors"
                     >
                       <Send className="w-4 h-4" />
                     </button>
@@ -1021,10 +1021,10 @@ print(data['choices'][0]['message']['content'])`
                         <>
                           <div className="flex items-center justify-between mb-4 animate-fade-in">
                             <h2 className="text-lg font-semibold text-[#36322F] flex items-center gap-2">
-                              <BookOpen className="w-5 h-5 text-orange-500" />
+                              <BookOpen className="w-5 h-5 text-green-600" />
                               Sources
                             </h2>
-                            <span className="text-xs text-gray-500 bg-orange-50 px-2 py-1 rounded-full">
+                            <span className="text-xs text-gray-500 bg-green-50 px-2 py-1 rounded-full">
                               {lastAssistantMessage.sources?.length || 0} references
                             </span>
                           </div>
@@ -1036,7 +1036,7 @@ print(data['choices'][0]['message']['content'])`
                                 href={source.url}
                                 target="_blank"
                                 rel="noopener noreferrer"
-                                className="block p-4 bg-gradient-to-br from-gray-50 to-gray-100 hover:from-orange-50 hover:to-orange-100 rounded-lg border border-gray-200 hover:border-orange-300 transition-all duration-300 group animate-fade-in hover:shadow-md"
+                                className="block p-4 bg-gradient-to-br from-gray-50 to-gray-100 hover:from-green-50 hover:to-green-100 rounded-lg border border-gray-200 hover:border-green-300 transition-all duration-300 group animate-fade-in hover:shadow-md"
                                 style={{
                                   animationDelay: `${idx * 100}ms`,
                                   animationDuration: '0.5s',
@@ -1044,11 +1044,11 @@ print(data['choices'][0]['message']['content'])`
                                 }}
                               >
                                 <div className="flex items-start gap-3">
-                                  <span className="text-sm font-medium text-orange-500 flex-shrink-0 bg-orange-100 w-8 h-8 rounded-full flex items-center justify-center">
+                                  <span className="text-sm font-medium text-green-700 flex-shrink-0 bg-green-100 w-8 h-8 rounded-full flex items-center justify-center">
                                     {idx + 1}
                                   </span>
                                   <div className="flex-1 min-w-0">
-                                    <h4 className="text-sm font-medium text-gray-800 group-hover:text-orange-600 transition-colors line-clamp-2 mb-1">
+                                    <h4 className="text-sm font-medium text-gray-800 group-hover:text-green-700 transition-colors line-clamp-2 mb-1">
                                       {source.title}
                                     </h4>
                                     {source.snippet && (
@@ -1056,7 +1056,7 @@ print(data['choices'][0]['message']['content'])`
                                         {source.snippet}
                                       </p>
                                     )}
-                                    <p className="text-xs text-gray-500 truncate flex items-center gap-1 group-hover:text-orange-500 transition-colors">
+                                    <p className="text-xs text-gray-500 truncate flex items-center gap-1 group-hover:text-green-700 transition-colors">
                                       <ExternalLink className="w-3 h-3" />
                                       {new URL(source.url).hostname}
                                     </p>

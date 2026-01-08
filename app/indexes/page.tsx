@@ -12,7 +12,8 @@ import { getBackendUrl } from "@/lib/backend"
 
 interface IndexedSite {
   url: string
-  clientSlug: string
+  clientSlug?: string
+  namespace: string
   pagesCrawled: number
   createdAt: string
   metadata?: {
@@ -79,10 +80,11 @@ export default function IndexesPage() {
   }, [])
 
   const handleSelectIndex = (index: IndexedSite) => {
+    const slug = index.clientSlug || index.namespace
     // Store the site info in session storage for the dashboard
     const siteInfo = {
       url: index.url,
-      clientSlug: index.clientSlug,
+      clientSlug: slug,
       pagesCrawled: index.pagesCrawled,
       crawlDate: index.createdAt,
       metadata: index.metadata || {},
@@ -93,15 +95,16 @@ export default function IndexesPage() {
     sessionStorage.setItem('mintagent_current_data', JSON.stringify(siteInfo))
     
     // Navigate to the dashboard with clientSlug parameter
-    router.push(`/dashboard?clientSlug=${index.clientSlug}`)
+    router.push(`/dashboard?clientSlug=${slug}`)
   }
 
   const handleDeleteIndex = async (index: IndexedSite, e: React.MouseEvent) => {
     e.stopPropagation()
+    const slug = index.clientSlug || index.namespace
     
-    if (confirm(`Delete chatbot for ${index.metadata?.title || index.url}?`)) {
+    if (confirm(`Delete chatbot for ${slug}?`)) {
       try {
-        await deleteIndex(index.clientSlug)
+        await deleteIndex(slug)
         toast.success('Chatbot deleted successfully')
       } catch {
         toast.error('Failed to delete chatbot')
@@ -233,12 +236,14 @@ export default function IndexesPage() {
         </div>
       ) : (
         <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-4">
-          {indexes.map((index) => (
-            <div
-              key={index.clientSlug}
-              onClick={() => handleSelectIndex(index)}
-              className="bg-white rounded-lg border border-gray-200 hover:shadow-md transition-shadow cursor-pointer group p-4"
-            >
+          {indexes.map((index) => {
+            const slug = (index as any).clientSlug || (index as any).namespace
+            return (
+              <div
+                key={slug}
+                onClick={() => handleSelectIndex(index as any)}
+                className="bg-white rounded-lg border border-gray-200 hover:shadow-md transition-shadow cursor-pointer group p-4"
+              >
               <div className="flex items-start justify-between gap-3">
                 <div className="flex items-start gap-3 min-w-0">
                   {index.metadata?.favicon ? (
@@ -261,7 +266,7 @@ export default function IndexesPage() {
                   )}
                   <div className="min-w-0">
                     <h3 className="text-base font-semibold text-[#36322F] group-hover:text-orange-600 transition-colors truncate">
-                      {(index.metadata as any)?.indexName || new URL(index.url).hostname}
+                      {slug}
                     </h3>
                     <p className="text-xs text-gray-600 truncate">{index.url}</p>
                     {index.metadata?.description && (
@@ -276,7 +281,7 @@ export default function IndexesPage() {
                   <Button
                     variant="ghost"
                     size="sm"
-                    onClick={(e) => handleDeleteIndex(index, e)}
+                    onClick={(e) => handleDeleteIndex(index as any, e)}
                     className="opacity-0 group-hover:opacity-100 transition-opacity text-red-600 hover:text-red-700 hover:bg-red-50"
                   >
                     <Trash2 className="w-4 h-4" />
@@ -292,7 +297,7 @@ export default function IndexesPage() {
                 </div>
                 <div className="flex items-center gap-1">
                   <Database className="w-4 h-4" />
-                  <span className="font-mono text-[11px]">{index.clientSlug}</span>
+                  <span className="font-mono text-[11px]">{slug}</span>
                 </div>
                 <div className="flex items-center gap-1">
                   <Calendar className="w-4 h-4" />
@@ -300,7 +305,8 @@ export default function IndexesPage() {
                 </div>
               </div>
             </div>
-          ))}
+            )
+          })}
         </div>
       )}
     </div>

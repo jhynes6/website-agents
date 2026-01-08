@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from datetime import datetime, timezone
+from datetime import datetime, timedelta, timezone
 from typing import Any, Dict, List, Optional
 from urllib.parse import quote
 
@@ -170,6 +170,78 @@ class SupabaseAgentsDbClient:
         count = self._count_from_content_range(resp.headers.get("content-range"))
         return {"deleted": count if count is not None else True}
 
+    async def delete_documents_by_doc_ids(self, *, doc_ids: List[str]) -> Dict[str, Any]:
+        """
+        Delete documents by doc_id list.
+        Returns best-effort count (from Content-Range when available).
+        """
+        ids = [i.strip() for i in (doc_ids or []) if isinstance(i, str) and i.strip()]
+        ids = sorted(set(ids))
+        if not ids:
+            return {"deleted": 0}
+
+        in_list = ",".join(ids)
+        url = f"{self.rest_base}/documents?doc_id=in.({quote(in_list, safe=',')})"
+        headers = {**self._headers(), "Prefer": "count=exact,return=minimal"}
+        async with httpx.AsyncClient(timeout=60) as client:
+            resp = await client.delete(url, headers=headers)
+        if resp.status_code >= 400:
+            raise RuntimeError(f"Supabase documents delete error {resp.status_code}: {resp.text}")
+        count = self._count_from_content_range(resp.headers.get("content-range"))
+        return {"deleted": count if count is not None else True}
+
+    async def list_documents_missing_fields(
+        self,
+        *,
+        client_slug: Optional[str] = None,
+        require_document_context: bool = True,
+        require_keywords: bool = True,
+        limit: int = 10_000,
+    ) -> List[Dict[str, Any]]:
+        """
+        List documents rows missing key enrichment fields.
+
+        We treat missing as:
+          - document_context is null (when require_document_context=True)
+          - keywords is null OR '' (when require_keywords=True)
+
+        Returns rows with the columns needed to delete across systems:
+          doc_id, client_slug, document_source, keywords, document_context, metadata_header
+        """
+        slug = (client_slug or "").strip()
+
+        select_cols = "doc_id,client_slug,document_source,keywords,document_context,metadata_header"
+        url = f"{self.rest_base}/documents?select={quote(select_cols, safe=',')}"
+
+        filters: List[str] = []
+        if slug:
+            filters.append(f"client_slug=eq.{quote(slug)}")
+        # Only target real docs, avoid null slugs
+        filters.append("doc_id=not.is.null")
+
+        # PostgREST OR syntax:
+        #   or=(a.is.null,b.eq.)
+        ors: List[str] = []
+        if require_document_context:
+            ors.append("document_context.is.null")
+        if require_keywords:
+            ors.append("keywords.is.null")
+            ors.append("keywords.eq.")  # empty string
+        if not ors:
+            return []
+
+        url = url + "&or=(" + ",".join(ors) + ")"
+        if filters:
+            url = url + "&" + "&".join(filters)
+        url = url + f"&limit={int(limit)}"
+
+        async with httpx.AsyncClient(timeout=60) as client:
+            resp = await client.get(url, headers={**self._headers(), "Prefer": "count=none"})
+        if resp.status_code >= 400:
+            raise RuntimeError(f"Supabase documents select error {resp.status_code}: {resp.text}")
+        data = resp.json()
+        return data if isinstance(data, list) else []
+
     async def delete_client(self, *, client_slug: str) -> Dict[str, Any]:
         """
         Delete a row in public.clients for a client_slug.
@@ -215,5 +287,62 @@ class SupabaseAgentsDbClient:
                 if slug and isinstance(name, str) and name.strip():
                     out[slug] = name.strip()
         return out
+
+    async def get_recent_document_urls(
+        self,
+        *,
+        client_slug: str,
+        document_source: str = "website",
+        days: int = 30,
+        limit: int = 10_000,
+    ) -> List[str]:
+        """
+        Return URLs for documents for a client_slug that were updated recently.
+
+        Used to avoid re-scraping URLs (Firecrawl credits) when pages were ingested recently.
+        """
+        slug = (client_slug or "").strip()
+        if not slug:
+            raise ValueError("client_slug required")
+
+        src = (document_source or "").strip() or "website"
+        cutoff = datetime.now(timezone.utc) - timedelta(days=max(0, int(days)))
+        cutoff_iso = cutoff.isoformat()
+
+        async def _query_with_timestamp_field(ts_field: str) -> List[str]:
+            # Note: PostgREST supports gte filters: updated_at=gte.<iso>
+            url = (
+                f"{self.rest_base}/documents"
+                f"?select=url"
+                f"&client_slug=eq.{quote(slug)}"
+                f"&document_source=eq.{quote(src)}"
+                f"&url=not.is.null"
+                f"&{quote(ts_field)}=gte.{quote(cutoff_iso)}"
+                f"&limit={int(limit)}"
+            )
+            async with httpx.AsyncClient(timeout=60) as client:
+                resp = await client.get(url, headers={**self._headers(), "Prefer": "count=none"})
+            if resp.status_code >= 400:
+                raise RuntimeError(f"Supabase documents select error {resp.status_code}: {resp.text}")
+            data = resp.json()
+            out: List[str] = []
+            if isinstance(data, list):
+                for row in data:
+                    if not isinstance(row, dict):
+                        continue
+                    u = row.get("url")
+                    if isinstance(u, str) and u.strip():
+                        out.append(u.strip())
+            return out
+
+        # Prefer updated_at (our standard), but fall back to timestamp_last_updated if that exists in the DB.
+        try:
+            return await _query_with_timestamp_field("updated_at")
+        except Exception as e:
+            msg = str(e).lower()
+            if "timestamp_last_updated" in msg or "updated_at" in msg:
+                # Try fallback column name if schema differs
+                return await _query_with_timestamp_field("timestamp_last_updated")
+            raise
 
 

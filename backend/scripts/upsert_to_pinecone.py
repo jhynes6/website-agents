@@ -223,6 +223,9 @@ def parse_markdown_frontmatter(content: bytes) -> tuple[Dict[str, Any], str]:
                 
                 # Parse YAML
                 metadata = yaml.safe_load(frontmatter_str) or {}
+                # Preserve raw YAML header for DB auditing/backfills (not used for Pinecone metadata).
+                if isinstance(metadata, dict):
+                    metadata["_metadata_header_raw"] = frontmatter_str.strip()
                 return metadata, body
         
         # No frontmatter
@@ -347,8 +350,8 @@ async def process_client(client_slug: str, dry_run: bool = False) -> Dict[str, A
     
     # Pinecone (Records API + integrated embedding) is handled by pinecone_kb_client.
     if not dry_run and not settings.pinecone_api_key:
-            print("❌ PINECONE_API_KEY not configured")
-            return {"success": False, "error": "Missing Pinecone API key"}
+        print("❌ PINECONE_API_KEY not configured")
+        return {"success": False, "error": "Missing Pinecone API key"}
         
     # Shared bucket is canonical for this repo.
     bucket = SHARED_BUCKET
@@ -446,6 +449,7 @@ async def process_client(client_slug: str, dry_run: bool = False) -> Dict[str, A
                             "content_hash": metadata.get("content_hash") or "",
                             "document_context": metadata.get("document_context") or None,
                             "db_file_url": metadata.get("storage_preview_url") or None,
+                            "metadata_header": metadata.get("_metadata_header_raw") or None,
                             "text": body,
                         }
                     ]
@@ -462,17 +466,21 @@ async def process_client(client_slug: str, dry_run: bool = False) -> Dict[str, A
         print(f"   Documents prepared: {len(docs_for_upsert)}")
         return {"success": True, "client_slug": client_slug, "files_processed": total_files, "records_upserted": 0}
 
-    semantic_mode = bool(os.getenv("MINTAGENT_SEMANTIC_MODE") == "1")
-    effective_namespace = f"{client_slug}-semantic" if semantic_mode else client_slug
-    effective_index = (
-        str(getattr(settings, "pinecone_kb_semantic_index_name", "") or "").strip()
-        if semantic_mode
-        else str(settings.pinecone_kb_index_name)
-    )
-    if not effective_index:
-        effective_index = str(settings.pinecone_kb_index_name)
+    # Semantic mode:
+    # - Isolate *only* by namespace suffix, never by index name.
+    # - Enable via env var MINTAGENT_SEMANTIC_MODE=1, or automatically when using md_semantic_v1 chunker.
+    semantic_mode_env = bool(os.getenv("MINTAGENT_SEMANTIC_MODE") == "1")
+    semantic_mode = bool(semantic_mode_env)
+    # Always use the primary KB index. Semantic runs are isolated by namespace suffix only.
+    effective_index = str(settings.pinecone_kb_index_name)
 
     chunker_name = _resolve_client_chunker(settings=settings, client_slug=client_slug, cli_chunker=_CLI_CHUNKER)
+    # Safety: if you explicitly request semantic chunking but forgot semantic mode, don't overwrite base namespace.
+    if isinstance(chunker_name, str) and chunker_name.strip().lower().startswith("md_semantic_v1"):
+        semantic_mode = True
+
+    effective_namespace = f"{client_slug}-semantic" if semantic_mode else client_slug
+
     if semantic_mode:
         # When semantic mode is enabled, default to semantic chunking (unless explicitly overridden).
         if not chunker_name or str(chunker_name).strip().lower() == "auto":
@@ -500,6 +508,66 @@ async def process_client(client_slug: str, dry_run: bool = False) -> Dict[str, A
             except Exception:
                 pass
         raise
+
+    # Workaround for side-by-side comparisons in the UI:
+    # If we're writing to a -semantic namespace, also create a Storage prefix
+    # {client_slug}-semantic/ with a pinecone_namespace_metadata.json so /indexes picks it up.
+    try:
+        if semantic_mode and effective_namespace.endswith("-semantic"):
+            # Pull website/drive URLs + favicon/title from existing supabase_storage_metadata.json if present.
+            website_url = ""
+            drive_url = ""
+            favicon = None
+            title = None
+            client_name = None
+            try:
+                api_key = _resolve_supabase_storage_key(settings)
+                storage = SupabaseStorageClient(project_url=str(settings.supabase_agent_url or ""), service_role_key=api_key)
+                sb_meta = storage.download_json(SHARED_BUCKET, f"{client_slug}/supabase_storage_metadata.json")
+                if isinstance(sb_meta, dict):
+                    website_url = str(sb_meta.get("website_url") or sb_meta.get("websiteUrl") or "").strip()
+                    drive_url = str(sb_meta.get("drive_url") or sb_meta.get("driveUrl") or "").strip()
+                    ui = sb_meta.get("metadata") if isinstance(sb_meta.get("metadata"), dict) else {}
+                    favicon = ui.get("favicon") if isinstance(ui, dict) else None
+                    title = ui.get("title") if isinstance(ui, dict) else None
+                    client_name = sb_meta.get("client_name") or sb_meta.get("clientName")
+            except Exception:
+                pass
+
+            pinecone_meta = pinecone_kb_client.build_onboarding_metadata_report(
+                client_slug=str(effective_namespace),
+                website_url=website_url or None,
+                drive_url=drive_url or None,
+                index_name=str(effective_index),
+                wait_after_upsert_s=1.5,
+            )
+            if isinstance(pinecone_meta, dict):
+                # ensure favicon + distinct title
+                ui = pinecone_meta.get("metadata")
+                if not isinstance(ui, dict):
+                    ui = {}
+                    pinecone_meta["metadata"] = ui
+                if favicon and not ui.get("favicon"):
+                    ui["favicon"] = favicon
+                base_title = str(ui.get("title") or title or client_slug).strip()
+                if base_title and "(semantic)" not in base_title.lower():
+                    ui["title"] = f"{base_title} (semantic)"
+                pinecone_meta["client_name"] = (str(client_name).strip() if isinstance(client_name, str) and client_name.strip() else pinecone_meta.get("client_name"))
+                pinecone_meta["source"] = "pinecone_namespace"
+                pinecone_meta["base_client_slug"] = client_slug
+                pinecone_meta["semantic_embeddings"] = True
+
+                api_key = _resolve_supabase_storage_key(settings)
+                storage = SupabaseStorageClient(project_url=str(settings.supabase_agent_url or ""), service_role_key=api_key)
+                storage.upload_json(
+                    bucket=SHARED_BUCKET,
+                    path=f"{effective_namespace}/pinecone_namespace_metadata.json",
+                    payload=pinecone_meta,
+                    upsert=True,
+                )
+                print(f"🪪 Wrote semantic index card metadata: {effective_namespace}/pinecone_namespace_metadata.json")
+    except Exception as e:
+        print(f"⚠️ Could not write semantic index card metadata: {e}")
     
     print("\n" + "=" * 80)
     print(f"✅ Completed: {client_slug}")
@@ -551,6 +619,12 @@ async def main():
     )
 
     parser.add_argument(
+        "--semantic",
+        action="store_true",
+        help="Force semantic mode (writes to namespace <client_slug>-semantic, and writes semantic index-card metadata to Storage).",
+    )
+
+    parser.add_argument(
         "--limit",
         type=int,
         default=None,
@@ -567,6 +641,10 @@ async def main():
 
     global _CLI_CHUNKER
     _CLI_CHUNKER = str(args.chunker or "auto")
+
+    # If semantic mode is forced, set env var so process_client sees it (also affects nested helpers).
+    if bool(getattr(args, "semantic", False)):
+        os.environ["MINTAGENT_SEMANTIC_MODE"] = "1"
     
     if not args.client and not args.all:
         print("❌ Error: Specify --client <slug> or --all")

@@ -2,6 +2,9 @@
 Ingest client files to Supabase Storage by calling the backend create_chatbot function.
 
 This ensures we use the same cleaning, categorization, and file naming logic as the UI.
+
+NOTE: This script has been renamed to `bulk_client_onboarding.py`.
+This file is kept for backwards compatibility.
 """
 import asyncio
 import csv
@@ -110,7 +113,7 @@ def verify_bucket_exists() -> bool:
         return False
 
 
-async def ingest_client(row: Dict[str, str]) -> Dict[str, Any]:
+async def ingest_client(row: Dict[str, str], *, semantic_embeddings: bool = False) -> Dict[str, Any]:
     """
     Ingest a client by calling the backend's create_chatbot function.
     
@@ -123,6 +126,7 @@ async def ingest_client(row: Dict[str, str]) -> Dict[str, Any]:
     client_slug = row.get("client-slug", "").strip()
     drive_url = row.get("drive-folder", "").strip()
     website = row.get("client-website", "").strip()
+    client_name = row.get("client-name", "").strip()
     
     if not client_slug:
         raise ValueError("client-slug is required")
@@ -143,13 +147,21 @@ async def ingest_client(row: Dict[str, str]) -> Dict[str, Any]:
     payload = {
         "url": website_url,
         "clientSlug": client_slug,
+        # New: pass client display name through the same backend path as the UI.
+        # Backend supports both keys (clientName/client_name).
+        "clientName": client_name or None,
+        "client_name": client_name or None,
         "clientDriveFolder": drive_url,
         "driveFolderId": drive_url,
         "driveFolder": drive_url,
-        "limit": 100,  # Adjust as needed
-        "maxDepth": 3,
-        "blogLimit": 50,
+        "limit": 300,  # Adjust as needed
+        "maxDepth": 2,
+        "blogLimit": 20,
         "skipRedisSave": True,  # Don't save to Redis
+        # Optional: run semantic embeddings + semantic chunking (md_semantic_v1) path.
+        # Backend supports both keys (semanticEmbeddings/semantic_embeddings).
+        "semanticEmbeddings": bool(semantic_embeddings),
+        "semantic_embeddings": bool(semantic_embeddings),
     }
     
     # Call the backend function (uses all the proper logic)
@@ -187,6 +199,12 @@ async def main():
         "--all",
         action="store_true",
         help="Process all clients from CSV"
+    )
+    parser.add_argument(
+        "--semantic-embeddings",
+        "--semantic",
+        action="store_true",
+        help="Use semantic embeddings mode (namespace suffix -semantic + md_semantic_v1 chunking) when vectorizing to Pinecone.",
     )
     args = parser.parse_args()
     
@@ -276,7 +294,7 @@ async def main():
         logger.info(f"{'=' * 80}")
         
         try:
-            result = await ingest_client(client)
+            result = await ingest_client(client, semantic_embeddings=bool(args.semantic_embeddings))
             success_count += 1
         except Exception as e:
             logger.error(f"\n❌ FAILED for {client_slug}: {str(e)}", exc_info=True)

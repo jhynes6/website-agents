@@ -4,6 +4,7 @@ import json
 import hashlib
 import time
 import re
+import random
 from dataclasses import dataclass
 from datetime import datetime, timezone
 from typing import Any, Dict, List, Optional, Tuple
@@ -40,6 +41,51 @@ def _chunk_text(text: str, chunk_size: int, overlap: int) -> List[str]:
             break
         start = max(0, end - overlap)
     return chunks
+
+
+def _is_retryable_pinecone_error(e: Exception) -> bool:
+    """
+    Best-effort detection of Pinecone rate limiting / transient overload.
+    Pinecone SDK exception types vary by transport/version, so we rely on message + common attrs.
+    """
+    s = str(e) or ""
+    s_low = s.lower()
+    if "429" in s_low or "too many requests" in s_low:
+        return True
+    if "resource_exhausted" in s_low:
+        return True
+    if "rate limit" in s_low:
+        return True
+    return False
+
+
+def _retry_after_seconds(e: Exception) -> float | None:
+    """
+    Extract Retry-After seconds if present (best-effort).
+    """
+    # Some exception objects carry headers or response headers.
+    for attr in ("headers", "response_headers", "responseHeaders"):
+        h = getattr(e, attr, None)
+        if isinstance(h, dict):
+            ra = h.get("Retry-After") or h.get("retry-after")
+            try:
+                return float(ra)
+            except Exception:
+                pass
+    # Fallback: parse from message
+    m = re.search(r"retry-after[^0-9]*([0-9]+)", str(e), flags=re.IGNORECASE)
+    if m:
+        try:
+            return float(m.group(1))
+        except Exception:
+            return None
+    return None
+
+
+def _sleep_with_jitter(base_s: float, *, jitter_ratio: float = 0.25) -> None:
+    j = base_s * jitter_ratio
+    delay = max(0.0, base_s + random.uniform(-j, j))
+    time.sleep(delay)
 
 
 def _word_count(text: str) -> int:
@@ -318,6 +364,35 @@ class PineconeKBClient:
         _, host = self.ensure_index(index_name=index_name, text_field=text_field)
         return pc.Index(host=host)
 
+    def delete_records_by_file_key(
+        self,
+        *,
+        client_slug: str,
+        file_key: str,
+        index_name: Optional[str] = None,
+        namespace: Optional[str] = None,
+    ) -> Dict[str, Any]:
+        """
+        Best-effort deletion of all records for a given file_key within a namespace.
+
+        We store `file_key` as a flat metadata field on every record, so we can delete
+        all chunks for a source file using a metadata filter.
+        """
+        ns = (namespace or client_slug or "").strip()
+        fk = (file_key or "").strip()
+        if not ns:
+            raise ValueError("namespace/client_slug required")
+        if not fk:
+            raise ValueError("file_key required")
+
+        idx = self._index(index_name=index_name or self.settings.pinecone_kb_index_name, text_field="text")
+        try:
+            # Pinecone delete supports metadata filters (Mongo-ish operators).
+            idx.delete(namespace=ns, filter={"file_key": {"$eq": fk}})
+            return {"deleted": True, "method": "filter", "namespace": ns, "file_key": fk, "index": index_name or self.settings.pinecone_kb_index_name}
+        except Exception as e:
+            return {"deleted": False, "error": str(e), "namespace": ns, "file_key": fk, "index": index_name or self.settings.pinecone_kb_index_name}
+
     def _reports_index(self):
         """
         Report docs live in the REPORTING namespace of the configured reports index.
@@ -455,6 +530,20 @@ class PineconeKBClient:
             if not isinstance(keywords, list) or not all(isinstance(k, str) for k in keywords):
                 keywords = []
 
+            # ------------------------------------------------------------
+            # Per-chunk prefix (requested): inject doc summary + keywords
+            # ------------------------------------------------------------
+            keywords_str = ", ".join([k.strip() for k in (keywords or []) if isinstance(k, str) and k.strip()])
+            prefix = (
+                "### DOCUMENT CONTEXT ###\n\n"
+                f"DOCUMENT SUMMARY: {document_context}\n\n"
+                f"DOCUMENT KEYWORDS: {keywords_str}\n\n"
+                "#########################\n\n"
+            )
+            # If we have neither summary nor keywords, keep embeddings clean (no empty boilerplate).
+            if not (document_context or keywords_str):
+                prefix = ""
+
             # Hash the document body just before chunking (tracks content changes over time)
             content_hash = ""
             try:
@@ -482,17 +571,38 @@ class PineconeKBClient:
                 if m:
                     ow = max(0, int(m.group(1)))
                 chunker = f"md_semantic_v1:w{tw}:m{mw}:o{ow}"
-                chunks = _chunk_markdown_semantic_v1(content, target_words=tw, max_words=mw, overlap_words=ow)
+                # Account for the prefix so the total chunk stays closer to the target budgets.
+                if prefix:
+                    pw = _word_count(prefix)
+                    tw_eff = max(50, tw - pw)
+                    mw_eff = max(tw_eff, mw - pw)
+                    chunks = _chunk_markdown_semantic_v1(content, target_words=tw_eff, max_words=mw_eff, overlap_words=ow)
+                else:
+                    chunks = _chunk_markdown_semantic_v1(content, target_words=tw, max_words=mw, overlap_words=ow)
             elif chunker_sel in ("char", "char_v1"):
                 chunker = f"char:{chunk_size}:{overlap}"
-                chunks = _chunk_text(content, chunk_size=chunk_size, overlap=overlap)
+                # Account for the prefix so final payload doesn't blow past model token limits.
+                if prefix:
+                    # Keep a minimum content window even for long prefixes.
+                    budget = max(200, int(chunk_size) - len(prefix) - 50)
+                    chunks = _chunk_text(content, chunk_size=budget, overlap=min(overlap, max(0, budget // 5)))
+                else:
+                    chunks = _chunk_text(content, chunk_size=chunk_size, overlap=overlap)
             elif chunker_sel.startswith("char:"):
                 # If they pass explicit "char:1200:200", keep it (and still use our defaults for now)
-                chunks = _chunk_text(content, chunk_size=chunk_size, overlap=overlap)
+                if prefix:
+                    budget = max(200, int(chunk_size) - len(prefix) - 50)
+                    chunks = _chunk_text(content, chunk_size=budget, overlap=min(overlap, max(0, budget // 5)))
+                else:
+                    chunks = _chunk_text(content, chunk_size=chunk_size, overlap=overlap)
             else:
                 # Unknown chunker string -> safe fallback
                 chunker = f"char:{chunk_size}:{overlap}"
-                chunks = _chunk_text(content, chunk_size=chunk_size, overlap=overlap)
+                if prefix:
+                    budget = max(200, int(chunk_size) - len(prefix) - 50)
+                    chunks = _chunk_text(content, chunk_size=budget, overlap=min(overlap, max(0, budget // 5)))
+                else:
+                    chunks = _chunk_text(content, chunk_size=chunk_size, overlap=overlap)
             for i, chunk in enumerate(chunks):
                 # Use file_key as the stable per-file identifier for record IDs
                 id_seed = file_key or storage_path or url or title or "unknown"
@@ -509,7 +619,8 @@ class PineconeKBClient:
                 records.append(
                     {
                         "_id": rec_id,
-                        text_field: chunk,
+                        # Prefix is included in the embedded text (and thus search + retrieved context).
+                        text_field: (prefix + chunk) if prefix else chunk,
                         "client_slug": namespace,
                         "file_key": file_key,
                         **({"favicon": favicon} if favicon else {}),
@@ -535,7 +646,26 @@ class PineconeKBClient:
         batch_size = 96
         for i in range(0, len(records), batch_size):
             batch = records[i : i + batch_size]
-            idx.upsert_records(namespace=namespace, records=batch)
+            # Rate limit handling: integrated embedding can hit tokens-per-minute caps.
+            # Retry with exponential backoff + jitter; respect Retry-After when provided.
+            max_retries = 8
+            attempt = 0
+            while True:
+                try:
+                    idx.upsert_records(namespace=namespace, records=batch)
+                    break
+                except Exception as e:
+                    attempt += 1
+                    if (attempt > max_retries) or (not _is_retryable_pinecone_error(e)):
+                        raise
+                    ra = _retry_after_seconds(e)
+                    # If Pinecone indicates a TPM cap, waiting ~60s is usually required to recover.
+                    if ra is None and "tokens per minute" in (str(e).lower()):
+                        ra = 60.0
+                    # Exponential backoff capped at 90s
+                    backoff = min(90.0, (2.0 ** min(attempt, 6)))
+                    wait_s = float(ra) if ra is not None else backoff
+                    _sleep_with_jitter(wait_s, jitter_ratio=0.2)
             total += len(batch)
 
         return {
