@@ -259,6 +259,39 @@ class SupabaseAgentsDbClient:
         count = self._count_from_content_range(resp.headers.get("content-range"))
         return {"deleted": count if count is not None else True}
 
+    async def list_clients_for_mapping(self, *, limit: int = 10_000) -> List[Dict[str, Any]]:
+        """
+        List clients for Firecrawl /map reporting.
+
+        Returns rows with:
+          - client_slug
+          - website
+          - client_domain
+        """
+        select_cols = "client_slug,website,client_domain"
+        url = f"{self.rest_base}/clients?select={quote(select_cols, safe=',')}&order=client_slug.asc&limit={int(limit)}"
+        async with httpx.AsyncClient(timeout=60) as client:
+            resp = await client.get(url, headers={**self._headers(), "Prefer": "count=none"})
+        if resp.status_code >= 400:
+            raise RuntimeError(f"Supabase clients select error {resp.status_code}: {resp.text}")
+        data = resp.json()
+        rows = data if isinstance(data, list) else []
+        out: List[Dict[str, Any]] = []
+        for r in rows:
+            if not isinstance(r, dict):
+                continue
+            slug = str(r.get("client_slug") or "").strip()
+            if not slug:
+                continue
+            out.append(
+                {
+                    "client_slug": slug,
+                    "website": (str(r.get("website") or "").strip() or None),
+                    "client_domain": (str(r.get("client_domain") or "").strip() or None),
+                }
+            )
+        return out
+
     async def get_client_names_map(self, *, client_slugs: List[str]) -> Dict[str, str]:
         """
         Fetch client_name values for a set of slugs.

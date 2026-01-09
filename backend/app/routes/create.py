@@ -28,6 +28,7 @@ from ..services.drive_ingest import (
     categorize_drive_documents,
     extract_drive_folder_id,
 )
+from ..services.client_maps_reports import upsert_client_map_report
 from ..utils.content_hash import compute_content_hash
 from pinecone import Pinecone
 from openai import OpenAI
@@ -1835,6 +1836,34 @@ async def create_chatbot(payload: Dict[str, Any]) -> Dict[str, Any]:
             "driveFolder": bool(drive_folder_input),
         },
     )
+
+    # -------------------------------------------------------------------------
+    # Update per-client Firecrawl /map report (stored under reports bucket/_reports)
+    # -------------------------------------------------------------------------
+    if url:
+        try:
+            # Use the canonical website field when possible (normalized https://domain)
+            map_url = str(website_field or url).strip()
+            map_limit = int(payload.get("mapLimit") or payload.get("limit") or 5000)
+            links_raw = await firecrawl_client.map_urls(map_url, limit=map_limit)
+            links: List[str] = []
+            for item in links_raw or []:
+                if isinstance(item, dict):
+                    u = str(item.get("url") or item.get("link") or item.get("href") or "").strip()
+                else:
+                    u = str(item or "").strip()
+                if u:
+                    links.append(u)
+            rep = upsert_client_map_report(
+                client_slug=normalized_slug,
+                website_url=map_url,
+                links=links,
+                limit_used=map_limit,
+                reports_bucket=str(settings.supabase_reports_bucket_name),
+            )
+            log("create.map_report.upserted", {"client": normalized_slug, **rep})
+        except Exception as e:
+            log("create.map_report.error", {"client": normalized_slug, "error": str(e)})
 
     pages: List[Dict[str, Any]] = []
     raw_status: Dict[str, Any] | None = None

@@ -64,6 +64,9 @@ class Settings(BaseSettings):
     crawling_default_limit: int = Field(10, alias="CRAWLING_DEFAULT_LIMIT")
     crawling_cache_max_age_ms: int = Field(1_209_600_000, alias="CRAWLING_CACHE_MAX_AGE_MS")
 
+    # Supabase Storage bucket for operational reports (private by default)
+    supabase_reports_bucket_name: str = Field("mintleads-reports", alias="SUPABASE_REPORTS_BUCKET")
+
     # Supabase Agent Project (MCP managed agents database)
     supabase_agent_url: Optional[HttpUrl] = Field(None, alias="SUPABASE_AGENT_URL")
     supabase_agent_key: Optional[str] = Field(None, alias="SUPABASE_AGENT_KEY")
