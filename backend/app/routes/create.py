@@ -16,7 +16,7 @@ from google.oauth2 import service_account
 from googleapiclient.discovery import build
 from googleapiclient.errors import HttpError
 
-from ..clients.firecrawl import firecrawl_client
+from ..clients.crawl_provider import get_crawl_client
 from ..clients.llm import llm_client
 from ..clients.pinecone_client import pinecone_kb_client
 from ..clients.supabase_agent_storage_client import SupabaseAgentStorageClient
@@ -57,6 +57,7 @@ DRIVE_VALID_CATEGORIES = [
 ]
 
 router = APIRouter()
+crawl_client = get_crawl_client()
 
 # -----------------------------------------------------------------------------
 # Map + Scrape endpoints (used by homepage "Map + Scrape" flow)
@@ -66,18 +67,19 @@ router = APIRouter()
 @router.post("/map")
 async def map_site(payload: Dict[str, Any]) -> Dict[str, Any]:
     """
-    Discover URLs for a site (best-effort) using Firecrawl's /map.
+    Discover URLs for a site (best-effort) using configured crawl provider.
     Frontend expects: { success: true, links: [...] }.
     """
     url = str(payload.get("url") or "").strip()
     if not url:
         raise HTTPException(status_code=400, detail="url is required")
     limit = int(payload.get("limit") or 5000)
+    sitemap_url = str(payload.get("sitemapUrl") or payload.get("sitemap_url") or "").strip() or None
     req_id = uuid.uuid4().hex[:10]
     t0 = time.perf_counter()
-    log("create.map.start", {"req_id": req_id, "url": url, "limit": limit})
+    log("create.map.start", {"req_id": req_id, "url": url, "limit": limit, "sitemap_url": sitemap_url})
     try:
-        links = await firecrawl_client.map_urls(url, limit=limit)
+        links = await crawl_client.map_urls(url, limit=limit, sitemap_url=sitemap_url)
         elapsed_ms = int((time.perf_counter() - t0) * 1000)
         log("create.map.ok", {"req_id": req_id, "url": url, "links": len(links), "elapsed_ms": elapsed_ms})
         return {"success": True, "links": links, "details": {"pagesFound": len(links)}}
@@ -90,7 +92,7 @@ async def map_site(payload: Dict[str, Any]) -> Dict[str, Any]:
 @router.post("/scrape")
 async def scrape_urls(payload: Dict[str, Any]) -> Dict[str, Any]:
     """
-    Scrape a provided list of URLs using Firecrawl's /scrape.
+    Scrape a provided list of URLs using configured crawl provider.
     This is used by the homepage "Map + Scrape" flow.
 
     NOTE: This endpoint can optionally persist results to Supabase Storage/DB and ingest to Pinecone,
@@ -100,10 +102,31 @@ async def scrape_urls(payload: Dict[str, Any]) -> Dict[str, Any]:
     if not isinstance(urls_in, list) or not urls_in:
         raise HTTPException(status_code=400, detail="urls (list) is required")
 
-    client_slug = str(payload.get("clientSlug") or payload.get("client_slug") or payload.get("namespace") or "").strip()
+    client_slug_raw = str(payload.get("clientSlug") or payload.get("client_slug") or payload.get("namespace") or "").strip()
+    client_slug = client_slug_raw.lower().replace(" ", "-").replace("_", "-")
     index = str(payload.get("index") or client_slug or "").strip() or None
     namespace = client_slug or (index or "default")
+    website_url_input = str(payload.get("websiteUrl") or payload.get("url") or "").strip()
+    client_name_input = str(payload.get("clientName") or payload.get("client_name") or "").strip()
+    drive_folder_input = (
+        str(
+            payload.get("clientDriveFolder")
+            or payload.get("driveFolderId")
+            or payload.get("driveFolder")
+            or payload.get("drive_folder")
+            or ""
+        ).strip()
+        or None
+    )
     req_id = uuid.uuid4().hex[:10]
+    batch_index = int(payload.get("batchIndex") or payload.get("batch_index") or 1)
+    total_batches = int(payload.get("totalBatches") or payload.get("total_batches") or 1)
+    if batch_index < 1:
+        batch_index = 1
+    if total_batches < 1:
+        total_batches = 1
+    if batch_index > total_batches:
+        total_batches = batch_index
     t0_total = time.perf_counter()
     urls_preview = [str(u or "").strip() for u in urls_in[:5]]
     log(
@@ -114,6 +137,8 @@ async def scrape_urls(payload: Dict[str, Any]) -> Dict[str, Any]:
             "index": index,
             "urls_count": len(urls_in),
             "urls_preview": urls_preview,
+            "batch_index": batch_index,
+            "total_batches": total_batches,
         },
     )
 
@@ -198,7 +223,7 @@ async def scrape_urls(payload: Dict[str, Any]) -> Dict[str, Any]:
             t0 = time.perf_counter()
             log("create.scrape.url_start", {"req_id": req_id, "url": url})
             try:
-                res = await asyncio.to_thread(firecrawl_client.scrape_url, url)
+                res = await asyncio.to_thread(crawl_client.scrape_url, url)
                 if not isinstance(res, dict):
                     elapsed_ms = int((time.perf_counter() - t0) * 1000)
                     log("create.scrape.url_ok", {"req_id": req_id, "url": url, "elapsed_ms": elapsed_ms, "markdown_len": 0})
@@ -235,6 +260,11 @@ async def scrape_urls(payload: Dict[str, Any]) -> Dict[str, Any]:
 
     results = await asyncio.gather(*[scrape_one(u) for u in urls_in])
     pages = [r for r in results if isinstance(r, dict)]
+    if pages:
+        try:
+            pages = await _categorize_pages_parallel(pages)
+        except Exception as e:
+            log("create.scrape.categorize_error", {"req_id": req_id, "error": str(e)})
 
     errors = [p for p in pages if isinstance(p.get("error"), str) and p.get("error")]
     empty_md = [p for p in pages if not str(p.get("markdown") or "").strip()]
@@ -256,6 +286,8 @@ async def scrape_urls(payload: Dict[str, Any]) -> Dict[str, Any]:
             "generate_document_context": generate_document_context,
             "generate_keywords": generate_keywords,
             "skip_markdown_clean": skip_markdown_clean,
+            "batch_index": batch_index,
+            "total_batches": total_batches,
         },
     )
 
@@ -264,6 +296,17 @@ async def scrape_urls(payload: Dict[str, Any]) -> Dict[str, Any]:
     pinecone_info: Dict[str, Any] = {}
     if persist_to_supabase and client_slug:
         try:
+            BUCKET_NAME = "client-data-sources"
+            supabase_client = get_supabase_storage_client()
+            existing_storage_meta: Dict[str, Any] = {}
+            if supabase_client:
+                try:
+                    loaded = supabase_client.download_json(BUCKET_NAME, f"{client_slug}/supabase_storage_metadata.json")
+                    if isinstance(loaded, dict):
+                        existing_storage_meta = loaded
+                except Exception:
+                    existing_storage_meta = {}
+
             # Convert scrape results to the same document shape used by the create pipeline.
             final_documents: List[Dict[str, Any]] = []
             for p in pages:
@@ -278,14 +321,14 @@ async def scrape_urls(payload: Dict[str, Any]) -> Dict[str, Any]:
                 favicon = meta.get("favicon") or meta.get("ogImage") or meta.get("og:image") or meta.get("twitter:image")
                 if favicon:
                     meta["favicon"] = favicon
-                # Heuristic: homepage if path is empty or '/'
-                content_type = "other"
+                # Prefer LLM categorization result from page metadata.
+                content_type = str(meta.get("content_type") or "").strip() or "other"
                 try:
                     parsed = urlparse(url)
-                    if parsed.path in ("", "/"):
+                    if parsed.path in ("", "/") and content_type == "other":
                         content_type = "homepage"
                 except Exception:
-                    content_type = "other"
+                    pass
 
                 # Match /create: deterministic preclean. (LLM cleaning is run after we assemble the list,
                 # with bounded concurrency to avoid appearing "stuck" on large batches.)
@@ -311,9 +354,27 @@ async def scrape_urls(payload: Dict[str, Any]) -> Dict[str, Any]:
                             try:
                                 u = str((d.get("metadata") or {}).get("url") or "")
                                 t = str(d.get("title") or "")
-                                pre = str(d.get("markdown") or "")
+                                pre = str(d.get("markdown") or "").strip()
+                                if not pre:
+                                    return
+                                # Match /create cleaning behavior: only spend LLM cleaning on noisy pages,
+                                # and never replace with empty output.
+                                img_count = pre.count("![")
+                                base64_count = pre.lower().count("base64-image-removed")
+                                social_count = pre.lower().count("addtoany.com/add_to") + sum(
+                                    pre.lower().count(x) for x in ["[facebook]", "[twitter]", "[linkedin]", "[email]"]
+                                )
+                                noisy = (img_count >= 10) or (base64_count >= 5) or (social_count >= 2) or (len(pre) >= 12_000)
+                                if not noisy:
+                                    # Keep deterministic pre-cleaned content for short/simple pages.
+                                    return
                                 cleaned = await _llm_clean_markdown_for_kb(url=u, title=t, markdown=pre)
-                                d["markdown"] = _preclean_markdown_for_kb(cleaned)
+                                cleaned2 = _preclean_markdown_for_kb(cleaned)
+                                if cleaned2:
+                                    d["markdown"] = cleaned2
+                                else:
+                                    # Never zero-out content due to over-aggressive cleaning.
+                                    d["markdown"] = pre
                             except Exception as e:
                                 log(
                                     "create.scrape.markdown_clean_error",
@@ -411,14 +472,64 @@ async def scrape_urls(payload: Dict[str, Any]) -> Dict[str, Any]:
                     except Exception as e:
                         log("create.scrape.enrichment_error", {"req_id": req_id, "client": client_slug, "error": str(e)})
 
+                # Optional: ingest Drive folder in Map+Scrape flow (run once when provided).
+                drive_folder_url_field: Optional[str] = None
+                if drive_folder_input:
+                    raw = str(drive_folder_input).strip()
+                    if raw.startswith("http://") or raw.startswith("https://"):
+                        drive_folder_url_field = raw
+                    else:
+                        drive_folder_url_field = f"https://drive.google.com/drive/folders/{raw}"
+
+                    try:
+                        folder_id = extract_drive_folder_id(drive_folder_input)
+                        creds_path = Path("service_account.json")
+                        if not creds_path.exists():
+                            creds_path = Path("../service_account.json")
+                        if not creds_path.exists():
+                            creds_path = Path(__file__).resolve().parent.parent.parent.parent / "service_account.json"
+                        if not creds_path.exists():
+                            raise FileNotFoundError(f"service_account.json not found. Checked: {creds_path}")
+
+                        raw_drive_docs, summary, _ = build_drive_documents(folder_id, namespace, creds_path, text_max_chars=None)
+                        await categorize_drive_documents(raw_drive_docs)
+                        log(
+                            "create.scrape.drive.fetched",
+                            {"req_id": req_id, "client": client_slug, "count": len(raw_drive_docs), "summary": summary},
+                        )
+
+                        for d in raw_drive_docs:
+                            d_id = d.get("id")
+                            if not d_id:
+                                continue
+                            meta = d.get("metadata", {}) if isinstance(d.get("metadata"), dict) else {}
+                            title = meta.get("title") or d.get("content", {}).get("title") or "Untitled Drive Doc"
+                            doc_source = meta.get("document_source", "drive")
+                            final_documents.append(
+                                {
+                                    "id": d_id,
+                                    "url": d.get("url", ""),
+                                    "title": title,
+                                    "content": d.get("content", ""),
+                                    "document_source": doc_source,
+                                    "content_type": meta.get("content_type", "other"),
+                                    "markdown": d.get("content", ""),
+                                    "metadata": meta,
+                                }
+                            )
+                    except Exception as e:
+                        log("create.scrape.drive.error", {"req_id": req_id, "client": client_slug, "error": str(e)})
+
                 # Ensure the client row exists in DB (Map+Scrape-only flows should still create/update it).
                 try:
                     db = SupabaseAgentsDbClient()
                     # Derive a best-effort website + domain
-                    website_url = str(payload.get("websiteUrl") or payload.get("url") or "").strip()
+                    website_url = website_url_input
                     if not website_url:
                         # fall back to first scraped page url
                         website_url = str((final_documents[0].get("metadata") or {}).get("url") or "").strip()
+                    if not website_url:
+                        website_url = str(existing_storage_meta.get("website_url") or "").strip()
                     client_domain = ""
                     try:
                         parsed = urlparse(website_url)
@@ -426,11 +537,20 @@ async def scrape_urls(payload: Dict[str, Any]) -> Dict[str, Any]:
                     except Exception:
                         client_domain = ""
                     if client_domain:
+                        intake_url = None
+                        for d in final_documents:
+                            if str(d.get("document_source") or "").strip() not in ("intake_form", "intake-form"):
+                                continue
+                            intake_url = str((d.get("metadata") or {}).get("url") or d.get("url") or "").strip() or None
+                            if intake_url:
+                                break
                         await db.upsert_client(
                             client_slug=client_slug,
                             client_domain=client_domain,
-                            client_name=str(payload.get("clientName") or payload.get("client_name") or "") or None,
+                            client_name=client_name_input or None,
                             website=website_url or None,
+                            drive_folder_url=drive_folder_url_field or str(existing_storage_meta.get("drive_url") or "").strip() or None,
+                            intake_form_url=intake_url,
                         )
                         log("create.scrape.db_client_upsert_ok", {"req_id": req_id, "client": client_slug, "domain": client_domain})
                 except Exception as e:
@@ -440,42 +560,73 @@ async def scrape_urls(payload: Dict[str, Any]) -> Dict[str, Any]:
                 storage_info = await _upload_to_storage(client_slug, final_documents)
                 log("create.scrape.persist_done", {"req_id": req_id, "client": client_slug, **(storage_info or {})})
 
-                # Write/update supabase_storage_metadata.json (so /indexes has something durable even if UI dies)
-                supabase_client = get_supabase_storage_client()
-                BUCKET_NAME = "client-data-sources"
+                # Write/update supabase_storage_metadata.json using cumulative DB counts across batches.
                 if supabase_client:
                     try:
+                        db = SupabaseAgentsDbClient()
+                        rows = await db.list_documents_for_client(client_slug=client_slug, limit=20_000)
+
+                        def _by_ct(source_names: List[str]) -> Dict[str, int]:
+                            out: Dict[str, int] = {}
+                            src_set = set(source_names)
+                            for r in rows:
+                                src = str(r.get("document_source") or "").strip()
+                                if src not in src_set:
+                                    continue
+                                ct = str(r.get("content_type") or "other").strip() or "other"
+                                out[ct] = out.get(ct, 0) + 1
+                            return out
+
+                        website_by_ct = _by_ct(["website"])
+                        drive_by_ct = _by_ct(["drive", "client_materials"])
+                        intake_form_docs = sum(
+                            1
+                            for r in rows
+                            if str(r.get("document_source") or "").strip() in ("intake_form", "intake-form")
+                        )
+
                         homepage_doc = next((d for d in final_documents if d.get("content_type") == "homepage"), final_documents[0])
                         hm = homepage_doc.get("metadata") or {}
-                        homepage_title = hm.get("ogTitle") or hm.get("title") or client_slug
-                        homepage_favicon = hm.get("favicon") or hm.get("ogImage")
+                        existing_meta_block = existing_storage_meta.get("metadata") if isinstance(existing_storage_meta.get("metadata"), dict) else {}
+                        homepage_title = (
+                            hm.get("ogTitle")
+                            or hm.get("title")
+                            or existing_meta_block.get("title")
+                            or client_slug
+                        )
+                        homepage_favicon = (
+                            hm.get("favicon")
+                            or hm.get("ogImage")
+                            or existing_meta_block.get("favicon")
+                        )
+
+                        website_url_val = (
+                            website_url_input
+                            or str(existing_storage_meta.get("website_url") or "").strip()
+                            or str((final_documents[0].get("metadata") or {}).get("url") or "")
+                        )
+                        drive_url_val = drive_folder_input or str(existing_storage_meta.get("drive_url") or "")
+                        client_name_val = client_name_input or existing_storage_meta.get("client_name")
+
                         supabase_storage_metadata_file: Dict[str, Any] = {
-                            "website_url": str(payload.get("websiteUrl") or payload.get("url") or ""),
-                            "drive_url": "",
+                            "website_url": website_url_val,
+                            "drive_url": drive_url_val,
                             "client_slug": client_slug,
-                            "client_name": str(payload.get("clientName") or payload.get("client_name") or "") or None,
+                            "client_name": client_name_val or None,
                             "website_docs": {
-                                "total": len([d for d in final_documents if d.get("document_source") == "website"]),
-                                "by_content_type": {},
+                                "total": sum(website_by_ct.values()),
+                                "by_content_type": website_by_ct,
                             },
-                            "intake_form_docs": 0,
-                            "drive_docs": {"total": 0, "by_content_type": {}},
+                            "intake_form_docs": intake_form_docs,
+                            "drive_docs": {"total": sum(drive_by_ct.values()), "by_content_type": drive_by_ct},
                             "createdAt": time.strftime("%Y-%m-%dT%H:%M:%S.000Z"),
                             "metadata": {
                                 "title": homepage_title,
                                 **({"favicon": homepage_favicon} if homepage_favicon else {}),
                             },
-                            "chunker": requested_chunker or "char:1200:200",
+                            "chunker": requested_chunker or str(existing_storage_meta.get("chunker") or "char:1200:200"),
                             "source": "supabase_storage",
                         }
-                        # counts
-                        by_ct: Dict[str, int] = {}
-                        for d in final_documents:
-                            if d.get("document_source") != "website":
-                                continue
-                            ct = d.get("content_type") or "other"
-                            by_ct[ct] = by_ct.get(ct, 0) + 1
-                        supabase_storage_metadata_file["website_docs"]["by_content_type"] = by_ct
 
                         supabase_client.upload_json(
                             bucket=BUCKET_NAME,
@@ -483,12 +634,24 @@ async def scrape_urls(payload: Dict[str, Any]) -> Dict[str, Any]:
                             payload=supabase_storage_metadata_file,
                             upsert=True,
                         )
-                        log("create.scrape.supabase_metadata_saved", {"req_id": req_id, "client": client_slug, "key": "supabase_storage_metadata.json"})
+                        log(
+                            "create.scrape.supabase_metadata_saved",
+                            {
+                                "req_id": req_id,
+                                "client": client_slug,
+                                "key": "supabase_storage_metadata.json",
+                                "website_docs": supabase_storage_metadata_file["website_docs"]["total"],
+                                "drive_docs": supabase_storage_metadata_file["drive_docs"]["total"],
+                                "intake_form_docs": supabase_storage_metadata_file["intake_form_docs"],
+                            },
+                        )
                     except Exception as e:
                         log("create.scrape.supabase_metadata_error", {"req_id": req_id, "client": client_slug, "error": str(e)})
 
                 # Vectorize to Pinecone (optional)
-                if ingest_to_pinecone and storage_info.get("success"):
+                # Trigger as long as we uploaded at least one markdown file (avoid requiring "all input docs uploaded",
+                # since some inputs are intentionally skipped or may be empty).
+                if ingest_to_pinecone and int(storage_info.get("uploaded_to_supabase") or 0) > 0:
                     try:
                         settings = get_settings()
                         effective_namespace = f"{client_slug}-semantic" if semantic_embeddings else client_slug
@@ -518,8 +681,8 @@ async def scrape_urls(payload: Dict[str, Any]) -> Dict[str, Any]:
                             try:
                                 pinecone_meta = pinecone_kb_client.build_onboarding_metadata_report(
                                     client_slug=str(pinecone_info.get("namespace") or effective_namespace),
-                                    website_url=str(payload.get("websiteUrl") or payload.get("url") or ""),
-                                    drive_url="",
+                                    website_url=website_url_input or str(existing_storage_meta.get("website_url") or ""),
+                                    drive_url=drive_folder_input or str(existing_storage_meta.get("drive_url") or ""),
                                     index_name=str(pinecone_info.get("index") or effective_index),
                                 )
                                 BUCKET_NAME = "client-data-sources"
@@ -553,6 +716,8 @@ async def scrape_urls(payload: Dict[str, Any]) -> Dict[str, Any]:
             "persistedToSupabase": bool(storage_info.get("success")) if persist_to_supabase and client_slug else False,
             "pineconeUpserted": bool(pinecone_info.get("success")) if ingest_to_pinecone and client_slug else False,
             "recordsUpserted": int(pinecone_info.get("records_upserted") or 0) if isinstance(pinecone_info, dict) else 0,
+            "batchIndex": batch_index,
+            "totalBatches": total_batches,
         },
         "data": data_preview,
     }
@@ -908,6 +1073,8 @@ async def _upload_to_storage(client_slug: str, documents: List[Dict[str, Any]]) 
     supabase_client = get_supabase_storage_client()
     supabase_uploaded = 0
     supabase_failed = 0
+    attempted_uploads = 0
+    skipped_empty = 0
     local_backup_dir = None
     
     if not supabase_client:
@@ -977,6 +1144,7 @@ async def _upload_to_storage(client_slug: str, documents: List[Dict[str, Any]]) 
                 content = doc["markdown"]
             
             if not content:
+                skipped_empty += 1
                 continue
             
             # Determine document source first
@@ -1049,6 +1217,7 @@ async def _upload_to_storage(client_slug: str, documents: List[Dict[str, Any]]) 
                 db_file_url = ""
             if db_file_url:
                 header_lines.append(f"storage_preview_url: \"{db_file_url}\"")
+
 
             # Original file type (before converting to .md)
             # - website sources come from HTML pages
@@ -1149,6 +1318,7 @@ async def _upload_to_storage(client_slug: str, documents: List[Dict[str, Any]]) 
             
             if bucket_ready:
                 try:
+                    attempted_uploads += 1
                     supabase_client.upload_bytes(
                         bucket=BUCKET_NAME,
                         path=filename,
@@ -1240,13 +1410,17 @@ async def _upload_to_storage(client_slug: str, documents: List[Dict[str, Any]]) 
             log("create.storage.upload_error", {"doc_id": doc.get("id", "unknown"), "error": str(e)})
             supabase_failed += 1
     
-    total_docs = len(documents)
-    success = supabase_uploaded == total_docs and supabase_failed == 0
+    total_input_docs = len(documents)
+    # Only count docs we actually attempted to upload. Some inputs are intentionally skipped
+    # (e.g. empty content after parsing/cleaning).
+    success = (attempted_uploads > 0) and (supabase_uploaded == attempted_uploads) and (supabase_failed == 0)
     
     log("create.supabase.uploaded", {
         "count": supabase_uploaded,
         "failed": supabase_failed,
-        "total": total_docs,
+        "attempted": attempted_uploads,
+        "skipped_empty": skipped_empty,
+        "total_input": total_input_docs,
         "client": client_slug,
         "success": success
     })
@@ -1261,7 +1435,9 @@ async def _upload_to_storage(client_slug: str, documents: List[Dict[str, Any]]) 
     return {
         "uploaded_to_supabase": supabase_uploaded,
         "failed": supabase_failed,
-        "total": total_docs,
+        "attempted": attempted_uploads,
+        "skipped_empty": skipped_empty,
+        "total_input": total_input_docs,
         "success": success,
         "local_backup_path": str(local_backup_dir) if local_backup_dir else None,
     }
@@ -1845,7 +2021,7 @@ async def create_chatbot(payload: Dict[str, Any]) -> Dict[str, Any]:
             # Use the canonical website field when possible (normalized https://domain)
             map_url = str(website_field or url).strip()
             map_limit = int(payload.get("mapLimit") or payload.get("limit") or 5000)
-            links_raw = await firecrawl_client.map_urls(map_url, limit=map_limit)
+            links_raw = await crawl_client.map_urls(map_url, limit=map_limit)
             links: List[str] = []
             for item in links_raw or []:
                 if isinstance(item, dict):
@@ -1889,7 +2065,7 @@ async def create_chatbot(payload: Dict[str, Any]) -> Dict[str, Any]:
         if crawl_entire_domain is None and limit >= 1000:
             crawl_entire_domain = True
 
-        main_pages, raw_status_main = await firecrawl_client.crawl_and_wait(
+        main_pages, raw_status_main = await crawl_client.crawl_and_wait(
             url,
             limit,
             include_paths,
@@ -1919,7 +2095,7 @@ async def create_chatbot(payload: Dict[str, Any]) -> Dict[str, Any]:
                 "exclude_paths": exclude_paths,
             },
         )
-        blog_pages, raw_status_blog = await firecrawl_client.crawl_and_wait(
+        blog_pages, raw_status_blog = await crawl_client.crawl_and_wait(
             url,
             blog_limit,
             [".*blog.*"],
@@ -2006,6 +2182,7 @@ async def create_chatbot(payload: Dict[str, Any]) -> Dict[str, Any]:
             # categorize_drive_documents modifies in-place and takes only list
             await categorize_drive_documents(raw_drive_docs)
             drive_docs = raw_drive_docs
+
             log("create.drive.categorized", {"count": len(drive_docs)})
 
             # Update clients.intake_form_url after we've scanned the drive folder.
@@ -2264,7 +2441,9 @@ async def create_chatbot(payload: Dict[str, Any]) -> Dict[str, Any]:
             # 6. Vectorize to Pinecone (only if Supabase upload was successful)
             # -------------------------------------------------------------------------
             pinecone_info: Dict[str, Any] = {}
-            if storage_info.get("success"):
+            # Vectorize as long as we uploaded at least one markdown file (don't require “all input docs uploaded”,
+            # because some inputs are intentionally skipped or may be empty).
+            if int(storage_info.get("uploaded_to_supabase") or 0) > 0:
                 try:
                     effective_namespace = f"{client_slug}-semantic" if semantic_embeddings else client_slug
                     # Always use the primary KB index. Semantic runs are isolated by namespace suffix only.
@@ -2293,7 +2472,7 @@ async def create_chatbot(payload: Dict[str, Any]) -> Dict[str, Any]:
                     pinecone_info = {"success": False, "error": str(e)}
 
             # After vectorization, write pinecone_namespace_metadata.json (authoritative for UI display)
-            if supabase_client and storage_info.get("success") and pinecone_info.get("success"):
+            if supabase_client and int(storage_info.get("uploaded_to_supabase") or 0) > 0 and pinecone_info.get("success"):
                 try:
                     effective_namespace = pinecone_info.get("namespace") or client_slug
                     effective_index = pinecone_info.get("index") or settings.pinecone_kb_index_name

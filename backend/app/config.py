@@ -27,7 +27,7 @@ class Settings(BaseSettings):
     mintagent_api_key: Optional[str] = Field(default=None, alias="MINTAGENT_API_KEY")
 
     # Firecrawl
-    firecrawl_api_key: str = Field(..., alias="FIRECRAWL_API_KEY")
+    firecrawl_api_key: Optional[str] = Field(None, alias="FIRECRAWL_API_KEY")
     firecrawl_base_url: HttpUrl = Field("https://api.firecrawl.dev/v2", alias="FIRECRAWL_BASE_URL")
     firecrawl_poll_interval_ms: int = Field(1000, ge=200, le=10_000, alias="FIRECRAWL_POLL_INTERVAL_MS")
     # Timeout for crawl jobs (ms). Default: 90s. Max allowed: 10m.
@@ -44,12 +44,12 @@ class Settings(BaseSettings):
 
     @staticmethod
     def _default_ai_system_prompt() -> str:
-        # Default to inbox manager template. Override via AI_SYSTEM_PROMPT env if desired.
+        # Default to kb_chat template. Override via AI_SYSTEM_PROMPT env if desired.
         try:
-            return load_agent_template("inbox_manager")
+            return load_agent_template("kb_chat")
         except Exception:
             # Defensive fallback: keep non-empty string so startup doesn't crash in odd envs.
-            return "System Prompt: Inbox Manager\n\n(Template missing)"
+            return "System Prompt: KB Chat\n\n(Template missing)"
 
     ai_system_prompt: str = Field(default_factory=_default_ai_system_prompt, alias="AI_SYSTEM_PROMPT")
 
@@ -63,6 +63,13 @@ class Settings(BaseSettings):
     # Crawling defaults (parity with TS config)
     crawling_default_limit: int = Field(10, alias="CRAWLING_DEFAULT_LIMIT")
     crawling_cache_max_age_ms: int = Field(1_209_600_000, alias="CRAWLING_CACHE_MAX_AGE_MS")
+    crawler_provider: str = Field("crawl4ai", alias="CRAWLER_PROVIDER")
+    crawl4ai_headless: bool = Field(True, alias="CRAWL4AI_HEADLESS")
+    crawl4ai_verbose: bool = Field(False, alias="CRAWL4AI_VERBOSE")
+    crawl4ai_page_timeout_ms: int = Field(45_000, ge=5_000, le=180_000, alias="CRAWL4AI_PAGE_TIMEOUT_MS")
+    crawl4ai_default_max_depth: int = Field(2, ge=0, le=8, alias="CRAWL4AI_DEFAULT_MAX_DEPTH")
+    crawl4ai_allow_subdomains: bool = Field(False, alias="CRAWL4AI_ALLOW_SUBDOMAINS")
+    crawl4ai_max_discovered_urls: int = Field(5_000, ge=100, le=50_000, alias="CRAWL4AI_MAX_DISCOVERED_URLS")
 
     # Supabase Storage bucket for operational reports (private by default)
     supabase_reports_bucket_name: str = Field("mintleads-reports", alias="SUPABASE_REPORTS_BUCKET")

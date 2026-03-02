@@ -74,6 +74,7 @@ Categories and definitions:
 - case_studies: content with case studies detailing success stories or project examples
 - brochures_newsletters: content with brochures or newsletters
 - pitch_decks: content with pitch decks
+- pricing: content with pricing information
 - other: use this if you cannot confidently assign the content to one of the provided categories
 
 

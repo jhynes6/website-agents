@@ -1,0 +1,166 @@
+{
+  "id": "workflow-1769524183693",
+  "name": "my-workflow",
+  "version": "1.0.0",
+  "nodes": [
+    {
+      "id": "start-node-default",
+      "type": "start",
+      "name": "start-node-default",
+      "position": {
+        "x": 100,
+        "y": 200
+      },
+      "data": {
+        "label": "Start"
+      }
+    },
+    {
+      "id": "prompt-message-input",
+      "type": "prompt",
+      "name": "prompt-message-input",
+      "position": {
+        "x": 360,
+        "y": 195
+      },
+      "data": {
+        "label": "Sales Prospect Message",
+        "prompt": "{{client_slug}}\n{{prospect_reply}}",
+        "variables": {
+          "prospectMessage": {
+            "type": "string",
+            "description": "Message from sales prospect"
+          }
+        }
+      }
+    },
+    {
+      "id": "agent-query-optimizer",
+      "type": "subAgent",
+      "name": "agent-query-optimizer",
+      "position": {
+        "x": 585,
+        "y": 195
+      },
+      "data": {
+        "description": "Optimize query for vector retrieval",
+        "prompt": "query: \n\nindex = sb-knowledge-bases\nnamespace = {{client_slug}}\n\ngenerate an optimized vector database query to retrieve all relevant information to answer {{prospect_reply}} from pinecone. ",
+        "model": "sonnet",
+        "outputPorts": 1
+      }
+    },
+    {
+      "id": "agent-result-formatter",
+      "type": "subAgent",
+      "name": "agent-result-formatter",
+      "position": {
+        "x": 1245,
+        "y": 195
+      },
+      "data": {
+        "description": "Format and refine retrieval results",
+        "prompt": "Take the retrieved information from Pinecone and format it for further processing. Organize by relevance, extract key insights, and prepare structured output for text processing and refinement.\n\nHere are the rules for refining the email response: \n\nYou are responsible for quality control on the email communication that happens after a lead has replied to one of our cold email campaigns. \n\nTASK 1 - Sanity Check : \n1.  Read the email thread provided so you have full scope of what was emailed to the prospect and how they are replying to us\n2. Summarize the last action taken by the prospect: did they ask us to send them something, have they expressed interest in meeting, etc.\n3. Summarize the proposed message we've drafted to the prospect\n4. Verify that our proposed response makes sense in the given context\n\nTASK 2 - Formatting : \n\n1. All emails need to be formatted as follows: \n\n<<EMAIL>>\nHey {prospect_name}, \n\n[Email Body - no more than 4 sentences + bullet points]\n\n[CTA - suggest a call in the next week or 2, keep it casual like that]\n\nRegards, \n\nres['data']['sender_email']['name'].split()[0]\n\n-- \nres['data']['sender_email']['name']\n[workspace_name]\n<<EMAIL>>\n\n2. Avoid sounding too over-eager. Don't say things like \"I would love to\", \"Thank you for replying\", etc. \n\nTask 3 - Quality Score / Human In the Loop: \n\nRate the email on a scale of 1-10 weighing the following factors: \n\n1. Extent to which we addressed the prospect's question or request. If we were able to provide specific examples, that is good. Generic examples are okay. No examples would be bad. \n2. Is the message straightforward and to the point? We want to communicate value in 4 sentences or less plus some bullet points. Is our answer going to compel a stranger to get on the phone? \n3. Is there a call to action at the end of the email to book a call to chat? Good if yes, bad if no\n\n\nAGENT OUTPUT: \n\nyou will output your response as a json\n\nres = {\n   task_1:{\n      prospect_reply_summary: str,\n      proposed_reply_summary: str, \n      sanity_check: str (\"pass\", \"fail\") [does our proposed_reply make sense with their reply_summary?]\n   },\n   task_2: {\n      formatted_email: str\n   },\n   task_3: {\n      reply_quality_rating: float 0-1 [if you rate < 0.7, it warrants human in the loop]\n   }\n}\n\n",
+        "model": "sonnet",
+        "outputPorts": 1
+      }
+    },
+    {
+      "id": "end-node-default",
+      "type": "end",
+      "name": "end-node-default",
+      "position": {
+        "x": 1590,
+        "y": 225
+      },
+      "data": {
+        "label": "End"
+      }
+    },
+    {
+      "id": "mcp-1769522712865",
+      "type": "mcp",
+      "name": "mcp-1769522712865",
+      "position": {
+        "x": 930,
+        "y": 195
+      },
+      "data": {
+        "mode": "aiToolSelection",
+        "serverId": "pinecone",
+        "aiToolSelectionConfig": {
+          "taskDescription": "Find all relevant information related to the query. Only search index = 'sb-knowledge-bases' and namespace = {{client_slug}}",
+          "availableTools": [],
+          "timestamp": "2026-01-27T14:21:09.440Z"
+        },
+        "validationStatus": "valid",
+        "outputPorts": 1
+      }
+    }
+  ],
+  "connections": [
+    {
+      "id": "conn-prompt-optimizer",
+      "from": "prompt-message-input",
+      "to": "agent-query-optimizer",
+      "fromPort": "output",
+      "toPort": "input"
+    },
+    {
+      "id": "conn-formatter-end",
+      "from": "agent-result-formatter",
+      "to": "end-node-default",
+      "fromPort": "output",
+      "toPort": "input"
+    },
+    {
+      "id": "reactflow__edge-agent-query-optimizeroutput-mcp-1769522712865",
+      "from": "agent-query-optimizer",
+      "to": "mcp-1769522712865",
+      "fromPort": "output",
+      "toPort": "input"
+    },
+    {
+      "id": "reactflow__edge-mcp-1769522712865-agent-result-formatterinput",
+      "from": "mcp-1769522712865",
+      "to": "agent-result-formatter",
+      "fromPort": "output",
+      "toPort": "input"
+    },
+    {
+      "id": "reactflow__edge-start-node-defaultout-prompt-message-inputin",
+      "from": "start-node-default",
+      "to": "prompt-message-input",
+      "fromPort": "out",
+      "toPort": "in"
+    }
+  ],
+  "createdAt": "2026-01-27T14:29:43.693Z",
+  "updatedAt": "2026-01-27T14:29:43.693Z",
+  "conversationHistory": {
+    "schemaVersion": "1.0.0",
+    "messages": [
+      {
+        "id": "455f9e2e-df71-47df-8c10-ad8417421451",
+        "sender": "user",
+        "content": "i'd like an agentic rag system that takes in a message from a potential sales prospect, creates an optimized query to use for vector retrieval via pinecone db, and returns all relevant information related to the query for further formatting / text processing / refinement. \n",
+        "timestamp": "2026-01-27T09:17:22.976Z"
+      },
+      {
+        "id": "5823c919-e372-4021-bca6-f9ccf126ffce",
+        "sender": "ai",
+        "content": "Created agentic RAG workflow with prospect message input, query optimization, Pinecone vector retrieval, and result formatting",
+        "timestamp": "2026-01-27T09:17:22.976Z"
+      }
+    ],
+    "currentIteration": 1,
+    "maxIterations": 20,
+    "createdAt": "2026-01-27T09:14:56.462Z",
+    "updatedAt": "2026-01-27T09:17:22.976Z",
+    "sessionId": "3242b17d-47f6-43f9-ab81-6da6545a7659"
+  },
+  "subAgentFlows": [],
+  "slashCommandOptions": {
+    "model": "sonnet",
+    "allowedTools": "Bash,BashOutput,Edit,ExitPlanMode,Glob,Grep,KillShell,MCPSearch,NotebookEdit,Read,Skill,SlashCommand,Task,TodoWrite,WebFetch,WebSearch,Write,AskUserQuestion"
+  }
+}

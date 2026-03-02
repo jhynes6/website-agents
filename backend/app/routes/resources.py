@@ -3,6 +3,7 @@ Resource links endpoint - generates presigned URLs for key JSON reports
 """
 from fastapi import APIRouter, HTTPException, Request
 from fastapi.responses import JSONResponse
+from starlette.responses import RedirectResponse
 import json
 import logging
 from typing import Any, Dict
@@ -13,6 +14,9 @@ logger = logging.getLogger(__name__)
 router = APIRouter()
 
 INDEXES_BUCKET = "client-data-sources"
+
+def _normalize_client_slug(value: str) -> str:
+    return (value or "").strip().lower().replace(" ", "-").replace("_", "-")
 
 
 def _pinecone_fetch_report_doc(*, index_name: str, namespace: str, doc_id: str) -> Dict[str, Any]:
@@ -111,18 +115,19 @@ async def get_client_details(client_slug: str, request: Request):
         dict: Contains kb_data and agent_data for the client
     """
     try:
+        slug = _normalize_client_slug(client_slug)
         settings = get_settings()
         result: Dict[str, Any] = {
-            "client_slug": client_slug,
+            "client_slug": slug,
             # Always return objects (not None) so the UI can safely render modals/tabs.
             "kb_data": {},
             "kb_data_found": False,
             "agent_data": {},
             "agent_data_found": False,
             # UI convenience links to quickly view Supabase Storage metadata files in a new tab.
-            "metadata_url": f"{str(request.base_url).rstrip('/')}/api/mintagent/client-metadata/{client_slug}",
-            "supabase_storage_metadata_url": f"{str(request.base_url).rstrip('/')}/api/mintagent/client-metadata/{client_slug}?source=supabase",
-            "pinecone_namespace_metadata_url": f"{str(request.base_url).rstrip('/')}/api/mintagent/client-metadata/{client_slug}?source=pinecone",
+            "metadata_url": f"{str(request.base_url).rstrip('/')}/api/mintagent/client-metadata/{slug}",
+            "supabase_storage_metadata_url": f"{str(request.base_url).rstrip('/')}/api/mintagent/client-metadata/{slug}?source=supabase",
+            "pinecone_namespace_metadata_url": f"{str(request.base_url).rstrip('/')}/api/mintagent/client-metadata/{slug}?source=pinecone",
         }
         
         # Fetch KB/Client data
@@ -130,7 +135,7 @@ async def get_client_details(client_slug: str, request: Request):
             result["kb_data"] = _pinecone_fetch_report_doc(
                 index_name=settings.pinecone_client_kb_reports_index_name,
                 namespace=settings.pinecone_client_kb_reports_namespace,
-                doc_id=f"_client_kb_master/clients/{client_slug}.json",
+                doc_id=f"_client_kb_master/clients/{slug}.json",
             )
             result["kb_data_found"] = True
         except HTTPException as e:
@@ -151,7 +156,7 @@ async def get_client_details(client_slug: str, request: Request):
             result["agent_data"] = _pinecone_fetch_report_doc(
                 index_name=settings.pinecone_agent_reports_index_name,
                 namespace=settings.pinecone_agent_reports_namespace,
-                doc_id=f"agents/inbox_manager_{client_slug}.json",
+                doc_id=f"agents/inbox_manager_{slug}.json",
             )
             result["agent_data_found"] = True
         except HTTPException as e:
@@ -170,7 +175,7 @@ async def get_client_details(client_slug: str, request: Request):
         return result
         
     except Exception as e:
-        logger.error(f"Error fetching client details for {client_slug}: {e}")
+        logger.error(f"Error fetching client details for {slug}: {e}")
         raise HTTPException(status_code=500, detail=f"Failed to fetch client details: {str(e)}")
 
 
@@ -188,7 +193,7 @@ async def get_client_metadata(client_slug: str, source: str = "pinecone"):
     """
     from ..clients.supabase_storage_client import SupabaseStorageClient
 
-    slug = (client_slug or "").strip()
+    slug = _normalize_client_slug(client_slug)
     if not slug:
         raise HTTPException(status_code=400, detail="client_slug required")
 
@@ -220,6 +225,35 @@ async def get_client_metadata(client_slug: str, source: str = "pinecone"):
 
     # Return as JSON so it renders nicely in-browser.
     return JSONResponse(content=data)
+
+
+@router.get("/client-metadata-public/{client_slug}")
+async def get_client_metadata_public_redirect(client_slug: str, file: str = "pinecone") -> RedirectResponse:
+    """
+    Redirect to canonical lowercase public storage path for client metadata JSON.
+
+    This prevents mixed-case slug URLs from 404-ing when users manually open
+    Supabase public object paths.
+    """
+    settings = get_settings()
+    project_url = str(settings.supabase_agent_url or "").rstrip("/")
+    if not project_url:
+        raise HTTPException(status_code=500, detail="SUPABASE_AGENT_URL not configured")
+
+    slug = _normalize_client_slug(client_slug)
+    if not slug:
+        raise HTTPException(status_code=400, detail="client_slug required")
+
+    file_norm = (file or "pinecone").strip().lower()
+    if file_norm in ("supabase", "storage", "supabase_storage"):
+        key = "supabase_storage_metadata.json"
+    elif file_norm in ("metadata", "legacy"):
+        key = "metadata.json"
+    else:
+        key = "pinecone_namespace_metadata.json"
+
+    url = f"{project_url}/storage/v1/object/public/{INDEXES_BUCKET}/{slug}/{key}"
+    return RedirectResponse(url=url, status_code=307)
 
 
 @router.get("/report/{doc_id:path}")

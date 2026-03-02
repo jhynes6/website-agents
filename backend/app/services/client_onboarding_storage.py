@@ -8,7 +8,7 @@ from pathlib import Path
 from typing import Any, Dict, List, Optional, Tuple
 from urllib.parse import urlparse
 
-from ..clients.firecrawl import firecrawl_client
+from ..clients.crawl_provider import get_crawl_client
 from ..clients.supabase_storage_client import SupabaseStorageClient
 from ..logging import log
 from .drive_ingest import build_drive_documents
@@ -16,6 +16,8 @@ from .drive_ingest import build_drive_documents
 
 def _utc_now_iso() -> str:
     return datetime.now(timezone.utc).isoformat()
+
+crawl_client = get_crawl_client()
 
 
 def _resolve_service_account_path() -> Path:
@@ -113,7 +115,7 @@ async def onboard_client_to_supabase_storage(
     wurl = _normalize_url(website_url)
     if wurl and not skip_website:
         log("onboarding.website.start", {"client_slug": slug, "url": wurl, "limit": website_limit})
-        pages, raw_status = await firecrawl_client.crawl_and_wait(
+        pages, raw_status = await crawl_client.crawl_and_wait(
             wurl,
             website_limit,
             include_paths=None,

@@ -61,6 +61,17 @@ interface ClientDetails {
   pinecone_namespace_metadata_url?: string | null
 }
 
+function getSourceHostLabel(url: string): string {
+  const raw = (url || '').trim()
+  if (!raw) return 'unknown source'
+  try {
+    return new URL(raw).hostname
+  } catch {
+    // Some sources are file keys/paths rather than absolute URLs.
+    return raw
+  }
+}
+
 // Simple markdown renderer component
 function MarkdownContent({ content, onSourceClick, isStreaming = false }: { content: string; onSourceClick?: (index: number) => void; isStreaming?: boolean }) {
   // Simple markdown parsing
@@ -1096,7 +1107,7 @@ print(data['choices'][0]['message']['content'])`
                                     )}
                                     <p className="text-xs text-gray-500 truncate flex items-center gap-1 group-hover:text-green-700 transition-colors">
                                       <ExternalLink className="w-3 h-3" />
-                                      {new URL(source.url).hostname}
+                                      {getSourceHostLabel(source.url)}
                                     </p>
                                   </div>
                                 </div>

@@ -22,6 +22,10 @@ INDEXES_CACHE_TTL_S = 30.0
 _indexes_cache: Dict[str, Any] = {"ts": 0.0, "payload": None}
 
 
+def _normalize_client_slug(value: str) -> str:
+    return (value or "").strip().lower().replace(" ", "-").replace("_", "-")
+
+
 def _supabase_storage_client():
     """
     Storage client for server-side reads (service role preferred).
@@ -412,7 +416,8 @@ async def list_indexes(
     settings = get_settings()
     
     # Handle aliases
-    target_slug = client_slug or clientSlug or namespace
+    target_slug = _normalize_client_slug(client_slug or clientSlug or namespace or "")
+    target_slug = target_slug or None
     # --- Supabase Storage path (preferred) ---
     try:
         storage = _supabase_storage_client()
@@ -476,9 +481,12 @@ async def list_indexes(
 
         slugs = _list_client_slugs_from_storage()
         if target_slug:
-            if target_slug not in slugs:
+            slug_map = {s.lower(): s for s in slugs}
+            resolved = slug_map.get(target_slug.lower())
+            if not resolved:
                 raise HTTPException(status_code=404, detail="Client not found in storage")
-            slugs = [target_slug]
+            target_slug = resolved
+            slugs = [resolved]
 
         # Single client: just load directly (one roundtrip).
         if target_slug:

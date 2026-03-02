@@ -87,7 +87,12 @@ class FirecrawlClient:
             return resp.json()
         return await self._get(u)
 
-    async def map_urls(self, url: str, limit: int = 500) -> List[Dict[str, Any]]:
+    async def map_urls(
+        self,
+        url: str,
+        limit: int = 500,
+        sitemap_url: Optional[str] = None,
+    ) -> List[Dict[str, Any]]:
         payload: Dict[str, Any] = {
             "url": url,
             "limit": limit,
@@ -95,6 +100,9 @@ class FirecrawlClient:
             "ignoreQueryParameters": True,
             "sitemap": "include",
         }
+        # Firecrawl map does not accept a custom sitemap URL.
+        # Keep signature parity with other providers and ignore sitemap_url.
+        _ = sitemap_url
         resp = await self._post("/map", payload)
         if isinstance(resp, dict):
             return resp.get("links", [])

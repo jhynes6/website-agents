@@ -13,7 +13,8 @@ uvicorn app.main:app --host 127.0.0.1 --port 8000 --reload
 cd ..
 npm run dev
 ```
-
 Notes:
 - `npm run dev` sets `NEXT_PUBLIC_BACKEND_URL=http://127.0.0.1:8000`, so the UI will call the backend directly.
 - If port 8000 is already in use, either stop the old process or change both the backend port and `NEXT_PUBLIC_BACKEND_URL`.
+- For Crawl4AI scraping, run `pip install -r backend/requirements.txt` and one-time browser setup with `crawl4ai-setup` (or `python -m playwright install chromium` if needed).
+

@@ -3,6 +3,7 @@ import logging
 import os
 import io
 import tempfile
+import re
 from pathlib import Path
 from typing import Any, Dict, List, Optional, Tuple
 
@@ -52,6 +53,271 @@ DRIVE_VALID_CATEGORIES = [
     "pitch_decks",
     "other",
 ]
+
+INTAKE_PLACEHOLDER_PATTERNS = [
+    "type your answer",
+    "your answer",
+    "insert answer",
+    "add answer",
+    "n/a",
+    "na",
+    "none",
+    "tbd",
+    "example answer",
+    "placeholder",
+]
+
+INTAKE_ADMIN_SECTIONS = {
+    "basic information",
+    "contact information",
+    "preferred methods of communication",
+}
+
+INTAKE_MARKETING_QUESTIONS: List[Tuple[str, str]] = [
+    ("TARGETING", "Describe your top three target personas (clients):"),
+    ("TARGETING", "Are there industries you won’t sell to?"),
+    ("PRODUCTS_SERVICES", "What services do you sell to your top 3 target personas?"),
+    ("OFFERS", "For each service, what are your top offers (packages/examples) that you would be willing to pitch them?"),
+    ("PRICING", "What is your average order value? What are your “Starting At” costs for your services?"),
+    ("DIFFERENTIATORS", "What makes you different from your competitors? What is your “special sauce”?"),
+    ("PAIN_POINTS", "How would your customer describe their problem in their own words? What do you do to improve their business?"),
+    ("CASE_STUDIES", "For each service, what are case studies or recent customer successes that you use to highlight your expertise in your field?"),
+]
+
+
+def _normalize_line(value: str) -> str:
+    return " ".join((value or "").replace("\t", " ").strip().split())
+
+
+def _strip_example_parentheticals(value: str) -> str:
+    """
+    Remove inline placeholder/example hints like "(ex: ...)" from form text.
+    """
+    text = value or ""
+    # Remove parenthetical blocks that are examples/placeholders.
+    text = re.sub(r"\((?:(?:ex(?:ample)?|e\.g)\s*[:.]?)[^)]*\)", "", text, flags=re.IGNORECASE)
+    # Remove stray "ex:" fragments that may appear without a closing parenthesis.
+    text = re.sub(r"\bex(?:ample)?\s*[:.]\s*$", "", text, flags=re.IGNORECASE)
+    return _normalize_line(text)
+
+
+def _strip_multiline_example_blocks(raw_text: str) -> str:
+    """
+    Remove example blocks that start with "(ex:" and may span multiple lines.
+    """
+    lines = (raw_text or "").splitlines()
+    out: List[str] = []
+    skipping = False
+    marker = re.compile(r"\(\s*(?:ex(?:ample)?|e\.g)\s*[:.]", flags=re.IGNORECASE)
+
+    for line in lines:
+        cur = line or ""
+        if not skipping:
+            m = marker.search(cur)
+            if not m:
+                out.append(cur)
+                continue
+
+            # If example block closes on same line, remove just that segment.
+            close_idx = cur.find(")", m.start())
+            if close_idx != -1:
+                cleaned = (cur[: m.start()] + cur[close_idx + 1 :]).rstrip()
+                if cleaned.strip():
+                    out.append(cleaned)
+                continue
+
+            # Start multiline skip; preserve any prefix before "(ex:"
+            prefix = cur[: m.start()].rstrip()
+            if prefix.strip():
+                out.append(prefix)
+            skipping = True
+            continue
+
+        # Currently skipping example block until the first closing paren.
+        close_idx = cur.find(")")
+        if close_idx == -1:
+            continue
+        suffix = cur[close_idx + 1 :].strip()
+        if suffix:
+            out.append(suffix)
+        skipping = False
+
+    return "\n".join(out)
+
+
+def _strip_example_parentheticals_preserve(value: str) -> str:
+    """Remove example hints while preserving markdown indentation/bullets."""
+    text = value or ""
+    text = re.sub(r"\((?:(?:ex(?:ample)?|e\.g)\s*[:.]?)[^)]*\)", "", text, flags=re.IGNORECASE)
+    text = re.sub(r"\bex(?:ample)?\s*[:.]\s*$", "", text, flags=re.IGNORECASE)
+    # Collapse repeated spaces but keep leading indentation.
+    lead = re.match(r"^\s*", text).group(0) if text else ""
+    core = text[len(lead):]
+    core = re.sub(r"[ \t]{2,}", " ", core).strip()
+    return f"{lead}{core}".rstrip()
+
+
+def _normalize_form_line(value: str) -> str:
+    text = _strip_example_parentheticals(value)
+    # Old formatted markdown may include bullets; strip marker for parsing.
+    text = re.sub(r"^\s*[-*]\s+", "", text)
+    return _normalize_line(text)
+
+
+def _canonicalize(value: str) -> str:
+    return _strip_example_parentheticals(value).lower().rstrip(":").rstrip("?")
+
+
+def _is_placeholder_answer(value: str) -> bool:
+    v = _canonicalize(value)
+    if not v:
+        return True
+    if v in {"-", "--", "---"}:
+        return True
+    return any(p in v for p in INTAKE_PLACEHOLDER_PATTERNS)
+
+
+def _is_suppression_list_line(value: str) -> bool:
+    c = _canonicalize(value)
+    return c in {
+        "suppression list",
+        "example suppression list",
+        "if you have a list of companies that we should not be sending any emails to, please let us know",
+        "one .xls or .csv file of these company’s domains needed. if domains are not provided, these contacts could be reached",
+    }
+
+
+def _format_intake_form_markdown(raw_text: str) -> str:
+    """
+    Convert intake form text to an LLM-friendly structure and strip placeholders.
+    """
+    cleaned_raw = _strip_multiline_example_blocks(raw_text or "")
+
+    if "client_intake_form" in cleaned_raw.lower():
+        cleaned_lines: List[str] = []
+        prev_blank = False
+        skip_suppression = False
+        for line in cleaned_raw.splitlines():
+            cleaned = _strip_example_parentheticals_preserve(line)
+            probe = re.sub(r"^\s*[-*]\s+", "", cleaned).strip()
+            if _canonicalize(probe).startswith("### "):
+                skip_suppression = False
+            if _is_suppression_list_line(probe):
+                skip_suppression = True
+                continue
+            if skip_suppression:
+                continue
+            if _is_placeholder_answer(probe):
+                continue
+            is_blank = not cleaned.strip()
+            if is_blank and prev_blank:
+                continue
+            cleaned_lines.append(cleaned)
+            prev_blank = is_blank
+        return "\n".join(cleaned_lines).strip()
+
+    lines = [_normalize_form_line(l) for l in cleaned_raw.splitlines()]
+    lines = [l for l in lines if l]
+    if not lines:
+        return ""
+
+    canon_to_idx: Dict[str, int] = {}
+    for i, line in enumerate(lines):
+        canon_to_idx.setdefault(_canonicalize(line), i)
+
+    # Build ADMIN section from specified source sections only.
+    admin_entries: List[Tuple[str, str]] = []
+    for i, line in enumerate(lines):
+        if _canonicalize(line) not in INTAKE_ADMIN_SECTIONS:
+            continue
+        j = i + 1
+        current_question: Optional[str] = None
+        while j < len(lines):
+            cur = lines[j]
+            cur_canon = _canonicalize(cur)
+            # Stop at next top-level section heading.
+            if cur_canon in INTAKE_ADMIN_SECTIONS or cur_canon in {"campaign criteria", "targeting", "offerings", "cost of services", "service differentiation", "client pain points", "case studies and previous customer successes"}:
+                break
+            if cur.endswith(":") or cur.endswith("?"):
+                current_question = cur
+                admin_entries.append((current_question, ""))
+                j += 1
+                continue
+            if current_question:
+                if _is_placeholder_answer(cur):
+                    j += 1
+                    continue
+                # Attach to latest question
+                q, prev = admin_entries[-1]
+                merged = f"{prev} {cur}".strip() if prev else cur
+                admin_entries[-1] = (q, merged)
+            j += 1
+
+    # Build MARKETING section from explicit question mapping.
+    marketing_answers: Dict[str, List[Tuple[str, str]]] = {
+        "TARGETING": [],
+        "PRODUCTS_SERVICES": [],
+        "OFFERS": [],
+        "CASE_STUDIES": [],
+        "PRICING": [],
+        "DIFFERENTIATORS": [],
+        "PAIN_POINTS": [],
+    }
+    question_canons = [_canonicalize(q) for _, q in INTAKE_MARKETING_QUESTIONS]
+    stop_heads = {
+        "targeting",
+        "offerings",
+        "cost of services",
+        "service differentiation",
+        "client pain points",
+        "case studies and previous customer successes",
+        "basic information",
+        "contact information",
+        "preferred methods of communication",
+    }
+    for key, question in INTAKE_MARKETING_QUESTIONS:
+        qcanon = _canonicalize(question)
+        start = canon_to_idx.get(qcanon)
+        answer = ""
+        if start is not None:
+            k = start + 1
+            answer_lines: List[str] = []
+            while k < len(lines):
+                cur = lines[k]
+                c = _canonicalize(cur)
+                if c in question_canons or c in stop_heads:
+                    break
+                if _is_suppression_list_line(cur):
+                    break
+                if _is_placeholder_answer(cur):
+                    k += 1
+                    continue
+                answer_lines.append(cur)
+                k += 1
+            answer = "\n".join(answer_lines).strip()
+        marketing_answers[key].append((question, answer))
+
+    out: List[str] = []
+    out.append("# CLIENT_INTAKE_FORM")
+    out.append("")
+    out.append("## CLIENT_ADMIN_INFO")
+    if admin_entries:
+        for q, a in admin_entries:
+            out.append(f"- {q}")
+            if a:
+                out.append(f"  - {a}")
+    else:
+        out.append("- No non-placeholder admin responses provided.")
+    out.append("")
+    out.append("## CLIENT_MARKETING_INFO")
+    for section in ["TARGETING", "PRODUCTS_SERVICES", "OFFERS", "CASE_STUDIES", "PRICING", "DIFFERENTIATORS", "PAIN_POINTS"]:
+        out.append(f"### {section}")
+        for q, a in marketing_answers.get(section, []):
+            out.append(f"- {q}")
+            if a:
+                out.append(f"  - {a}")
+        out.append("")
+    return "\n".join(out).strip()
 
 
 def extract_drive_folder_id(raw_input: Optional[str]) -> Optional[str]:
@@ -308,6 +574,7 @@ def build_drive_documents(
         doc_source = "intake_form" if "intake" in name.lower() else "client_materials"
         if doc_source == "intake_form":
             intake_count += 1
+            content = _format_intake_form_markdown(content)
 
         view_url = file_meta.get("webViewLink") or f"https://drive.google.com/file/d/{file_id}/view"
         full_text = f"namespace:{namespace} {name}\n\n{content or ''}".strip()

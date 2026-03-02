@@ -323,7 +323,9 @@ class PineconeKBClient:
         """
         from pinecone import CloudProvider, AwsRegion, EmbedModel, IndexEmbed
 
-        idx_name = index_name or self.settings.pinecone_kb_index_name
+        idx_name = (index_name or self.settings.pinecone_kb_index_name or "").strip()
+        if not idx_name:
+            raise ValueError("Pinecone index name is empty (set PINECONE_KB_INDEX or pass index_name).")
         if idx_name in self._index_host_cache:
             return idx_name, self._index_host_cache[idx_name]
 
@@ -348,14 +350,20 @@ class PineconeKBClient:
         if aws_region is None:
             raise ValueError(f"Unsupported AWS region for Pinecone SDK enum: {self.settings.pinecone_region}")
 
-        created = pc.create_index_for_model(
-            name=idx_name,
-            cloud=CloudProvider.AWS,
-            region=aws_region,
-            # NOTE: metric must be a string (None triggers PineconeApiTypeError)
-            embed=IndexEmbed(model=EmbedModel.Multilingual_E5_Large, field_map={"text": text_field}, metric="cosine"),
-        )
-        host = created.host
+        try:
+            created = pc.create_index_for_model(
+                name=idx_name,
+                cloud=CloudProvider.AWS,
+                region=aws_region,
+                # NOTE: metric must be a string (None triggers PineconeApiTypeError)
+                embed=IndexEmbed(model=EmbedModel.Multilingual_E5_Large, field_map={"text": text_field}, metric="cosine"),
+            )
+            host = created.host
+        except Exception:
+            # Common race: index exists but wasn't in our local cache yet (e.g. multiple workers / reloads).
+            # Pinecone returns 409 ALREADY_EXISTS in that case. Treat it as success and describe the index.
+            desc = pc.describe_index(idx_name)
+            host = desc.host
         self._index_host_cache[idx_name] = host
         return idx_name, host
 

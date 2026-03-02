@@ -1,8 +1,7 @@
 ---
 description: Standards for using the Digital Ocean API
-globs: **/*.py, **/*.ts, **/*.tsx
+alwaysApply: false
 ---
-
 # Digital Ocean API Usage
 
 When writing or modifying code that interacts with the Digital Ocean API (including GenAI/Gradient):

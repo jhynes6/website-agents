@@ -4,9 +4,10 @@ httpx==0.27.2
 python-dotenv==1.0.1
 pydantic==2.10.2
 pydantic-settings==2.6.1
-openai==1.55.3
+openai>=2.8.0
 google-api-python-client==2.187.0
 google-auth==2.41.1
 google-auth-httplib2==0.2.1
 google-auth-oauthlib==1.2.3
 pinecone==8.0.0
+crawl4ai

@@ -242,6 +242,33 @@ class SupabaseAgentsDbClient:
         data = resp.json()
         return data if isinstance(data, list) else []
 
+    async def list_documents_for_client(
+        self,
+        *,
+        client_slug: str,
+        limit: int = 10_000,
+    ) -> List[Dict[str, Any]]:
+        """
+        List core document fields for a client (for metadata rollups).
+        """
+        slug = (client_slug or "").strip()
+        if not slug:
+            raise ValueError("client_slug required")
+
+        select_cols = "doc_id,url,document_source,content_type"
+        url = (
+            f"{self.rest_base}/documents"
+            f"?select={quote(select_cols, safe=',')}"
+            f"&client_slug=eq.{quote(slug)}"
+            f"&limit={int(limit)}"
+        )
+        async with httpx.AsyncClient(timeout=60) as client:
+            resp = await client.get(url, headers={**self._headers(), "Prefer": "count=none"})
+        if resp.status_code >= 400:
+            raise RuntimeError(f"Supabase documents select error {resp.status_code}: {resp.text}")
+        data = resp.json()
+        return data if isinstance(data, list) else []
+
     async def delete_client(self, *, client_slug: str) -> Dict[str, Any]:
         """
         Delete a row in public.clients for a client_slug.
