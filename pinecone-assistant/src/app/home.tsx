@@ -209,9 +209,14 @@ export default function Home({ initialShowAssistantFiles, showCitations }: HomeP
                       } max-w-[80%] break-words`}>
                         <ReactMarkdown
                           components={{
-                            a: ({ node, ...props }) => (
-                              <a {...props} className="text-blue-600 dark:text-blue-400 hover:underline">
-                                🔗 {props.children}
+                            a: ({ node: _node, href, children }) => (
+                              <a
+                                href={href}
+                                className="text-blue-600 dark:text-blue-400 hover:underline"
+                                target="_blank"
+                                rel="noopener noreferrer"
+                              >
+                                🔗 {children}
                               </a>
                             ),
                           }}

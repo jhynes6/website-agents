@@ -4,10 +4,10 @@ import { getBackendUrl, buildApiHeaders } from '@/lib/backend'
 // Proxy to Python backend's /api/mintagent/client-metadata/{clientSlug}
 export async function GET(
   _request: NextRequest,
-  { params }: { params: { clientSlug: string } }
+  { params }: { params: Promise<{ clientSlug: string }> }
 ) {
   try {
-    const clientSlug = params.clientSlug
+    const { clientSlug } = await params
     const backendUrl = getBackendUrl(`/api/mintagent/client-metadata/${clientSlug}`)
 
     const response = await fetch(backendUrl, {

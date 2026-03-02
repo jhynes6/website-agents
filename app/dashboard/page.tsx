@@ -4,7 +4,7 @@ import { useState, useEffect, useRef, Suspense } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
-import { Send, Globe, Copy, Check, FileText, Database, ArrowLeft, ExternalLink, BookOpen, ChevronDown, ChevronUp } from 'lucide-react'
+import { Send, Globe, Copy, Check, FileText, Database, ArrowLeft, ExternalLink, BookOpen } from 'lucide-react'
 import Image from 'next/image'
 // Removed useChat - using custom implementation
 import { toast } from "sonner"
@@ -52,6 +52,13 @@ interface SiteData {
   crawlDate?: string
   createdAt?: string
   namespace?: string // Keep optional for compat if needed, but primary is clientSlug
+}
+
+interface ClientDetails {
+  kb_data: Record<string, unknown> | null
+  agent_data: Record<string, unknown> | null
+  metadata_url?: string | null
+  pinecone_namespace_metadata_url?: string | null
 }
 
 // Simple markdown renderer component
@@ -226,9 +233,10 @@ function DashboardContent() {
   const [messages, setMessages] = useState<Array<{ role: 'user' | 'assistant'; content: string; sources?: Source[] }>>([])
   const [input, setInput] = useState('')
   const [isLoading, setIsLoading] = useState(false)
-  const [agentEnsuring, setAgentEnsuring] = useState(false)
+  const [agentEnsuring] = useState(false)
   const [agentReady, setAgentReady] = useState(false)
   const [showApiModal, setShowApiModal] = useState(false)
+  const [isGeneratingBriefs, setIsGeneratingBriefs] = useState(false)
   const [activeTab, setActiveTab] = useState<'curl' | 'javascript' | 'python' | 'openai-js' | 'openai-python'>('curl')
   const scrollAreaRef = useRef<HTMLDivElement>(null)
   const [autoScroll, setAutoScroll] = useState(true)
@@ -237,11 +245,7 @@ function DashboardContent() {
     by_content_type: Record<string, number>
     by_document_source: Record<string, number>
   } | null>(null)
-  const [clientDetails, setClientDetails] = useState<{
-    kb_data: any
-    agent_data: any
-    metadata_url?: string | null
-  } | null>(null)
+  const [clientDetails, setClientDetails] = useState<ClientDetails | null>(null)
   const [showKbDetailsModal, setShowKbDetailsModal] = useState(false)
   const [showAgentDetailsModal, setShowAgentDetailsModal] = useState(false)
 
@@ -393,7 +397,6 @@ function DashboardContent() {
   useEffect(() => {
     // Get clientSlug from URL params (fallback to namespace for compat)
     const clientSlugParam = searchParams.get('clientSlug') || searchParams.get('namespace')
-    const agentTypeParam = searchParams.get('agentType') || 'kb_chat'
     console.log(`[Dashboard] Init with clientSlug: ${clientSlugParam}`)
     
     if (clientSlugParam) {
@@ -556,6 +559,31 @@ function DashboardContent() {
     navigator.clipboard.writeText(text)
     setCopiedItem(itemId)
     setTimeout(() => setCopiedItem(null), 2000)
+  }
+
+  const handleGenerateBriefFiles = async () => {
+    if (!siteData?.clientSlug || isGeneratingBriefs) return
+    setIsGeneratingBriefs(true)
+    try {
+      const response = await fetch(getBackendUrl('/api/mintagent/generate-brief-files'), {
+        method: 'POST',
+        headers: buildApiHeaders(),
+        body: JSON.stringify({ clientSlug: siteData.clientSlug }),
+      })
+      const data = await response.json()
+      if (!response.ok) {
+        throw new Error(data?.detail || data?.error || 'Failed to generate brief files')
+      }
+      toast.success('Brief files generated', {
+        description: 'Saved to client_brief/case_studies_all.json, intake_form_summary.json, and client_materials_summary.json',
+      })
+      console.log('[Dashboard] Brief generation result:', data)
+    } catch (error) {
+      toast.error('Failed to generate brief files')
+      console.error('[Dashboard] Brief generation failed:', error)
+    } finally {
+      setIsGeneratingBriefs(false)
+    }
   }
 
 
@@ -740,13 +768,23 @@ print(data['choices'][0]['message']['content'])`
               </div>
             </div>
             
-            <Button
-              onClick={() => setShowDeleteModal(true)}
-              variant="code"
-              size="sm"
-            >
-              Delete
-            </Button>
+            <div className="flex items-center gap-2">
+              <Button
+                onClick={handleGenerateBriefFiles}
+                variant="outline"
+                size="sm"
+                disabled={isGeneratingBriefs}
+              >
+                {isGeneratingBriefs ? 'Generating…' : 'Generate Brief Files'}
+              </Button>
+              <Button
+                onClick={() => setShowDeleteModal(true)}
+                variant="code"
+                size="sm"
+              >
+                Delete
+              </Button>
+            </div>
           </div>
         </div>
       </div>

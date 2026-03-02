@@ -32,9 +32,27 @@ function getAIModel() {
 }
 
 // Rate limiter factory
-function createRateLimiter(identifier: string, requests = 50, window = '1 d') {
+type RateLimitResult = {
+  success: boolean
+  limit: number
+  remaining: number
+}
+
+type RateLimiter = {
+  limit: (identifier: string) => Promise<RateLimitResult>
+}
+
+function createRateLimiter(_identifier: string, requests = 50, _window = '1 d') {
   // Upstash rate limiting removed. Keep function for backward compatibility.
-    return null
+  return {
+    async limit(_id: string): Promise<RateLimitResult> {
+      return {
+        success: true,
+        limit: requests,
+        remaining: requests,
+      }
+    },
+  } satisfies RateLimiter
 }
 
 const config = {

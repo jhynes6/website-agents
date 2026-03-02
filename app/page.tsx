@@ -2,7 +2,6 @@
 
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import Image from "next/image";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -34,6 +33,39 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 
+type HomepageMetadata = {
+  sourceURL?: string
+  title?: string
+  ogTitle?: string
+  description?: string
+  ogDescription?: string
+  favicon?: string
+  ogImage?: string
+  'og:image'?: string
+  'twitter:image'?: string
+  indexName?: string
+}
+
+type CrawlItem = {
+  url?: string
+  metadata?: HomepageMetadata
+}
+
+type CrawlResponse = {
+  success?: boolean
+  namespace: string
+  index?: string
+  crawlId?: string
+  details?: {
+    url?: string
+    pagesCrawled?: number
+    pagesScraped?: number
+  }
+  data?: CrawlItem[]
+  homepage?: HomepageMetadata
+  error?: string
+}
+
 export default function MintagentPage() {
   const router = useRouter();
   const searchParams = new URLSearchParams(typeof window !== 'undefined' ? window.location.search : '');
@@ -60,10 +92,13 @@ export default function MintagentPage() {
   const [firecrawlApiKey, setFirecrawlApiKey] = useState<string>('');
   const [isValidatingApiKey, setIsValidatingApiKey] = useState(false);
   const [hasFirecrawlKey, setHasFirecrawlKey] = useState(false);
-  const [mapLinks, setMapLinks] = useState<Array<{ url: string; title?: string; description?: string }>>([]);
+  const [mapLinks] = useState<Array<{ url: string; title?: string; description?: string }>>([]);
   const [selectedLinks, setSelectedLinks] = useState<Record<string, boolean>>({});
   const [useMapFlow, setUseMapFlow] = useState(false);
+  const [sitemapUrl, setSitemapUrl] = useState('');
   const [isScrapingSelected, setIsScrapingSelected] = useState(false);
+  const normalizeSlug = (value: string) =>
+    (value || "").trim().toLowerCase().replace(/\s+/g, "-").replace(/_+/g, "-");
   const allMappedSelected =
     mapLinks.length > 0 && mapLinks.every((link) => selectedLinks[link.url]);
 
@@ -96,7 +131,7 @@ export default function MintagentPage() {
     e.preventDefault();
     console.log('[Homepage] handleSubmit called', { url, loading, hasFirecrawlKey });
 
-    const slug = indexName.trim();
+    const slug = normalizeSlug(indexName);
     if (!slug) {
       toast.error('Client slug is required');
       return;
@@ -141,33 +176,6 @@ export default function MintagentPage() {
       pagesScraped: 0
     });
     
-    interface CrawlResponse {
-      success: boolean
-      namespace: string
-    index?: string
-      crawlId?: string
-      details?: {
-        url?: string
-        pagesCrawled?: number
-        pagesScraped?: number
-      }
-      data: Array<{
-        url?: string
-        metadata?: {
-          sourceURL?: string
-          title?: string
-          ogTitle?: string
-          description?: string
-          ogDescription?: string
-          favicon?: string
-          ogImage?: string
-          'og:image'?: string
-          'twitter:image'?: string
-          indexName?: string
-        }
-      }>
-    }
-    
     let data: CrawlResponse | null = null;
     
     try {
@@ -184,11 +192,32 @@ export default function MintagentPage() {
           pagesFound: 0,
           pagesScraped: 0
         });
+        let normalizedSitemapUrl: string | undefined = undefined;
+        if (sitemapUrl.trim()) {
+          normalizedSitemapUrl = sitemapUrl.trim();
+          if (!normalizedSitemapUrl.startsWith('http://') && !normalizedSitemapUrl.startsWith('https://')) {
+            normalizedSitemapUrl = 'https://' + normalizedSitemapUrl;
+          }
+          try {
+            new URL(normalizedSitemapUrl);
+          } catch {
+            toast.error('Please enter a valid sitemap URL');
+            setLoading(false);
+            setCrawlProgress(null);
+            return;
+          }
+        }
         
         const mapResp = await fetch(getBackendUrl('/api/mintagent/map'), {
           method: 'POST',
           headers: buildApiHeaders(),
-          body: JSON.stringify({ url: normalizedUrl, limit: 5000, index: slug || undefined, clientSlug: slug })
+          body: JSON.stringify({
+            url: normalizedUrl,
+            limit: 5000,
+            sitemapUrl: normalizedSitemapUrl,
+            index: slug || undefined,
+            clientSlug: slug
+          })
         });
         const mapData = await mapResp.json();
         if (!mapResp.ok || !mapData?.success) {
@@ -204,7 +233,12 @@ export default function MintagentPage() {
       }
 
         // Auto-scrape all discovered URLs (up to the page limit)
-        let urlsToScrape = links.slice(0, pageLimit).map((l: any) => l.url || l);
+        let urlsToScrape = links
+          .slice(0, pageLimit)
+          .map((link: { url?: string } | string) =>
+            typeof link === 'string' ? link : (link.url || '')
+          )
+          .filter((u: string): boolean => Boolean(u));
         // Ensure homepage is prioritized so we can extract metadata early.
         try {
           const normHome = normalizedUrl.replace(/\/$/, '')
@@ -229,10 +263,13 @@ export default function MintagentPage() {
 
         // Scrape in small batches so the progress UI can update as work completes.
         const batchSize = 25
+        const totalBatches = Math.max(1, Math.ceil(urlsToScrape.length / batchSize))
         let totalScraped = 0
-        let lastResult: any = null
+        let lastResult: CrawlResponse | null = null
         for (let i = 0; i < urlsToScrape.length; i += batchSize) {
           const batch = urlsToScrape.slice(i, i + batchSize)
+          const batchIndex = Math.floor(i / batchSize) + 1
+          const batchDriveFolder = i === 0 ? (driveFolder || undefined) : undefined
           setCrawlProgress({
             status: `Scraping ${urlsToScrape.length} discovered pages...`,
             pagesFound: urlsToScrape.length,
@@ -242,12 +279,21 @@ export default function MintagentPage() {
           const scrapeResp = await fetch(getBackendUrl('/api/mintagent/scrape'), {
             method: 'POST',
             headers: buildApiHeaders(),
-            body: JSON.stringify({ urls: batch, index: slug || undefined, clientSlug: slug })
+            body: JSON.stringify({
+              urls: batch,
+              index: slug || undefined,
+              clientSlug: slug,
+              websiteUrl: normalizedUrl,
+              clientName: clientName.trim() || undefined,
+              clientDriveFolder: batchDriveFolder,
+              batchIndex,
+              totalBatches,
+            })
           })
 
-          const batchData = await scrapeResp.json()
+          const batchData: CrawlResponse = await scrapeResp.json()
           if (!scrapeResp.ok || !batchData?.success) {
-            const errorMsg = (batchData as any)?.error || 'Failed to scrape URLs'
+            const errorMsg = batchData?.error || 'Failed to scrape URLs'
             throw new Error(errorMsg)
           }
 
@@ -263,6 +309,9 @@ export default function MintagentPage() {
         }
 
         data = lastResult
+        if (!data) {
+          throw new Error('No scrape result returned')
+        }
         
         setCrawlProgress({
           status: 'Scraping complete!',
@@ -282,7 +331,7 @@ export default function MintagentPage() {
           'twitter:image'?: string
         } = {};
         if (data.data && data.data.length > 0) {
-          const homepage = data.data.find((page: any) => {
+          const homepage = data.data.find((page) => {
             const pageUrl = page.metadata?.sourceURL || page.url || '';
             return pageUrl === normalizedUrl || pageUrl === normalizedUrl + '/' || pageUrl === normalizedUrl.replace(/\/$/, '');
           }) || data.data[0];
@@ -319,7 +368,7 @@ export default function MintagentPage() {
             favicon: homepageMetadata.favicon,
             ogImage: homepageMetadata.ogImage || homepageMetadata['og:image'] || homepageMetadata['twitter:image'],
             indexName: data.index,
-          } as any
+          }
         });
         
         setTimeout(() => {
@@ -442,7 +491,7 @@ export default function MintagentPage() {
             favicon: homepageMetadata.favicon,
             ogImage: homepageMetadata.ogImage || homepageMetadata['og:image'] || homepageMetadata['twitter:image'],
             indexName: data.index,
-          } as any
+          }
         });
         
         setTimeout(() => {
@@ -477,12 +526,20 @@ export default function MintagentPage() {
     }
     setIsScrapingSelected(true);
     try {
+      const slug = normalizeSlug(indexName);
       const resp = await fetch(getBackendUrl('/api/mintagent/scrape'), {
         method: 'POST',
         headers: buildApiHeaders(),
-        body: JSON.stringify({ urls: chosen, index: indexName || undefined }),
+        body: JSON.stringify({
+          urls: chosen,
+          index: slug || undefined,
+          clientSlug: slug || undefined,
+          websiteUrl: url || undefined,
+          clientName: clientName.trim() || undefined,
+          clientDriveFolder: clientDriveFolder.trim() || undefined,
+        }),
       });
-      let result: any = null;
+      let result: CrawlResponse | null = null;
       try {
         result = await resp.json();
       } catch {
@@ -518,7 +575,7 @@ export default function MintagentPage() {
         namespace: result.namespace,
         pagesCrawled: result.details?.pagesScraped || 0,
         createdAt: new Date().toISOString(),
-        metadata: siteInfo.metadata as any,
+        metadata: siteInfo.metadata,
       });
 
       toast.success(`Scraped ${result.details?.pagesScraped || chosen.length} pages`);
@@ -778,6 +835,26 @@ export default function MintagentPage() {
                   <span>Use Map + Scrape for comprehensive coverage (slower but finds all pages)</span>
                 </label>
               </div>
+              {useMapFlow && (
+                <div className="flex flex-col sm:flex-row sm:items-center gap-3">
+                  <div className="flex-1">
+                    <label className="block text-sm font-medium text-[#0E3D68] dark:text-gray-300 mb-1">
+                      Sitemap URL (optional)
+                    </label>
+                    <Input
+                      type="text"
+                      value={sitemapUrl}
+                      onChange={(e) => setSitemapUrl(e.target.value)}
+                      placeholder="https://example.com/sitemap.xml"
+                      disabled={loading}
+                      className="border-[#0E3D68]/20 focus:border-[#00B388] focus:ring-[#00B388]/20"
+                    />
+                    <p className="text-xs text-muted-foreground mt-1">
+                      Leave blank to auto-discover sitemap from the root domain. Useful when sites have language-specific sitemap files.
+                    </p>
+                  </div>
+                </div>
+              )}
               <div className="flex items-center gap-3 text-sm text-muted-foreground">
                 <label className="flex items-center gap-2">
                   <input

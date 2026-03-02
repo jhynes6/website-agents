@@ -9,21 +9,7 @@ import { toast } from "sonner"
 import { useStorage } from "@/hooks/useStorage"
 import { useEffect, useState } from 'react'
 import { getBackendUrl } from "@/lib/backend"
-
-interface IndexedSite {
-  url: string
-  clientSlug?: string
-  namespace: string
-  pagesCrawled: number
-  createdAt: string
-  metadata?: {
-    title?: string
-    description?: string
-    favicon?: string
-    ogImage?: string
-    indexName?: string
-  } & Record<string, unknown>
-}
+import type { IndexMetadata } from "@/lib/storage"
 
 interface ResourceLinks {
   client_data: string | null
@@ -79,7 +65,7 @@ export default function IndexesPage() {
     fetchWarnings()
   }, [])
 
-  const handleSelectIndex = (index: IndexedSite) => {
+  const handleSelectIndex = (index: IndexMetadata) => {
     const slug = index.clientSlug || index.namespace
     // Store the site info in session storage for the dashboard
     const siteInfo = {
@@ -98,7 +84,7 @@ export default function IndexesPage() {
     router.push(`/dashboard?clientSlug=${slug}`)
   }
 
-  const handleDeleteIndex = async (index: IndexedSite, e: React.MouseEvent) => {
+  const handleDeleteIndex = async (index: IndexMetadata, e: React.MouseEvent) => {
     e.stopPropagation()
     const slug = index.clientSlug || index.namespace
     
@@ -237,11 +223,11 @@ export default function IndexesPage() {
       ) : (
         <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-4">
           {indexes.map((index) => {
-            const slug = (index as any).clientSlug || (index as any).namespace
+            const slug = index.clientSlug || index.namespace
             return (
               <div
                 key={slug}
-                onClick={() => handleSelectIndex(index as any)}
+                onClick={() => handleSelectIndex(index)}
                 className="bg-white rounded-lg border border-gray-200 hover:shadow-md transition-shadow cursor-pointer group p-4"
               >
               <div className="flex items-start justify-between gap-3">
@@ -281,7 +267,7 @@ export default function IndexesPage() {
                   <Button
                     variant="ghost"
                     size="sm"
-                    onClick={(e) => handleDeleteIndex(index as any, e)}
+                    onClick={(e) => handleDeleteIndex(index, e)}
                     className="opacity-0 group-hover:opacity-100 transition-opacity text-red-600 hover:text-red-700 hover:bg-red-50"
                   >
                     <Trash2 className="w-4 h-4" />
