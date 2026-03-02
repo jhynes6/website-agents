@@ -59,6 +59,24 @@ DRIVE_VALID_CATEGORIES = [
 router = APIRouter()
 crawl_client = get_crawl_client()
 
+
+def _fallback_favicon_from_url(raw_url: str) -> Optional[str]:
+    """
+    Build a stable favicon URL for sites where crawler metadata has no favicon.
+    """
+    u = str(raw_url or "").strip()
+    if not u:
+        return None
+    try:
+        if "://" not in u:
+            u = f"https://{u}"
+        host = (urlparse(u).hostname or "").strip()
+        if not host:
+            return None
+        return f"https://www.google.com/s2/favicons?domain={quote(host, safe='')}&sz=128"
+    except Exception:
+        return None
+
 # -----------------------------------------------------------------------------
 # Map + Scrape endpoints (used by homepage "Map + Scrape" flow)
 # -----------------------------------------------------------------------------
@@ -598,6 +616,7 @@ async def scrape_urls(payload: Dict[str, Any]) -> Dict[str, Any]:
                             hm.get("favicon")
                             or hm.get("ogImage")
                             or existing_meta_block.get("favicon")
+                            or _fallback_favicon_from_url(str(hm.get("url") or ""))
                         )
 
                         website_url_val = (
@@ -605,6 +624,8 @@ async def scrape_urls(payload: Dict[str, Any]) -> Dict[str, Any]:
                             or str(existing_storage_meta.get("website_url") or "").strip()
                             or str((final_documents[0].get("metadata") or {}).get("url") or "")
                         )
+                        if not homepage_favicon:
+                            homepage_favicon = _fallback_favicon_from_url(website_url_val)
                         drive_url_val = drive_folder_input or str(existing_storage_meta.get("drive_url") or "")
                         client_name_val = client_name_input or existing_storage_meta.get("client_name")
 

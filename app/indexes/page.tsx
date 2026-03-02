@@ -27,6 +27,23 @@ interface SummaryWarnings {
   generated_at: string
 }
 
+function getIndexLogoUrl(index: IndexMetadata): string | null {
+  const explicit = index.metadata?.favicon
+  if (typeof explicit === 'string' && explicit.trim()) {
+    return explicit
+  }
+  const rawUrl = (index.url || '').trim()
+  if (!rawUrl) return null
+  try {
+    const host = new URL(rawUrl).hostname
+    if (!host) return null
+    // Reliable favicon fallback for sites that don't provide favicon in crawl metadata.
+    return `https://www.google.com/s2/favicons?domain=${encodeURIComponent(host)}&sz=128`
+  } catch {
+    return null
+  }
+}
+
 export default function IndexesPage() {
   const router = useRouter()
   const { indexes, loading, deleteIndex, isUsingRedis } = useStorage()
@@ -224,6 +241,7 @@ export default function IndexesPage() {
         <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-4">
           {indexes.map((index) => {
             const slug = index.clientSlug || index.namespace
+            const logoUrl = getIndexLogoUrl(index)
             return (
               <div
                 key={slug}
@@ -232,10 +250,10 @@ export default function IndexesPage() {
               >
               <div className="flex items-start justify-between gap-3">
                 <div className="flex items-start gap-3 min-w-0">
-                  {index.metadata?.favicon ? (
+                  {logoUrl ? (
                     <div className="w-10 h-10 rounded-lg bg-gray-50 border border-gray-200 overflow-hidden flex-shrink-0">
                       <Image
-                        src={index.metadata.favicon}
+                        src={logoUrl}
                         alt="favicon"
                         width={40}
                         height={40}

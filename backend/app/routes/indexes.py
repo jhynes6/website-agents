@@ -576,6 +576,74 @@ async def list_indexes(
     return {"indexes": results}
 
 
+@router.post("/indexes")
+async def upsert_index(payload: Dict[str, Any]) -> Dict[str, Any]:
+    """
+    Upsert a client index card into supabase_storage_metadata.json.
+    This makes index visibility shared across environments (not browser-local only).
+    """
+    slug = _normalize_client_slug(
+        str(payload.get("clientSlug") or payload.get("client_slug") or payload.get("namespace") or "")
+    )
+    if not slug:
+        raise HTTPException(status_code=400, detail="clientSlug or namespace is required")
+
+    storage = _supabase_storage_client()
+
+    existing: Dict[str, Any] = {}
+    try:
+        loaded = await asyncio.to_thread(storage.download_json, INDEXES_BUCKET, f"{slug}/supabase_storage_metadata.json")
+        if isinstance(loaded, dict):
+            existing = loaded
+    except Exception:
+        existing = {}
+
+    incoming_meta = payload.get("metadata") if isinstance(payload.get("metadata"), dict) else {}
+    existing_meta = existing.get("metadata") if isinstance(existing.get("metadata"), dict) else {}
+    merged_meta = {**existing_meta, **incoming_meta}
+    if not merged_meta.get("title"):
+        merged_meta["title"] = str(payload.get("clientName") or payload.get("client_name") or slug)
+
+    website_docs = existing.get("website_docs") if isinstance(existing.get("website_docs"), dict) else {"total": int(payload.get("pagesCrawled") or 0), "by_content_type": {}}
+    drive_docs = existing.get("drive_docs") if isinstance(existing.get("drive_docs"), dict) else {"total": 0, "by_content_type": {}}
+    intake_form_docs = int(existing.get("intake_form_docs") or 0)
+
+    merged: Dict[str, Any] = {
+        "website_url": str(payload.get("url") or existing.get("website_url") or "").strip(),
+        "drive_url": str(payload.get("drive_url") or existing.get("drive_url") or "").strip() or None,
+        "client_slug": slug,
+        "client_name": str(payload.get("clientName") or payload.get("client_name") or existing.get("client_name") or "").strip() or None,
+        "website_docs": website_docs,
+        "intake_form_docs": intake_form_docs,
+        "drive_docs": drive_docs,
+        "createdAt": str(existing.get("createdAt") or datetime.now(timezone.utc).isoformat()),
+        "metadata": merged_meta,
+        "chunker": str(existing.get("chunker") or "char:1200:200"),
+        "source": "supabase_storage",
+    }
+
+    await asyncio.to_thread(
+        storage.upload_json,
+        INDEXES_BUCKET,
+        f"{slug}/supabase_storage_metadata.json",
+        merged,
+        True,
+    )
+
+    # Invalidate cache and refresh summary best-effort.
+    _indexes_cache["ts"] = 0.0
+    _indexes_cache["payload"] = None
+    try:
+        slugs = _list_client_slugs_from_storage()
+        results = await _build_indexes_from_storage(storage, slugs)
+        if results:
+            await _write_indexes_summary(storage, results)
+    except Exception:
+        pass
+
+    return {"success": True, "index": _index_payload_from_metadata(client_slug=slug, meta=merged)}
+
+
 @router.delete("/indexes")
 async def delete_index(
     namespace: Optional[str] = None,
