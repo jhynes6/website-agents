@@ -3,7 +3,7 @@ import { getBackendUrl, buildApiHeaders } from '@/lib/backend'
 
 // Proxy to Python backend's /api/mintagent/query
 export async function POST(request: NextRequest) {
-  try:
+  try {
     const backendUrl = getBackendUrl('/api/mintagent/query')
     const body = await request.json()
 
