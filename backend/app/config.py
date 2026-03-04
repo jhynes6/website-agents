@@ -33,6 +33,10 @@ class Settings(BaseSettings):
     # Timeout for crawl jobs (ms). Default: 90s. Max allowed: 10m.
     firecrawl_poll_timeout_ms: int = Field(600_000, ge=5_000, le=600_000, alias="FIRECRAWL_POLL_TIMEOUT_MS")
 
+    # Bright Data
+    brightdata_api_key: Optional[str] = Field(None, alias="BRIGHTDATA_API_KEY")
+    brightdata_zone: str = Field("web_unlocker1", alias="BRIGHTDATA_ZONE")
+
     # Upstash and DigitalOcean have been removed from this project.
 
     # AI providers

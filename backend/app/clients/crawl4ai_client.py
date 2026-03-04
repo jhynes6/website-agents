@@ -1,10 +1,11 @@
 from __future__ import annotations
 
 import asyncio
+import contextlib
 import html as html_lib
 import re
 from collections import deque
-from typing import Any, Deque, Dict, List, Optional, Set, Tuple
+from typing import Any, AsyncIterator, Deque, Dict, List, Optional, Set, Tuple
 from urllib.parse import quote, urldefrag, urljoin, urlparse, urlunparse
 from xml.etree import ElementTree as ET
 
@@ -84,6 +85,32 @@ class Crawl4AIClient:
             process_iframes=False,
             delay_before_return_html=1.5,
         )
+
+    @contextlib.asynccontextmanager
+    async def _open_crawler(self) -> AsyncIterator[Any]:
+        """Open an ``AsyncWebCrawler`` with a clear error when the browser cannot start.
+
+        Playwright's Chromium requires system libraries (libnspr4, libnss3, …)
+        that may be absent on minimal container images (e.g. Heroku).  When the
+        browser process exits immediately the Playwright driver raises a
+        ``TargetClosedError`` whose message is not actionable.  This wrapper
+        catches that and re-raises a ``RuntimeError`` with remediation steps.
+        """
+        try:
+            async with AsyncWebCrawler(config=self._browser_config()) as crawler:
+                yield crawler
+        except Exception as exc:
+            msg = str(exc)
+            if "cannot open shared object file" in msg or "TargetClosedError" in type(exc).__name__:
+                log("crawl4ai.browser_launch_failed", {"error": msg})
+                raise RuntimeError(
+                    "Crawl4AI browser failed to launch – likely missing system "
+                    "libraries (e.g. libnspr4, libnss3).  On Heroku, add the "
+                    "heroku-community/apt buildpack and an Aptfile listing the "
+                    "required packages.  Run 'playwright install --with-deps "
+                    "chromium' to install them locally.  Original error: " + msg
+                ) from exc
+            raise
 
     @staticmethod
     def _root_domain_url(url: str) -> str:
@@ -412,7 +439,7 @@ class Crawl4AIClient:
         if not normalized:
             raise ValueError("A valid http(s) URL is required")
 
-        async with AsyncWebCrawler(config=self._browser_config()) as crawler:
+        async with self._open_crawler() as crawler:
             result = await crawler.arun(url=normalized, config=self._run_config())
             success = bool(getattr(result, "success", False))
             if not success:
@@ -551,7 +578,7 @@ class Crawl4AIClient:
         pages: List[Dict[str, Any]] = []
         errors: List[Dict[str, str]] = []
 
-        async with AsyncWebCrawler(config=self._browser_config()) as crawler:
+        async with self._open_crawler() as crawler:
             while queue and len(pages) < crawl_limit:
                 current_url, depth = queue.popleft()
                 if current_url in visited:
