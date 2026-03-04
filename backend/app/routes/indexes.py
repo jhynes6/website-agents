@@ -197,10 +197,10 @@ async def _write_indexes_summary(storage, indexes: List[Dict[str, Any]]) -> None
     try:
         await asyncio.to_thread(
             storage.upload_json,
-            INDEXES_BUCKET,
-            INDEXES_SUMMARY_KEY,
-            payload,
-            True,  # upsert
+            bucket=INDEXES_BUCKET,
+            path=INDEXES_SUMMARY_KEY,
+            payload=payload,
+            upsert=True,
         )
     except Exception:
         return
@@ -624,10 +624,10 @@ async def upsert_index(payload: Dict[str, Any]) -> Dict[str, Any]:
 
     await asyncio.to_thread(
         storage.upload_json,
-        INDEXES_BUCKET,
-        f"{slug}/supabase_storage_metadata.json",
-        merged,
-        True,
+        bucket=INDEXES_BUCKET,
+        path=f"{slug}/supabase_storage_metadata.json",
+        payload=merged,
+        upsert=True,
     )
 
     # Invalidate cache and refresh summary best-effort.
