@@ -41,6 +41,16 @@ class Crawl4AIClient:
             verbose=bool(self.settings.crawl4ai_verbose),
             viewport_width=1280,
             viewport_height=720,
+            # Required for containerized / root-user environments (DO App Platform).
+            # --no-sandbox / --disable-setuid-sandbox: Chrome sandbox is incompatible
+            #   with running as root or inside unprivileged containers.
+            # --disable-dev-shm-usage: Docker caps /dev/shm at 64 MB; Chrome uses it
+            #   for IPC shared memory and will OOM-crash without this flag.
+            extra_args=[
+                "--no-sandbox",
+                "--disable-setuid-sandbox",
+                "--disable-dev-shm-usage",
+            ],
         )
 
     def _run_config(self) -> "CrawlerRunConfig":
