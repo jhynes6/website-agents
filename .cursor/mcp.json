@@ -1,0 +1,219 @@
+{
+  "mcpServers": {
+    "supabase_custom_messaging_project": {
+      "command": "npx",
+      "args": [
+        "-y",
+        "@supabase/mcp-server-supabase@latest",
+        "--project-ref=tqmepfhyocxzjmgermwb"
+      ],
+      "env": {
+        "SUPABASE_ACCESS_TOKEN": "${SUPABASE_CUSTOM_MESSAGING_ACCESS_TOKEN}"
+      },
+      "disabled": false,
+      "autoApprove": []
+    },
+    "supabase_agents_project": {
+      "command": "npx",
+      "args": [
+        "-y",
+        "@supabase/mcp-server-supabase@latest",
+        "--project-ref=tauelcoqhukoumpisgbb"
+      ],
+      "env": {
+        "SUPABASE_ACCESS_TOKEN": "${SUPABASE_AGENTS_ACCESS_TOKEN}"
+      },
+      "disabled": false,
+      "autoApprove": []
+    },
+    "supabase_mintleads_project": {
+      "command": "npx",
+      "args": [
+        "-y",
+        "@supabase/mcp-server-supabase@latest",
+        "--project-ref=hzebtjyomdecodjpogpg"
+      ],
+      "env": {
+        "SUPABASE_ACCESS_TOKEN": "${SUPABASE_MINTLEADS_ACCESS_TOKEN}"
+      },
+      "disabled": false,
+      "autoApprove": []
+    },
+    "supabase_vector_db_project": {
+      "command": "npx",
+      "args": [
+        "-y",
+        "@supabase/mcp-server-supabase@latest",
+        "--project-ref=zepjgxxwrnapxldywsbh"
+      ],
+      "env": {
+        "SUPABASE_ACCESS_TOKEN": "${SUPABASE_VECTOR_DB_ACCESS_TOKEN}"
+      },
+      "disabled": false,
+      "autoApprove": []
+    },
+    "supabase_email_bison_project": {
+      "command": "npx",
+      "args": [
+        "-y",
+        "@supabase/mcp-server-supabase@latest",
+        "--project-ref=stuszuailpwobzumksqd"
+      ],
+      "env": {
+        "SUPABASE_ACCESS_TOKEN": "${SUPABASE_EMAIL_BISON_ACCESS_TOKEN}"
+      },
+      "disabled": false,
+      "autoApprove": []
+    },
+    "supabase_instantly_project": {
+      "command": "npx",
+      "args": [
+        "-y",
+        "@supabase/mcp-server-supabase@latest",
+        "--project-ref=chlfoxvdrwukfgctovns"
+      ],
+      "env": {
+        "SUPABASE_ACCESS_TOKEN": "${SUPABASE_INSTANTLY_ACCESS_TOKEN}"
+      },
+      "disabled": false,
+      "autoApprove": []
+    },
+    "supabase_gmb_project": {
+      "command": "npx",
+      "args": [
+        "-y",
+        "@supabase/mcp-server-supabase@latest",
+        "--project-ref=atjgrkljnbkwkumnuslt"
+      ],
+      "env": {
+        "SUPABASE_ACCESS_TOKEN": "${SUPABASE_GMB_ACCESS_TOKEN}"
+      },
+      "disabled": false,
+      "autoApprove": []
+    },
+    "github": {
+      "url": "https://api.githubcopilot.com/mcp/",
+      "headers": {
+        "Authorization": "${GITHUB_MCP_AUTHORIZATION}"
+      }
+    },
+    "digitalocean": {
+      "command": "npx",
+      "args": [
+        "@digitalocean/mcp"
+      ],
+      "env": {
+        "DIGITALOCEAN_API_TOKEN": "${DIGITALOCEAN_API_TOKEN}"
+      }
+    },
+    "brightdata": {
+      "command": "node",
+      "args": [
+        "/Users/hynes/.nvm/versions/node/v24.11.1/lib/node_modules/@brightdata/mcp/server.js"
+      ],
+      "env": {
+        "API_TOKEN": "${BRIGHTDATA_API_TOKEN}",
+        "PRO_MODE": "true"
+      },
+      "disabled": false,
+      "autoApprove": []
+    },
+    "godaddy": {
+      "url": "https://api.godaddy.com/v1/domains/mcp",
+      "transport": "streamable-http"
+    },
+    "firecrawl-mcp": {
+      "command": "npx",
+      "args": [
+        "-y",
+        "firecrawl-mcp"
+      ],
+      "env": {
+        "FIRECRAWL_API_KEY": "${FIRECRAWL_API_KEY}"
+      }
+    },
+    "upstash": {
+      "command": "npx",
+      "args": [
+        "-y",
+        "@upstash/mcp-server",
+        "run",
+        "${UPSTASH_EMAIL}",
+        "${UPSTASH_TOKEN}"
+      ]
+    },
+    "context7": {
+      "url": "https://mcp.context7.com/mcp",
+      "headers": {
+        "CONTEXT7_API_KEY": "${CONTEXT7_API_KEY}"
+      }
+    },
+    "pinecone": {
+      "command": "npx",
+      "args": [
+        "-y",
+        "@pinecone-database/mcp"
+      ],
+      "env": {
+        "PINECONE_API_KEY": "${PINECONE_API_KEY}"
+      }
+    },
+    "monday-mcp": {
+      "url": "https://mcp.monday.com/mcp"
+    },
+    "Netlify": {
+      "command": "npx -y @netlify/mcp",
+      "env": {},
+      "args": []
+    },
+    "coresignal_data_api": {
+      "command": "npx",
+      "args": [
+        "mcp-remote",
+        "https://mcp.coresignal.com/mcp",
+        "--header",
+        "apikey:${AUTH_HEADER}"
+      ],
+      "env": {
+        "AUTH_HEADER": "${CORESIGNAL_AUTH_HEADER}"
+      }
+    },
+    "snowflake_community": {
+      "command": "uvx",
+      "args": [
+        "snowflake-labs-mcp",
+        "--service-config-file",
+        "/Users/hynes/.mcp/tools_config.yaml"
+      ],
+      "env": {
+        "SNOWFLAKE_ACCOUNT": "LPGGVSR-BTC87024",
+        "SNOWFLAKE_USER": "JHYNES6",
+        "SNOWFLAKE_PASSWORD": "${SNOWFLAKE_PROGRAMMATIC_ACCESS_TOKEN}",
+        "SNOWFLAKE_ROLE": "ACCOUNTADMIN",
+        "SNOWFLAKE_WAREHOUSE": "GTM_FLOWS"
+      },
+      "disabled": false,
+      "autoApprove": []
+    },
+    "snowflake_managed": {
+      "url": "https://LPGGVSR-BTC87024.snowflakecomputing.com/api/v2/databases/GTM_SAMPLE_DATA/schemas/GTM_HUBSPOT/mcp-servers/GTM_MCP_SERVER",
+      "headers": {
+        "Authorization": "Bearer ${SNOWFLAKE_PROGRAMMATIC_ACCESS_TOKEN}",
+        "X-Snowflake-Authorization-Token-Type": "PROGRAMMATIC_ACCESS_TOKEN"
+      },
+      "disabled": false,
+      "autoApprove": []
+    },
+    "brightdata-mcp": {
+      "command": "npx",
+      "args": [
+        "-y",
+        "@brightdata/mcp"
+      ],
+      "env": {
+        "API_TOKEN": "${BRIGHTDATA_API_TOKEN}",
+        "PRO_MODE": "true"
+      }
+    }
+  }
+}
