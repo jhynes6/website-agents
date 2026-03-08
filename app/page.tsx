@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useStorage } from "@/hooks/useStorage";
 import { buildApiHeaders, getBackendUrl } from "@/lib/backend";
+import type { IndexMetadata } from "@/lib/storage";
 import { clientConfig as config } from "@/mintagent.config";
 import { 
   Globe, 
@@ -97,6 +98,31 @@ export default function MintagentPage() {
   const [useMapFlow, setUseMapFlow] = useState(false);
   const [sitemapUrl, setSitemapUrl] = useState('');
   const [isScrapingSelected, setIsScrapingSelected] = useState(false);
+
+  const recoverCreatedIndex = async (slug: string): Promise<IndexMetadata | null> => {
+    for (let attempt = 0; attempt < 6; attempt += 1) {
+      try {
+        const response = await fetch(
+          `/api/indexes?clientSlug=${encodeURIComponent(slug)}&refresh=true`,
+          { cache: 'no-store' }
+        );
+        if (response.ok) {
+          const payload = await response.json();
+          if (payload?.index && typeof payload.index === 'object') {
+            return payload.index as IndexMetadata;
+          }
+        }
+      } catch {
+        // Best-effort recovery only.
+      }
+
+      if (attempt < 5) {
+        await new Promise((resolve) => setTimeout(resolve, 1500));
+      }
+    }
+
+    return null;
+  };
   const normalizeSlug = (value: string) =>
     (value || "").trim().toLowerCase().replace(/\s+/g, "-").replace(/_+/g, "-");
   const allMappedSelected =
@@ -406,7 +432,7 @@ export default function MintagentPage() {
         });
       }, 300);
       
-      const response = await fetch(getBackendUrl('/api/mintagent/create'), {
+      const response = await fetch('/api/mintagent/create', {
         method: 'POST',
         headers: buildApiHeaders(),
         body: JSON.stringify({ 
@@ -507,6 +533,43 @@ export default function MintagentPage() {
       }
     } catch (error) {
       console.error('[Homepage] handleSubmit error:', error);
+      const recoveredIndex = await recoverCreatedIndex(slug);
+      if (recoveredIndex) {
+        const recoveredNamespace = recoveredIndex.clientSlug || recoveredIndex.namespace;
+        const recoveredUrl = recoveredIndex.url || normalizedUrl || driveFolder || '';
+        const recoveredSiteInfo = {
+          url: recoveredUrl,
+          namespace: recoveredNamespace,
+          index: recoveredIndex.index,
+          pagesCrawled: recoveredIndex.pagesCrawled || 0,
+          crawlComplete: true,
+          crawlDate: recoveredIndex.createdAt || new Date().toISOString(),
+          metadata: recoveredIndex.metadata || {},
+        };
+
+        sessionStorage.setItem('mintagent_current_data', JSON.stringify(recoveredSiteInfo));
+        await saveIndex({
+          url: recoveredUrl,
+          namespace: recoveredNamespace,
+          index: recoveredIndex.index,
+          pagesCrawled: recoveredIndex.pagesCrawled || 0,
+          createdAt: recoveredIndex.createdAt || new Date().toISOString(),
+          metadata: recoveredIndex.metadata || {},
+        });
+        data = {
+          success: true,
+          namespace: recoveredNamespace,
+          index: recoveredIndex.index,
+        };
+        setCrawlProgress({
+          status: hasUrl ? 'Crawl complete!' : 'Ingestion complete!',
+          pagesFound: recoveredIndex.pagesCrawled || 0,
+          pagesScraped: recoveredIndex.pagesCrawled || 0,
+        });
+        toast.success('The crawl finished after the browser lost the connection. Opening the chatbot.');
+        router.push(`/dashboard?namespace=${recoveredNamespace}`);
+        return;
+      }
       toast.error('Failed to start crawling. Please try again.');
       setLoading(false);
       setCrawlProgress(null);
